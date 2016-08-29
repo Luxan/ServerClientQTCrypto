@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Source Files\test">
+      <UniqueIdentifier>{4447ff9a-80b4-4c95-b551-ee20f7aec891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\org">
+      <UniqueIdentifier>{aa54e878-f0ce-450b-802f-0c45f3ee0e6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\org\Server">
+      <UniqueIdentifier>{1c8807d1-a409-4fe0-899f-fe8643596fcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\org\Shared">
+      <UniqueIdentifier>{eb12fed4-b9b3-49f5-86c0-6e44aee5a9cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\org\CLient">
+      <UniqueIdentifier>{59a99308-25ae-43a2-acdf-8b78de34df04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\Shared">
+      <UniqueIdentifier>{658100d2-0d05-4200-937d-82a568ac0e73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\Server">
+      <UniqueIdentifier>{07c0cdfe-1850-4c25-bf70-cc9160667b80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\Client">
+      <UniqueIdentifier>{29ab8882-9efb-4d7b-ab95-861805562173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\org">
+      <UniqueIdentifier>{0435988e-6299-4c39-9487-022836e2e1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\org\Client">
+      <UniqueIdentifier>{a22474c2-9c6c-42bd-a271-33342a66c909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\org\Shared">
+      <UniqueIdentifier>{3806ee9f-2d45-4f48-beb8-408c8bf761a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\org\Server">
+      <UniqueIdentifier>{cce22e87-6dbf-4d1d-b9a9-604fbfe82d56}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\test\test_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\client\mainwindow.h">
+      <Filter>Header Files\org\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\client\clog.h">
+      <Filter>Header Files\org\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_messagecollector_messageprocessor.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_messageprocessor_messageworker.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_tcpchannel_messagecollector.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\database.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\impulse.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\interface_communication.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\interface_communication_controller.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\interface_thread.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\mainwindow.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\message_collector.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\message_processor.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\message_worker.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\slog.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\systemevents.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\task.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\task_queue.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\tcpchannel.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\clientsocket.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_gui_messagecollector.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_gui_messageprocessor.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\server\controller_gui_tcpchannel.h">
+      <Filter>Header Files\org\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\message.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package_buffer.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package_information.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package_instant_replay.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package_signal.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\package_update.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\reference_buffer.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\user.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\buffer.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\bufferspitter.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\cipher.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\configuration.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\error_enum.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\id_client.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\id_message.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\id_room.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\key.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\shared\log.h">
+      <Filter>Header Files\org\Shared</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\client\mainwindow.cpp">
+      <Filter>Source Files\org\CLient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\clog.cpp">
+      <Filter>Source Files\org\CLient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\main.cpp">
+      <Filter>Source Files\org\CLient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\bufferspitter.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\clientid.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\key.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\log.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\message.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\package_buffer.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\reference_buffer.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shared\user.cpp">
+      <Filter>Source Files\org\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\__main.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_gui_messagecollector.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_gui_messageprocessor.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_gui_tcpchannel.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_messagecollector_messageprocessor.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_messageprocessor_messageworker.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\controller_tcpchannel_messagecollector.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\database.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\interface_communication.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\interface_communication_controller.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\interface_thread.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\mainwindow.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\message_collector.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\message_processor.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\message_worker.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\slog.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\task.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\task_queue.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\tcpchannel.cpp">
+      <Filter>Source Files\org\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\server_test_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\shared_test_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\client_test_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\test_shared\test_package_buffer.cpp">
+      <Filter>Source Files\test\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\test_shared\test_buffer.cpp">
+      <Filter>Source Files\test\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\test_shared\test_buffer_spitter.cpp">
+      <Filter>Source Files\test\Shared</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
