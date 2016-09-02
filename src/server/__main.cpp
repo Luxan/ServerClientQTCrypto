@@ -4,6 +4,9 @@
 #include <QApplication>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <signal.h>
 
 #include "../../include/server/mainwindow.h"
 #include "../../include/server/database.h"
@@ -11,7 +14,7 @@
 #include "../../include/server/message_processor.h"
 #include "../../include/server/message_collector.h"
 #include "../../include/server/slog.h"
-#include "../../include/shared/cipher.h"
+#include "../../include/shared/crypto.h"
 #include "../../include/server/controller_gui_messagecollector.h"
 #include "../../include/server/controller_gui_messageprocessor.h"
 #include "../../include/server/controller_gui_tcpchannel.h"
@@ -19,6 +22,14 @@
 #include "../../include/server/controller_tcpchannel_messagecollector.h"
 #include "../../include/server/controller_messageprocessor_messageworker.h"
 #include "../../include/shared/configuration.h"
+
+void signal_callback_handler(int signum)
+{
+    printf("Caught signal %d\n",signum);
+    // Cleanup and close up stuff here
+    // Terminate program
+    exit(signum);
+}
 
 void addUsersTest()
 {
@@ -28,8 +39,12 @@ void addUsersTest()
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
+    // Register signal and signal handler
+    signal(SIGINT, signal_callback_handler);
 
     QApplication a(argc, argv);
+    CryptographyBase::InitializeOpenSSL();
+
     DataBase::LoadResources("database.txt");
     addUsersTest(); //remove TODO
     //TODO Generation of keys()setting up
@@ -67,8 +82,9 @@ int main(int argc, char *argv[])
     conf3.responseStartEvent = eSystemEvent::ResponseStartTcpChannel;
     TcpChannel server(conf3, globalConfiguration::serverPort, 64);
 
-    Cipher cipher;
-    server.setCipher(&cipher);
+    Sha256Hasher hasher;
+    RSACipher rsaCipher;
+    server.setCipher(&hasher, &rsaCipher);
 
     SLog::logInfo().setGuiLevel(&w);
 

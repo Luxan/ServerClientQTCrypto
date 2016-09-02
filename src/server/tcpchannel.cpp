@@ -53,8 +53,9 @@ TcpChannel::~TcpChannel()
         close(sfd);
 }
 
-void TcpChannel::setCipher(Cipher *cipher)
+void TcpChannel::setCipher(Hasher *hasher, Cipher * cipher)
 {
+    this->hasher = hasher;
     this->cipher = cipher;
 }
 

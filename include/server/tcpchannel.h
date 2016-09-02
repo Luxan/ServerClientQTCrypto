@@ -11,7 +11,7 @@
 #include "../shared/package.h"
 #include "../server/interface_thread.h"
 #include "../shared/user.h"
-#include "../shared/cipher.h"
+#include "../shared/crypto.h"
 #include "../server/clientsocket.h"
 
 class interfaceCommunication;
@@ -31,7 +31,7 @@ public:
     \pre
     \post
     */
-    void setCipher(Cipher * cipher);
+    void setCipher(Hasher *hasher, Cipher * cipher);
     /**
     \param
     \return
@@ -228,6 +228,7 @@ private:
     int efd;
     struct epoll_event *events;
     ClientSocket *connectedClients;
+    Hasher * hasher;
     Cipher * cipher;
 };
 

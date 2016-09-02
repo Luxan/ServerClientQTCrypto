@@ -9,6 +9,7 @@ QT += widgets
 QT += sql
 
 CONFIG += c++11
+CONFIG += -lcrypto
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -22,6 +23,15 @@ SOURCES += ../../src/shared/*.cpp \
     ../../src/server/*.cpp 
 
 HEADERS  += ../../include/shared/*.h \
-    ../../include/server/*.h
+    ../../include/server/*.h \
+    ../../include/server/processor.h \
+    ../../include/shared/hash.h
 
 FORMS    += ../../forms/server/mainwindow.ui
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../lib/openssl/install/lib/release/ -lssl
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../lib/openssl/install/lib/debug/ -lssl
+else:unix: LIBS += -L$$PWD/../../lib/openssl/install/lib/ -lssl
+
+INCLUDEPATH += $$PWD/../../lib/openssl/install/include
+DEPENDPATH += $$PWD/../../lib/openssl/install/include

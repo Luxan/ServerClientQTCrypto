@@ -6,9 +6,11 @@
 #include <string>
 #include <mutex>
 #include <queue>
+#include <stdint.h>
 
 #include "../shared/id_client.h"
 #include "../shared/package.h"
+#include "../shared/hash.h"
 #include "../shared/status.h"
 
 /**
@@ -22,7 +24,11 @@ private:
     std::mutex lock_queue;
     std::string name;
     std::string login;
-    std::string password;
+
+    Hash password;
+
+    uint_64_t user_salt;
+
     ClientID id;
     Status status;
 
@@ -36,7 +42,7 @@ public:
     \pre
     \post
     */
-    User(uint32_t _id, std::string _login, std::string _password);
+    User(uint32_t _id, std::string _login, uint_8_t * _password, size_t passwordLength, uint64_t user_salt);
     /**
     \param
     \return
@@ -64,6 +70,15 @@ public:
     \post
     */
     std::string getName()const;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    uint64_t getSalt()const;
     /**
     \param
     \return

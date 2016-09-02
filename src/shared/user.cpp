@@ -8,16 +8,16 @@
 #include "../../include/shared/id_client.h"
 #include "../../include/shared/package.h"
 
-User::User(uint32_t _id, std::string _login, std::string _password):
-    login(_login), password(_password), id(_id)
+User::User(uint32_t _id, std::string _login, uint_8_t * _password, size_t passwordLength, uint64_t user_salt):
+    login(_login), password(_password, passwordLength), id(_id), user_salt(user_salt)
 {}
 
-bool User::LogIn(std::string _login, std::string _password)
+bool User::LogIn(std::string _login, Hash * _password)
 {
     std::lock_guard<std::mutex> guard(lock_data);
     if (login == _login)
     {
-        if(password == _password)
+        if(*password == *_password)
         {
             status = Status::Online;
             return true;
@@ -36,6 +36,12 @@ std::string User::getName()const
 {
     return name;
 }
+
+uint64_t User::getSalt()const
+{
+    return user_salt;
+}
+
 const Status &User::getStatus()const
 {
     return status;

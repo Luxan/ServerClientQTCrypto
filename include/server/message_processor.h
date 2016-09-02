@@ -1,46 +1,21 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef MESSAGEPROCESSOR_H
-#define MESSAGEPROCESSOR_H
+#pragma once
 
 #include <list>
 
-#include "../server/message_worker.h"
-#include "../server/task.h"
-#include "../server/task_queue.h"
 #include "../server/interface_communication.h"
-#include "../server/interface_thread.h"
+#include "../server/processor.h"
 #include "../shared/message.h"
 #include "../server/controller_messageprocessor_messageworker.h"
-
-class MessageWorker;
 
 /**
 \class
 \brief
 */
-class MessageProcessor : public interfaceThread
+class MessageProcessor : public Processor
 {
-private:
-    Controller_MessageProcessor_MessageWorker cmpmw;
-    std::list<MessageWorker *> lWorkers;
-    TaskQueue tq;
-    /**
-    \threadsafe using threadsafe TaskQueue tq
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void AddTask(Task * task);
-
-    /**
-    \see interface_thread.h
-    */
-    void dowork();
 public:
     /**
     \param
@@ -89,6 +64,4 @@ public:
     */
     void RequestSleep();
 };
-
-#endif // MESSAGEPROCESSOR_H
 

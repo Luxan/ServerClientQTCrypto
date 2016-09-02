@@ -6,24 +6,24 @@
 #include "../../include/server/message_worker.h"
 #include "../../include/server/task_queue.h"
 
-MessageWorker::MessageWorker(ThreadConfiguration conf, TaskQueue *_queue):
+ThreadWorker::ThreadWorker(ThreadConfiguration conf, TaskQueue *_queue):
     interfaceThread(conf), queue(_queue)
 {}
 
-MessageWorker::~MessageWorker()
+ThreadWorker::~ThreadWorker()
 {}
 
-void MessageWorker::RequestSleep()
+void ThreadWorker::RequestSleep()
 {
     sleepThread();
 }
 
-void MessageWorker::RequestStart()
+void ThreadWorker::RequestStart()
 {
     unSleepThread();
 }
 
-void MessageWorker::dowork()
+void ThreadWorker::dowork()
 {
     Task *task = queue->GetNextTask();
 

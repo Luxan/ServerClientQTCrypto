@@ -11,7 +11,7 @@
 void Controller_MessageProcessor_MessageWorker::CheckModule1Events(void *module1, void *module2)
 {
     //MessageProcessor *messageProcessor = (MessageProcessor *)module1;
-    MessageWorker *eventGiver = (MessageWorker *)module2;
+    ThreadWorker *eventGiver = (ThreadWorker *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
@@ -63,7 +63,7 @@ void Controller_MessageProcessor_MessageWorker::CheckModule1Events(void *module1
 */
 void Controller_MessageProcessor_MessageWorker::CheckModule2Events(void *module1, void *module2)
 {
-    MessageWorker *messageWorker = (MessageWorker *)module1;
+    ThreadWorker *messageWorker = (ThreadWorker *)module1;
     MessageProcessor *eventGiver = (MessageProcessor *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
