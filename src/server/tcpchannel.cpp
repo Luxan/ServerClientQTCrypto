@@ -2,58 +2,41 @@
 \author Sergey Gorokh (ESEGORO)
 */
 #include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/epoll.h>
-#include <sys/un.h>
 #include <stdlib.h>
-
 #include <string.h>
-
-#include <thread>
-#include <fcntl.h>
 
 #include "../../include/server/tcpchannel.h"
 #include "../../include/shared/message.h"
 #include "../../include/server/slog.h"
 #include "../../include/shared/key.h"
-#include "../../include/shared/cipher.h"
+#include "../../include/shared/crypto.h"
 #include "../../include/shared/user.h"
 #include "../../include/server/database.h"
 #include "../../include/shared/buffer.h"
 #include "../../include/shared/package_instant_replay.h"
 #include "../../include/shared/package_signal.h"
-#include "../../include/shared/package_information.h"
+#include "../../include/shared/package_user_to_user.h"
 #include "../../include/shared/package_update.h"
 #include "../../include/shared/buffer_spitter.h"
 #include "../../include/shared/error_enum.h"
 
 #include <QDebug>
 
-TcpChannel::TcpChannel(ThreadConfiguration conf, const int portNumb, int _maxEvents):
+TcpChannel::TcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents):
     interfaceThread(conf),
-    maxEvents(_maxEvents),
+    maxEvents(maxEvents),
     portno(portNumb)
 {
-    /* Buffer where events are returned */
-    events = (epoll_event *)calloc(maxEvents, sizeof event);
-    connectedClients = new ClientSocket[maxEvents];
+    connectedClients = new RemoteClient[maxEvents];
     state = UnInitialized;
 }
 
 TcpChannel::~TcpChannel()
 {
-    free(events);
-
     delete[] connectedClients;
-    if (0 != sfd)
-        close(sfd);
 }
 
-void TcpChannel::setCipher(Hasher *hasher, Cipher * cipher)
+void TcpChannel::setCrypto(Hasher *hasher, Cipher * cipher)
 {
     this->hasher = hasher;
     this->cipher = cipher;
@@ -83,52 +66,12 @@ void TcpChannel::RequestStop()
     sleepThread();
 }
 
-bool TcpChannel::initialize(struct epoll_event &event)
-{
-    int s;
-    try
-    {
-        sfd = create_and_bind(portno);
-        if (sfd == -1)
-            throw std::string(" create_and_bind ") + gai_strerror(sfd);
-
-        s = make_socket_non_blocking(sfd);
-        if (s == -1)
-            throw std::string(" make_socket_non_blocking: ") + gai_strerror(s);
-
-        s = listen(sfd, SOMAXCONN);
-        if (s == -1)
-            throw std::string(" listen");
-
-        efd = epoll_create1(0);
-        if (efd == -1)
-            throw std::string(" epoll_create");
-
-        event.data.fd = sfd;
-        event.events = EPOLLIN | EPOLLET;
-        s = epoll_ctl(efd, EPOLL_CTL_ADD, sfd, &event);
-        if (s == -1)
-            throw std::string(" epoll_ctl");
-
-        return true;
-    }
-    catch (std::string e)
-    {
-        LogError(e);
-
-        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepTcpChannel));
-
-        close(sfd);
-        return false;
-    }
-}
-
 void TcpChannel::dowork()
 {
     switch (state)
     {
     case UnInitialized:
-        if (!initialize(event))
+        if (!initialize())
         {
             sleepThread();
             state = UnInitialized;
@@ -137,23 +80,15 @@ void TcpChannel::dowork()
         state = Listning;
         break;
     case Listning:
-        int n, i;
+        int n = doListen();
 
-        n = epoll_wait(efd, events, maxEvents, -1);
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
-            if ((events[i].events & EPOLLERR) ||
-                    (events[i].events & EPOLLHUP) ||
-                    (!(events[i].events & EPOLLIN)))
+            if (!isSocketValid(i))
             {
-                /* An error has occured on this fd, or the socket is not
-                   ready for reading (why were we notified then?) */
-                fprintf(stderr, "epoll error\n");
-                close(events[i].data.fd);
                 continue;
             }
-
-            else if (sfd == events[i].data.fd)
+            else if (checkIncomingConnections(i))
             {
                 /* We have a notification on the listening socket, which
                    means one or more incoming connections. */
@@ -172,73 +107,6 @@ void TcpChannel::dowork()
         }
         break;
     }
-}
-
-void TcpChannel::handleNotificationOnListningSocket()
-{
-    int s;
-    while (1)
-    {
-        struct sockaddr in_addr;
-        socklen_t in_len;
-        int infd;
-        char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-
-        in_len = sizeof in_addr;
-        infd = accept(sfd, &in_addr, &in_len);
-        if (infd == -1)
-        {
-            if ((errno == EAGAIN) ||
-                    (errno == EWOULDBLOCK))
-            {
-                /* We have processed all incoming
-                   connections. */
-                break;
-            }
-            else
-            {
-                perror("accept");
-                break;
-            }
-        }
-
-        s = getnameinfo(&in_addr, in_len,
-                        hbuf, sizeof hbuf,
-                        sbuf, sizeof sbuf,
-                        NI_NUMERICHOST | NI_NUMERICSERV);
-        if (s == 0)
-        {
-            printf("Accepted connection on descriptor %d "
-                   "(host=%s, port=%s)\n", infd, hbuf, sbuf);
-        }
-
-        /* Make the incoming socket non-blocking and add it to the
-           list of fds to monitor. */
-        s = make_socket_non_blocking(infd);
-        if (s == -1)
-            abort();
-
-        event.data.fd = infd;
-        event.events = EPOLLIN | EPOLLET;
-        s = epoll_ctl(efd, EPOLL_CTL_ADD, infd, &event);
-        if (s == -1)
-        {
-            perror("epoll_ctl");
-            abort();
-        }
-    }
-}
-
-bool TcpChannel::sendBuffer(uint8_t *buff, size_t size, int i)
-{
-    ssize_t s = write(events[i].data.fd, buff, size);
-
-    if (s == -1)
-    {
-        LogError(std::string(" epoll event error: write : ") + gai_strerror(errno));
-        return false;
-    }
-    return true;
 }
 
 bool TcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp, int i)
@@ -387,23 +255,14 @@ void TcpChannel::handleKeyRequestPackage(int i)
 
 void TcpChannel::processPacketExchange(int i)
 {
-    int done = 0;
-
     while (1)
     {
         ssize_t size;
         char buf[512];
 
-        size = read(events[i].data.fd, buf, sizeof buf);
-        if (size == -1)
+        if(!readBuffer(buf, sizeof buf, size, i))
         {
-            /* If errno == EAGAIN, that means we have read all
-               data. So go back to the main loop. */
-            if (errno != EAGAIN)
-            {
-                LogError(std::string(" epoll event error: read!"));
-                done = 1;
-            }
+            closeSocket(i);
             break;
         }
         else if (size == 0)
@@ -411,14 +270,14 @@ void TcpChannel::processPacketExchange(int i)
             /* End of file. The remote has closed the
                connection. */
             connectedClients[i].releaseUser();
-            done = 1;
+            closeSocket(i);
             break;
         }
 
-        for (int x = 0; x < size; x++)
-        {
-            qDebug() << QByteArray(std::to_string((uint8_t)buf[x]).c_str(), size);
-        }
+        //for (int x = 0; x < size; x++)
+        //{
+        //    qDebug() << QByteArray(std::to_string((uint8_t)buf[x]).c_str(), size);
+       // }
 
         bufferSpitter b((uint8_t *)buf, size);
 
@@ -427,16 +286,6 @@ void TcpChannel::processPacketExchange(int i)
         b.splitBufferIntoList(list, connectedClients[i].incompletePackageBuffer, connectedClients[i].incompletePackageFullLength);
 
         processReceivedBuffers(list, i);
-    }
-
-    if (done)
-    {
-        printf("Closed connection on descriptor %d\n",
-               events[i].data.fd);
-
-        /* Closing the descriptor will make epoll remove it
-           from the set of descriptors which are monitored. */
-        close(events[i].data.fd);
     }
 }
 
@@ -609,72 +458,4 @@ PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
 void TcpChannel::LogError(std::string data)
 {
     AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorTcpChannel, data));
-}
-
-int TcpChannel::create_and_bind(int port)
-{
-    struct addrinfo hints;
-    struct addrinfo *result, *rp;
-    int s;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;     /* Return IPv4 and IPv6 choices */
-    hints.ai_socktype = SOCK_STREAM; /* We want a TCP socket */
-    hints.ai_flags = AI_PASSIVE;     /* All interfaces */
-
-    s = getaddrinfo(NULL, std::to_string(port).c_str(), &hints, &result);
-    if (s != 0)
-    {
-        LogError(std::string("getaddrinfo: ") + gai_strerror(s));
-        return -1;
-    }
-
-    for (rp = result; rp != NULL; rp = rp->ai_next)
-    {
-        sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-        if (sfd == -1)
-            continue;
-
-        s = bind(sfd, rp->ai_addr, rp->ai_addrlen);
-        if (s == 0)
-        {
-            /* We managed to bind successfully! */
-            break;
-        }
-
-        close(sfd);
-    }
-
-    if (rp == NULL)
-    {
-        LogError("Could not bind.");
-        return -1;
-    }
-
-    freeaddrinfo(result);
-
-    return sfd;
-}
-
-int TcpChannel::make_socket_non_blocking(int sfd)
-{
-    int flags, s;
-
-    flags = fcntl(sfd, F_GETFL, 0);
-    if (flags == -1)
-    {
-        LogError("fcntl");
-        return -1;
-    }
-
-    flags |= O_NONBLOCK;
-
-    s = fcntl(sfd, F_SETFL, flags);
-    if (s == -1)
-    {
-        LogError("fcntl");
-        return -1;
-    }
-
-    return 0;
 }

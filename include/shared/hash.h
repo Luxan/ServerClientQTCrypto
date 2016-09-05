@@ -11,10 +11,10 @@
 */
 class Hash
 {
+    uint8_t * buff;
     const size_t hash_length;
-    uint8_t buff[hash_length];
 public:
-    const size_t getHashLength() const
+    size_t getHashLength() const
     {
         return hash_length;
     }
@@ -25,13 +25,18 @@ public:
     }
 
     Hash(uint8_t * buff, size_t hash_length):
-        hash_length(hash_length), buff(buff)
+        buff(buff), hash_length(hash_length)
     {}
+
+    virtual ~Hash()
+    {
+        delete[] buff;
+    }
 
     bool operator==(Hash &h)
     {
         int diff = this->getHashLength() ^ h.getHashLength();
-        for(int i = 0; i < this->getHashLength() && i < h.getHashLength(); i++)
+        for(uint8_t i = 0; i < this->getHashLength() && i < h.getHashLength(); i++)
         diff |= this->getHashBuff()[i] ^ h.getHashBuff()[i];
         return diff == 0;
     }

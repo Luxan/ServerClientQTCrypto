@@ -48,5 +48,10 @@ bool ClientID::operator>(const ClientID &id)const
 {
     return this->id > id.id;
 }
+ClientID ClientID::operator=(uint32_t _id)
+{
+    id = _id;
+    return *this;
+}
 
 int ClientID::staticID = 0;

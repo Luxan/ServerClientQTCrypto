@@ -20,12 +20,16 @@ OBJECTS_DIR = ../../obj/Server
 
 
 SOURCES += ../../src/shared/*.cpp \
-    ../../src/server/*.cpp 
+    ../../src/server/*.cpp \ 
+    ../../src/server/epoll_tcpchannel.cpp
 
 HEADERS  += ../../include/shared/*.h \
     ../../include/server/*.h \
     ../../include/server/processor.h \
-    ../../include/shared/hash.h
+    ../../include/shared/hash.h \
+    ../../include/server/epoll_tcpchannel.h \
+    ../../include/shared/cipher.h \
+    ../../include/shared/hasher.h
 
 FORMS    += ../../forms/server/mainwindow.ui
 

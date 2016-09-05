@@ -5,7 +5,7 @@
 #include "../shared/user.h"
 #include "../shared/package_buffer.h"
 
-class ClientSocket
+class RemoteClient
 {
     std::shared_ptr<User> u;
     bool isConn;
@@ -21,7 +21,7 @@ public:
 	\pre
 	\post
 	*/
-    ClientSocket()
+    RemoteClient()
     {
         isConn = false;
         incompletePackageBuffer = new PackageBuffer(nullptr, 0);
@@ -35,7 +35,7 @@ public:
 	\pre
 	\post
 	*/
-    ~ClientSocket()
+    ~RemoteClient()
     {
         delete incompletePackageBuffer;
     }

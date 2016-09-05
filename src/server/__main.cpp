@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
     Sha256Hasher hasher;
     RSACipher rsaCipher;
-    server.setCipher(&hasher, &rsaCipher);
+    server.setCrypto(&hasher, &rsaCipher);
 
     SLog::logInfo().setGuiLevel(&w);
 

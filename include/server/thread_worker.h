@@ -8,9 +8,9 @@
 #include <mutex>
 #include <atomic>
 
-#include "../server/task_queue.h"
-#include "../server/interface_thread.h"
-#include "../server/interface_communication.h"
+#include "task_queue.h"
+#include "interface_thread.h"
+#include "interface_communication.h"
 
 /**
 \class

@@ -59,7 +59,15 @@ public:
     \post
     */
     bool operator>(const ClientID &id)const;
-
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ClientID operator=(uint32_t _id);
     /**
     \param
     \return
@@ -79,7 +87,6 @@ public:
     \post
     */
     ClientID(uint32_t &_id);
-
     /**
     \param
     \return

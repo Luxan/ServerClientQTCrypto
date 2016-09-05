@@ -1,18 +1,27 @@
 #pragma once
 
+#include "crypto.h"
+
 class IV
 {
     const size_t iv_length;
-    uint8_t buff[key_length];
+    uint8_t * buff;
 public:
-    const size_t getIvLength() const
+    size_t getIVLength() const
     {
         return iv_length;
     }
 
     IV(size_t iv_length):
         iv_length(iv_length)
-    {}
+    {
+        buff = CryptographyBase::createRandomBuffer(iv_length);
+    }
+
+    ~IV()
+    {
+        delete buff;
+    }
 
     /**
     \param

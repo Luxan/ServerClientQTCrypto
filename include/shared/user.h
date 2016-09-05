@@ -24,11 +24,8 @@ private:
     std::mutex lock_queue;
     std::string name;
     std::string login;
-
-    Hash password;
-
-    uint_64_t user_salt;
-
+    Hash * password;
+    uint64_t user_salt;
     ClientID id;
     Status status;
 
@@ -42,7 +39,7 @@ public:
     \pre
     \post
     */
-    User(uint32_t _id, std::string _login, uint_8_t * _password, size_t passwordLength, uint64_t user_salt);
+    User(uint32_t _id, std::string _login, uint8_t * _password, size_t passwordLength, uint64_t _user_salt);
     /**
     \param
     \return
@@ -51,7 +48,16 @@ public:
     \pre
     \post
     */
-    bool LogIn(std::string _login, std::string _password);
+    ~User();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    bool LogIn(std::string _login, Hash * _password);
     /**
     \param
     \return
@@ -114,7 +120,7 @@ public:
     \pre
     \post
     */
-    std::string getPassword()const;
+    Hash *getPassword()const;
 
     /**
     \param

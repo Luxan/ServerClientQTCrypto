@@ -7,17 +7,22 @@
 #include "../../include/shared/user.h"
 #include "../../include/shared/id_client.h"
 #include "../../include/shared/package.h"
+#include "../../include/shared/hash.h"
 
-User::User(uint32_t _id, std::string _login, uint_8_t * _password, size_t passwordLength, uint64_t user_salt):
-    login(_login), password(_password, passwordLength), id(_id), user_salt(user_salt)
-{}
+User::User(uint32_t _id, std::string _login, uint8_t * _password, size_t passwordLength, uint64_t _user_salt):
+    login(_login),
+    user_salt(_user_salt),
+    id(_id)
+{
+    password = new Hash(_password, passwordLength);
+}
 
 bool User::LogIn(std::string _login, Hash * _password)
 {
     std::lock_guard<std::mutex> guard(lock_data);
     if (login == _login)
     {
-        if(*password == *_password)
+        if(password->operator ==(*_password))
         {
             status = Status::Online;
             return true;
@@ -25,6 +30,11 @@ bool User::LogIn(std::string _login, Hash * _password)
     }
 
     return false;
+}
+
+User::~User()
+{
+    delete password;
 }
 
 void User::LogOff()
@@ -57,7 +67,7 @@ std::string User::getLogin()const
     return login;
 }
 
-std::string User::getPassword()const
+Hash* User::getPassword()const
 {
     return password;
 }

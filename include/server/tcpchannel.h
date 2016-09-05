@@ -1,8 +1,4 @@
-/**
-\author Sergey Gorokh (ESEGORO)
-*/
-#ifndef SERVERTCP_H
-#define SERVERTCP_H
+#pragma once
 
 #include <netinet/in.h>
 #include <sys/epoll.h>
@@ -11,10 +7,9 @@
 #include "../shared/package.h"
 #include "../server/interface_thread.h"
 #include "../shared/user.h"
-#include "../shared/crypto.h"
+#include "../shared/hasher.h"
+#include "../shared/cipher.h"
 #include "../server/clientsocket.h"
-
-class interfaceCommunication;
 
 /**
 \class
@@ -31,7 +26,7 @@ public:
     \pre
     \post
     */
-    void setCipher(Hasher *hasher, Cipher * cipher);
+    void setCrypto(Hasher *hasher, Cipher * cipher);
     /**
     \param
     \return
@@ -40,7 +35,7 @@ public:
     \pre
     \post
     */
-    TcpChannel(ThreadConfiguration conf,int portNumb, int MaxEvents);
+    TcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
     /**
     \param
     \return
@@ -68,7 +63,97 @@ public:
     \post
     */
     void RequestStop();
+protected:
+    const int portno;
+    const int maxEvents;
+
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual void closeSocket(int i) = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual void initialize() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual bool doListen() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual bool checkIncomingConnections(int i) = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual void handleNotificationOnListningSocket() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual bool isSocketValid(int i) = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual bool sendBuffer(uint8_t *buff, size_t size, int i) = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual bool readBuffer(uint8_t *buf, ssize_t aviableToRead, ssize_t &redData, int i) = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void LogError(std::string data);
 private:
+    Hasher * hasher;
+    Cipher * cipher;
+    RemoteClient *connectedClients;
+    eChannelState state;
+
     enum eChannelState
     {
         UnInitialized,
@@ -78,83 +163,11 @@ private:
 //        ProcessingEventData,
 //        CloseEpolDescriptor
     };
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool initialize(epoll_event &event);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    PackageWrapper *CreatePackage(PackageBuffer *buf);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    int create_and_bind(int port);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    int make_socket_non_blocking(int sfd);
 
     /**
     \see interface_thread.h
     */
     void dowork();
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void handleNotificationOnListningSocket();
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool readBuffer(int i, uint8_t *buf, ssize_t &count);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool sendPackage(PackageWrapper * response, int i);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool sendBuffer(uint8_t *buff, size_t size, int i);
     /**
     \param
     \return
@@ -217,19 +230,14 @@ private:
     \pre
     \post
     */
-    void LogError(std::string data);
-
-    eChannelState state;
-
-    struct epoll_event event;
-    const int maxEvents;
-    const int portno;
-    int sfd;
-    int efd;
-    struct epoll_event *events;
-    ClientSocket *connectedClients;
-    Hasher * hasher;
-    Cipher * cipher;
+    PackageWrapper *CreatePackage(PackageBuffer *buf);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    bool sendPackage(PackageWrapper * response, int i);
 };
-
-#endif // SERVERTCP_H
