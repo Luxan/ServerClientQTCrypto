@@ -165,8 +165,8 @@ protected:
     \pre
     \post
     */
-    int aes_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-      unsigned char *iv, unsigned char *ciphertext)
+    int aes_encrypt(uint8_t *plaintext, int plaintext_len, uint8_t *key,
+      uint8_t *iv, uint8_t *ciphertext)
     {
       EVP_CIPHER_CTX *ctx;
 
@@ -282,7 +282,7 @@ public:
         * ciphertext which may be longer than the plaintext, dependant on the
         * algorithm and mode
         */
-        unsigned char ciphertext[max_data_block_length];
+        uint8_t ciphertext[max_data_block_length];
 
         int ciphertext_len;
 
@@ -291,7 +291,12 @@ public:
         {
             int rest = input->getLength() - offset >= max_data_block_length ? max_data_block_length : input->getLength() - offset;
             /* Encrypt the input data */
-            ciphertext_len = aes_encrypt(input->getPointerToBuffer()[offset], rest, key, iv, ciphertext);
+            ciphertext_len = aes_encrypt(
+                        input->getPointerToBuffer() + offset,
+                        rest,
+                        key,
+                        iv,
+                        ciphertext);
 
             output->concatBuff(ciphertext, ciphertext_len);
 
