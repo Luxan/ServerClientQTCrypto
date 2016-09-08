@@ -41,7 +41,7 @@ private:
     \pre
     \post
     */
-    virtual void doListen();
+    virtual int doListen();
     /**
     \param
     \return

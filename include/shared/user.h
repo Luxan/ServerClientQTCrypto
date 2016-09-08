@@ -7,11 +7,15 @@
 #include <mutex>
 #include <queue>
 #include <stdint.h>
+#include <list>
 
 #include "../shared/id_client.h"
+#include "../shared/id_room.h"
 #include "../shared/package.h"
 #include "../shared/hash.h"
 #include "../shared/status.h"
+#include "../shared/user_credentials.h"
+#include "../shared/user_relations.h"
 
 /**
 \class
@@ -23,10 +27,9 @@ private:
     std::mutex lock_data;
     std::mutex lock_queue;
     std::string name;
-    std::string login;
-    Hash * password;
-    uint64_t user_salt;
-    ClientID id;
+
+    UserCredentials * credentials;
+    UserRelations * relations;
     Status status;
 
     std::queue<PackageWrapper*> vpackagesToSend;
@@ -39,7 +42,7 @@ public:
     \pre
     \post
     */
-    User(uint32_t _id, std::string _login, uint8_t * _password, size_t passwordLength, uint64_t _user_salt);
+    User(std::string name, UserCredentials * credentials, UserRelations * relations);
     /**
     \param
     \return
@@ -75,7 +78,7 @@ public:
     \pre
     \post
     */
-    std::string getName()const;
+    std::string getName();
     /**
     \param
     \return
@@ -84,7 +87,7 @@ public:
     \pre
     \post
     */
-    uint64_t getSalt()const;
+    uint64_t getIteration();
     /**
     \param
     \return
@@ -93,7 +96,7 @@ public:
     \pre
     \post
     */
-    const Status &getStatus()const;
+    uint64_t getSalt();
     /**
     \param
     \return
@@ -102,7 +105,7 @@ public:
     \pre
     \post
     */
-    const ClientID &getID()const;
+    Status getStatus();
     /**
     \param
     \return
@@ -111,7 +114,7 @@ public:
     \pre
     \post
     */
-    std::string getLogin()const;
+    ClientID getID();
     /**
     \param
     \return
@@ -120,8 +123,7 @@ public:
     \pre
     \post
     */
-    Hash *getPassword()const;
-
+    std::string getLogin();
     /**
     \param
     \return

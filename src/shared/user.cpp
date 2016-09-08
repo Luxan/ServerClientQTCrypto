@@ -9,20 +9,16 @@
 #include "../../include/shared/package.h"
 #include "../../include/shared/hash.h"
 
-User::User(uint32_t _id, std::string _login, uint8_t * _password, size_t passwordLength, uint64_t _user_salt):
-    login(_login),
-    user_salt(_user_salt),
-    id(_id)
-{
-    password = new Hash(_password, passwordLength);
-}
+User::User(std::string name, UserCredentials * credentials, UserRelations * relations):
+    name(name), credentials(credentials), relations(relations)
+{}
 
 bool User::LogIn(std::string _login, Hash * _password)
 {
     std::lock_guard<std::mutex> guard(lock_data);
-    if (login == _login)
+    if (credentials->getLogin() == _login)
     {
-        if(password->operator ==(*_password))
+        if(credentials->isCorrectPassword(_password))
         {
             status = Status::Online;
             return true;
@@ -34,7 +30,8 @@ bool User::LogIn(std::string _login, Hash * _password)
 
 User::~User()
 {
-    delete password;
+    delete credentials;
+    delete relations;
 }
 
 void User::LogOff()
@@ -42,34 +39,33 @@ void User::LogOff()
     status = Status::Offline;
 }
 
-std::string User::getName()const
+std::string User::getName()
 {
     return name;
 }
 
-uint64_t User::getSalt()const
+uint64_t User::getIteration()
 {
-    return user_salt;
+    return credentials->getIteration();
+}
+uint64_t User::getSalt()
+{
+    return credentials->getSalt();
 }
 
-const Status &User::getStatus()const
+Status User::getStatus()
 {
     return status;
 }
 
-const ClientID &User::getID()const
+ClientID User::getID()
 {
-    return id;
+    return credentials->getID();
 }
 
-std::string User::getLogin()const
+std::string User::getLogin()
 {
-    return login;
-}
-
-Hash* User::getPassword()const
-{
-    return password;
+    return credentials->getLogin();
 }
 
 PackageWrapper * User::getPackageToSend()
@@ -83,13 +79,11 @@ void User::pushPackageToSend(PackageWrapper * m)
     std::lock_guard<std::mutex> guard(lock_queue);
     vpackagesToSend.push(m);
 }
-
 void User::popPackageToSend()
 {
     std::lock_guard<std::mutex> guard(lock_queue);
     vpackagesToSend.pop();
 }
-
 bool User::hasPacketsToSend()
 {
     std::lock_guard<std::mutex> guard(lock_queue);

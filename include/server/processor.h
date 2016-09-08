@@ -24,6 +24,37 @@ protected:
         }
     }
 
+    Processor(ThreadConfiguration &conf):
+        interfaceThread(conf)
+    {
+
+    }
+
+    virtual ~Processor()
+    {
+        for (ThreadWorker *w : lWorkers)
+        {
+            delete w;
+        }
+    }
+
+    void CreateWorkers(ThreadConfiguration conf, int _numberOfWorkers)
+    {
+        numberOfWorkers = _numberOfWorkers;
+        controller->setModule1Obj(this);
+        this->AddEventController(controller);
+
+        for (int i = 0; i < numberOfWorkers; i++)
+        {
+            ThreadWorker *worker = new ThreadWorker(conf, &tq);
+
+            controller->setModule2Obj(worker);
+            worker->AddEventController(controller);
+
+            lWorkers.push_back(worker);
+        }
+    }
+public:
     /**
     \threadsafe using threadsafe TaskQueue tq
     \param
@@ -37,38 +68,4 @@ protected:
     {
         tq.AddTask(task);
     }
-
-    virtual ~Processor()
-    {
-        for (ThreadWorker *w : lWorkers)
-        {
-            delete w;
-        }
-    }
-
-    /**
-    \see interface_thread.h
-    */
-    void dowork()
-    {
-        //TODO implement
-    }
-
-    void CreateWorkers(ThreadConfiguration conf, int numberOfWorkers):
-        numberOfWorkers(numberOfWorkers)
-    {
-        controller.setModule1Obj(this);
-        this->AddEventController(&controller);
-
-        for (int i = 0; i < numberOfWorkers; i++)
-        {
-            ThreadWorker *worker = new ThreadWorker(workersConf, &tq);
-
-            cmpmw.setModule2Obj(worker);
-            worker->AddEventController(&cmpmw);
-
-            lWorkers.push_back(worker);
-        }
-    }
-
 };

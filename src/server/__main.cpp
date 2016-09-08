@@ -10,10 +10,12 @@
 
 #include "../../include/server/mainwindow.h"
 #include "../../include/server/database.h"
-#include "../../include/server/tcpchannel.h"
+#include "../../include/server/epoll_tcpchannel.h"
+
 #include "../../include/server/message_processor.h"
 #include "../../include/server/message_collector.h"
 #include "../../include/server/slog.h"
+#include "../../include/shared/user.h"
 #include "../../include/shared/crypto.h"
 #include "../../include/server/controller_gui_messagecollector.h"
 #include "../../include/server/controller_gui_messageprocessor.h"
@@ -33,7 +35,7 @@ void signal_callback_handler(int signum)
 
 void addUsersTest()
 {
-    DataBase::GetDataBase().addUser(std::make_shared<User>(1, "login1", "password"));
+    //DataBase::GetDataBase().addUser(std::make_shared<User>(1, "login1", "password"));
 }
 
 int main(int argc, char *argv[])
@@ -43,7 +45,6 @@ int main(int argc, char *argv[])
     signal(SIGINT, signal_callback_handler);
 
     QApplication a(argc, argv);
-    CryptographyBase::InitializeOpenSSL();
 
     DataBase::LoadResources("database.txt");
     addUsersTest(); //remove TODO
@@ -80,10 +81,10 @@ int main(int argc, char *argv[])
     conf3.sleepLoopMode = ThreadConfiguration::doNotSleepInsideLoop;
     conf3.responseSleepEvent = eSystemEvent::ResponseSleepTcpChannel;
     conf3.responseStartEvent = eSystemEvent::ResponseStartTcpChannel;
-    TcpChannel server(conf3, globalConfiguration::serverPort, 64);
+    EpollTCPChannel server(conf3, globalConfiguration.serverPort, 64);
 
     Sha256Hasher hasher;
-    RSACipher rsaCipher;
+    Cipher rsaCipher;
     server.setCrypto(&hasher, &rsaCipher);
 
     SLog::logInfo().setGuiLevel(&w);

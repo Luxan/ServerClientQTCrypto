@@ -34,6 +34,22 @@ struct MessageContext : Context
 };
 
 /**
+\struct
+\brief
+*/
+struct CryptoContext : Context
+{
+    PackageBuffer * m;
+
+    /**
+    \brief
+    \pre
+    \post
+    */
+    virtual ~CryptoContext();
+};
+
+/**
 \class
 \brief
 */
@@ -88,4 +104,29 @@ public:
     void execute();
 };
 
+
+/**
+\class
+\brief
+*/
+class CryptoTask : public Task
+{
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    CryptoTask(CryptoContext * c):
+        Task(c)
+    {}
+
+    /**
+    \see task.h
+    */
+    void execute();
+};
 #endif // TASK_H

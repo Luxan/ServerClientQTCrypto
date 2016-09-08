@@ -12,6 +12,16 @@
 */
 enum class eSystemEvent : uint8_t
 {
+    RequestStartEncryptionProcessor,
+    RequestSleepEncryptionProcessor,
+    ResponseStartEncryptionProcessor,
+    ResponseSleepEncryptionProcessor,
+
+    RequestStartDencryptionProcessor,
+    RequestSleepDencryptionProcessor,
+    ResponseStartDencryptionProcessor,
+    ResponseSleepDencryptionProcessor,
+
     RequestStartMessageCollector,
     RequestSleepMessageCollector,
     ResponseStartMessageCollector,
@@ -22,22 +32,38 @@ enum class eSystemEvent : uint8_t
     ResponseStartMessageProcessor,
     ResponseSleepMessageProcessor,
 
+    //channel
+    RequestStartTcpChannel,
+    RequestSleepTcpChannel,
+    ResponseStartTcpChannel,
+    ResponseSleepTcpChannel,
+//workers
     RequestStartMessageWorker,
     RequestSleepMessageWorker,
     ResponseStartMessageWorker,
     ResponseSleepMessageWorker,
 
-    RequestStartTcpChannel,
-    RequestSleepTcpChannel,
-    ResponseStartTcpChannel,
-    ResponseSleepTcpChannel,
+    RequestStartEncryptionWorker,
+    RequestSleepEncryptionWorker,
+    ResponseStartEncryptionWorker,
+    ResponseSleepEncryptionWorker,
 
+    RequestStartDencryptionWorker,
+    RequestSleepDencryptionWorker,
+    ResponseStartDencryptionWorker,
+    ResponseSleepDencryptionWorker,
+
+//errors
+    ErrorEncryptionProcessor,
+    ErrorDencryptionProcessor,
     ErrorMessageCollector,
     ErrorTcpChannel,
     ErrorMessageProcessor,
     ErrorGui,
     ErrorMessageWorker,
-
+//data events
+    EncryptPackage,
+    DecryptPackage,
     PackageReceived,
     PackageToSend,
     MessageCollected,

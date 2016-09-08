@@ -103,7 +103,7 @@ public:
     \pre
     \post
     */
-    interfaceThread(ThreadConfiguration conf);
+    interfaceThread(ThreadConfiguration &conf);
 
     /**
     \param

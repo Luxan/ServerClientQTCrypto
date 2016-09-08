@@ -14,14 +14,9 @@ class Hash
     uint8_t * buff;
     const size_t hash_length;
 public:
-    size_t getHashLength() const
+    size_t getLength() const
     {
         return hash_length;
-    }
-
-    uint8_t * getHashBuff() const
-    {
-        return buff;
     }
 
     Hash(uint8_t * buff, size_t hash_length):
@@ -33,11 +28,11 @@ public:
         delete[] buff;
     }
 
-    bool operator==(Hash &h)
+    bool operator==(Hash &h)const
     {
-        int diff = this->getHashLength() ^ h.getHashLength();
-        for(uint8_t i = 0; i < this->getHashLength() && i < h.getHashLength(); i++)
-        diff |= this->getHashBuff()[i] ^ h.getHashBuff()[i];
+        int diff = this->getLength() ^ h.getLength();
+        for(uint8_t i = 0; i < this->getLength() && i < h.getLength(); i++)
+        diff |= this->getBuff()[i] ^ h.getBuff()[i];
         return diff == 0;
     }
     /**

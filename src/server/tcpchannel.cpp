@@ -276,7 +276,7 @@ void TcpChannel::processPacketExchange(int i)
 
         //for (int x = 0; x < size; x++)
         //{
-        //    qDebug() << QByteArray(std::to_string((uint8_t)buf[x]).c_str(), size);
+        //    qDebug() << Quint8_tArray(std::to_string((uint8_t)buf[x]).c_str(), size);
        // }
 
         bufferSpitter b((uint8_t *)buf, size);

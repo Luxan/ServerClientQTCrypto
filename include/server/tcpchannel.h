@@ -84,7 +84,7 @@ protected:
     \pre
     \post
     */
-    virtual void initialize() = 0;
+    virtual bool initialize() = 0;
     /**
     \param
     \return
@@ -93,7 +93,7 @@ protected:
     \pre
     \post
     */
-    virtual bool doListen() = 0;
+    virtual int doListen() = 0;
     /**
     \param
     \return
@@ -149,11 +149,6 @@ protected:
     */
     void LogError(std::string data);
 private:
-    Hasher * hasher;
-    Cipher * cipher;
-    RemoteClient *connectedClients;
-    eChannelState state;
-
     enum eChannelState
     {
         UnInitialized,
@@ -163,6 +158,13 @@ private:
 //        ProcessingEventData,
 //        CloseEpolDescriptor
     };
+
+    Hasher * hasher;
+    Cipher * cipher;
+    RemoteClient *connectedClients;
+    eChannelState state;
+
+
 
     /**
     \see interface_thread.h

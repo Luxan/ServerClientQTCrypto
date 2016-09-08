@@ -10,6 +10,8 @@
 #include "../../include/server/slog.h"
 
 #include "../../include/server/database.h"
+#include "../../include/shared/user_credentials.h"
+#include "../../include/shared/user_relations.h"
 
 std::mutex DataBase::map_lock;
 std::map<ClientID, std::shared_ptr<User>> DataBase::mUsers;
@@ -76,17 +78,34 @@ std::shared_ptr<User> DataBase::selectUserFromDatabase(ClientID id)
         /* Create SQL statement */
         QSqlQuery query(QString("SELECT * from USER where ID=") + ((std::string)id).c_str() + QString(";"));
 
+        int fieldNameNo = query.record().indexOf("NAME");
         int fieldIDNo = query.record().indexOf("ID");
         int fieldLoginNo = query.record().indexOf("LOGIN");
         int fieldPasswordNo = query.record().indexOf("PASSWORD");
+        int fieldIterationNo = query.record().indexOf("ITERATION");
+        int fieldSaltNo = query.record().indexOf("SALT");
+        int fieldFriendListNo = query.record().indexOf("FRIENDLIST");
+        int fieldBlockedUserListNo = query.record().indexOf("BLOCKEDUSERLIST");
+        int fieldPresenceInBlockedListNo = query.record().indexOf("PRESENCEINBLOCKEDLIST");
+        int fieldPresenceInRoomsNo = query.record().indexOf("PRESENCEINROOMS");
         User *user;
         while (query.next())
         {
-            int ID = query.value(fieldIDNo).toInt();
-            std::string Login = query.value(fieldLoginNo).toString().toStdString();
-            std::string Password = query.value(fieldPasswordNo).toString().toStdString();
+            std::string name = query.value(fieldNameNo).toString().toStdString();
+            int id = query.value(fieldIDNo).toInt();
+            std::string login = query.value(fieldLoginNo).toString().toStdString();
+            QByteArray password = query.value(fieldPasswordNo).toByteArray();
+            int iteration = query.value(fieldIterationNo).toInt();
+            uint32_t salt = query.value(fieldSaltNo).toUInt();
+            QString friendList = query.value(fieldFriendListNo).toString();
+            QString blockedUserList = query.value(fieldBlockedUserListNo).toString();
+            QString presenceInBlockedList = query.value(fieldPresenceInBlockedListNo).toString();
+            QString presenceInRooms = query.value(fieldPresenceInRoomsNo).toString();
 
-            user = new User(ID, Login, Password);
+            Hash * hashedPassword = new Hash(password.data_ptr(), password.length());
+            UserCredentials *uc = new UserCredentials(login, hashedPassword, iteration, salt, id);
+            UserRelations * ur = new UserRelations(friendList, blockedUserList, presenceInBlockedList, presenceInRooms);
+            user = new User(name, uc, ur);
             std::shared_ptr<User> u(user);
 
             SLog::logInfo() << "User selected successfully";

@@ -20,9 +20,20 @@ OBJECTS_DIR = ../../obj/Server
 
 
 SOURCES += ../../src/shared/*.cpp \
-    ../../src/server/*.cpp
+    ../../src/server/*.cpp \
+    ../../src/server/crypto_processor.cpp
 
 HEADERS  += ../../include/shared/*.h \
-    ../../include/server/*.h
+    ../../include/server/*.h \
+    ../../include/shared/user_credentials.h \
+    ../../include/shared/user_relations.h
 
 FORMS    += ../../forms/server/mainwindow.ui
+
+unix|win32: LIBS += -L$$PWD/../../lib/crypto++/installed/lib/ -lcryptopp
+
+INCLUDEPATH += $$PWD/../../lib/crypto++/installed/include
+DEPENDPATH += $$PWD/../../lib/crypto++/installed/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../../lib/crypto++/installed/lib/cryptopp.lib
+else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../../lib/crypto++/installed/lib/libcryptopp.a

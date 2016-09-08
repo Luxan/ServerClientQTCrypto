@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <time.h>
 
 #include "../shared/package.h"
 #include "../shared/id_client.h"
+#include "../shared/id_message.h"
+#include "../shared/id_room.h"
 #include "../shared/log.h"
 
 /**
@@ -18,11 +21,17 @@
 class Message
 {
 protected:
-    std::string data;
+    std::string data;//xml
     std::list<Package *> lPackages;
-    ClientID senderid;
-    ClientID recieverid;
-    PackageWrapper::ePackageType packageType;
+    ClientID sender_id;
+    ClientID reciever_id;
+    RoomID room_id;
+    time_t time_received;
+    time_t time_sended;
+
+    MessageID message_id;
+
+    const PackageWrapper::ePackageType packageType;
 public:
 	/**
 	\param
@@ -45,9 +54,9 @@ public:
 	\pre
 	\post
 	*/
-    ClientID getSenderID()
+    ClientID getSenderID()const
     {
-        return senderid;
+        return sender_id;
     }
 
 	/**
@@ -58,9 +67,9 @@ public:
 	\pre
 	\post
 	*/
-    ClientID getReceiverID()
+    ClientID getReceiverID()const
     {
-        return recieverid;
+        return reciever_id;
     }
 
 	/**
@@ -71,7 +80,8 @@ public:
 	\pre
 	\post
 	*/
-    Message(Package * p)
+    Message(Package * p, PackageWrapper::ePackageType type):
+        packageType(type)
     {
         lPackages.push_back(p);
     }
@@ -129,8 +139,8 @@ public:
     \pre
     \post
     */
-    MessageProcessable(Package * p):
-        Message(p)
+    MessageProcessable(Package * p, PackageWrapper::ePackageType type):
+        Message(p, type)
     {}
     /**
     \param
@@ -165,440 +175,440 @@ public:
     }
 };
 
-/**
-\class
-\brief
-*/
-class MessageRequestAutocomplete : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageRequestAutocomplete(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageRequestAutocomplete";}
-};
-/**
-\class
-\brief
-*/
-class MessageRequestLeavingRoom : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageRequestLeavingRoom(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageRequestLeavingRoom";}
-};
-/**
-\class
-\brief
-*/
-class MessageRequestMessageHistory : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageRequestMessageHistory(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageRequestMessageHistory";}
-};
-/**
-\class
-\brief
-*/
-class MessageRequestJoinRoom : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageRequestJoinRoom(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageRequestJoinRoom";}
-};
-/**
-\class
-\brief
-*/
-class ResponseAutocompleteMessage : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    ResponseAutocompleteMessage(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "ResponseAutocompleteMessage";}
-};
-/**
-\class
-\brief
-*/
-class MessageResponseLeavingRoom : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageResponseLeavingRoom(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageResponseLeavingRoom";}
-};
-/**
-\class
-\brief
-*/
-class MessageResponseJoinRoom : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageResponseJoinRoom(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageResponseJoinRoom";}
-};
-/**
-\class
-\brief
-*/
-class MessageUpdateBlackList : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUpdateBlackList(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUpdateBlackList";}
-};
-/**
-\class
-\brief
-*/
-class MessageUpdateFriendStatus : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUpdateFriendStatus(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUpdateFriendStatus";}
-};
-/**
-\class
-\brief
-*/
-class MessageUpdateRoomPresence : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUpdateRoomPresence(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUpdateRoomPresence";}
-};
-/**
-\class
-\brief
-*/
-class MessageUpdateBlackListPresence : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUpdateBlackListPresence(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUpdateBlackListPresence";}
-};
-/**
-\class
-\brief
-*/
-class MessageUserMessage : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUserMessage(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUserMessage";}
-};
-/**
-\class
-\brief
-*/
-class MessageUserNotification : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUserNotification(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUserNotification";}
-};
-/**
-\class
-\brief
-*/
-class MessageReceipeMessageHistory : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageReceipeMessageHistory(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageReceipeMessageHistory";}
-};
-/**
-\class
-\brief
-*/
-class MessagePTPhistory : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessagePTPhistory(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessagePTPhistory";}
-};
-/**
-\class
-\brief
-*/
-class MessageSetUserInBlackList : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageSetUserInBlackList(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageSetUserInBlackList";}
-};
-/**
-\class
-\brief
-*/
-class MessageUnFriendUser : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageUnFriendUser(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageUnFriendUser";}
-};
-/**
-\class
-\brief
-*/
-class MessagePing : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessagePing(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessagePing";}
-};
-/**
-\class
-\brief
-*/
-class MessageError : public MessageProcessable
-{
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    MessageError(Package * p):
-        MessageProcessable(p)
-    {}
-    /**
-    \see message.h
-    */
-    void process() {}//SLog::logInfo() << "MessageError";}
-};
+///**
+//\class
+//\brief
+//*/
+//class MessageRequestAutocomplete : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageRequestAutocomplete(PackageRequestAutocomplete * p):
+//        MessageProcessable(p, PackageWrapper::ePackageType::RequestAutocomplete)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageRequestAutocomplete";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageRequestLeavingRoom : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageRequestLeavingRoom(PackageRequestLeavingRoom * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageRequestLeavingRoom";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageRequestMessageHistory : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageRequestMessageHistory(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageRequestMessageHistory";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageRequestJoinRoom : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageRequestJoinRoom(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageRequestJoinRoom";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class ResponseAutocompleteMessage : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    ResponseAutocompleteMessage(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "ResponseAutocompleteMessage";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageResponseLeavingRoom : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageResponseLeavingRoom(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageResponseLeavingRoom";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageResponseJoinRoom : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageResponseJoinRoom(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageResponseJoinRoom";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUpdateBlackList : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUpdateBlackList(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUpdateBlackList";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUpdateFriendStatus : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUpdateFriendStatus(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUpdateFriendStatus";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUpdateRoomPresence : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUpdateRoomPresence(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUpdateRoomPresence";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUpdateBlackListPresence : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUpdateBlackListPresence(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUpdateBlackListPresence";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUserMessage : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUserMessage(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUserMessage";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUserNotification : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUserNotification(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUserNotification";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageReceipeMessageHistory : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageReceipeMessageHistory(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageReceipeMessageHistory";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessagePTPhistory : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessagePTPhistory(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessagePTPhistory";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageSetUserInBlackList : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageSetUserInBlackList(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageSetUserInBlackList";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageUnFriendUser : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageUnFriendUser(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageUnFriendUser";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessagePing : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessagePing(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessagePing";}
+//};
+///**
+//\class
+//\brief
+//*/
+//class MessageError : public MessageProcessable
+//{
+//public:
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    MessageError(Package * p):
+//        MessageProcessable(p)
+//    {}
+//    /**
+//    \see message.h
+//    */
+//    void process() {}//SLog::logInfo() << "MessageError";}
+//};

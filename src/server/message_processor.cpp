@@ -51,6 +51,11 @@ void MessageProcessor::RequestStart()
     unSleepThread();
 }
 
+void MessageProcessor::dowork()
+{
+    //TODO implement
+}
+
 void MessageProcessor::AddMessageToProcess(MessageProcessable *m)
 {
     MessageContext *c = new MessageContext();

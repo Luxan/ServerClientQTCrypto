@@ -1,53 +1,66 @@
 #pragma once
 
+#include <cryptopp/sha3.h>
 #include "crypto.h"
+#include "hash.h"
 
 class Hasher : public CryptographyBase
 {
-private:
-    const EVP_MD * hashingAlgorithm;
 protected:
-    void digest_message(const uint8_t *message, size_t message_len, uint8_t **digest, uint32_t *digest_len)
-    {
-        EVP_MD_CTX *mdctx;
-
-        if((mdctx = EVP_MD_CTX_create()) == NULL)
-            handleErrors();
-
-        if(1 != EVP_DigestInit_ex(mdctx, hashingAlgorithm, NULL))
-            handleErrors();
-
-        if(1 != EVP_DigestUpdate(mdctx, message, message_len))
-            handleErrors();
-
-        if((*digest = (uint8_t *)OPENSSL_malloc(EVP_MD_size(hashingAlgorithm))) == NULL)
-            handleErrors();
-
-        if(1 != EVP_DigestFinal_ex(mdctx, *digest, digest_len))
-            handleErrors();
-
-        EVP_MD_CTX_destroy(mdctx);
-    }
+//    uint8_t * digest_message(const uint8_t *message, size_t message_len, int itherationsCount) = 0;
 public:
-    virtual Hash * createHash(PackageBuffer * input) = 0;
-
-    Hasher(const EVP_MD * hashingAlgorithm):
-        hashingAlgorithm(hashingAlgorithm)
-    {}
+    virtual Hash * createHash(PackageBuffer * input, int itherationsCount) = 0;
 };
 
-class Sha256Hasher : public Hasher
+
+class SHA3 : public Hasher
+{
+private:
+    CryptoPP::SHA3 * hashingAlgorithm;
+    const int DIGESTSIZE;
+
+    uint8_t * digest_message(const uint8_t *message, size_t message_len, int itherationsCount)
+    {
+        if (message == nullptr)
+            throw ("SHA3: message is nullptr!");
+
+        if (itherationsCount < 1)
+            throw ("SHA3: itherationsCount is fewer than 1!");
+
+        uint8_t * digest = new uint8_t[DIGESTSIZE];
+
+        hashingAlgorithm->CalculateDigest(digest, message, message_len);
+
+        for (int i = 1; i < itherationsCount; i++)
+            hashingAlgorithm->CalculateDigest(digest, digest, DIGESTSIZE);
+
+        return digest;
+    }
+public:
+    int getDigestSize()const
+    {
+        return DIGESTSIZE;
+    }
+
+    SHA3(CryptoPP::SHA3 * hashingAlgorithm, const int DIGESTSIZE):
+        hashingAlgorithm(hashingAlgorithm), DIGESTSIZE(DIGESTSIZE)
+    {}
+
+   virtual  ~SHA3()
+    {
+        delete hashingAlgorithm;
+    }
+
+    Hash * createHash(PackageBuffer * input, int itherationsCount)
+    {
+        return new Hash(digest_message(input->getPointerToBuffer(), input->getLength(), itherationsCount), getDigestSize());
+    }
+};
+
+class Sha256Hasher : public SHA3
 {
 public:
     Sha256Hasher():
-        Hasher(EVP_sha256())
+        SHA3(new CryptoPP::SHA3_256(), CryptoPP::SHA3_256::DIGESTSIZE)
     {}
-
-    Hash * createHash(PackageBuffer * input)
-    {
-        uint32_t digest_len = 0;
-        uint8_t * buff;
-        digest_message(input->getPointerToBuffer(), input->getLength(), &buff, &digest_len);
-        return new Hash(buff, digest_len);
-    }
 };

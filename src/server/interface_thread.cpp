@@ -3,7 +3,7 @@
 */
 #include "../../include/server/interface_thread.h"
 
-interfaceThread::interfaceThread(ThreadConfiguration conf):
+interfaceThread::interfaceThread(ThreadConfiguration &conf):
     configuration(conf)
 {
     doTerminate = false;

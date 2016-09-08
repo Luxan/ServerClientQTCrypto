@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../pro/Server -I. -I../../lib/openssl/install/include -I../../../../Qt5.7.0/5.7/gcc_64/include -I../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets -I../../../../Qt5.7.0/5.7/gcc_64/include/QtGui -I../../../../Qt5.7.0/5.7/gcc_64/include/QtSql -I../../../../Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I. -I../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../../pro/Server -I. -I../../lib/crypto++/installed/include -I../../../../Qt5.7.0/5.7/gcc_64/include -I../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets -I../../../../Qt5.7.0/5.7/gcc_64/include/QtGui -I../../../../Qt5.7.0/5.7/gcc_64/include/QtSql -I../../../../Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I. -I../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/luxan/Qt5.7.0/5.7/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = Server1.0.0
 DISTDIR = /home/luxan/PROJECTS/ClientServerCOmmunication/obj/Server/Server1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/luxan/Qt5.7.0/5.7/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/luxan/PROJECTS/ClientServerCOmmunication/pro/Server/../../lib/openssl/install/lib/ -lssl -L/home/luxan/Qt5.7.0/5.7/gcc_64/lib -lQt5Widgets -L/usr/lib64 -lQt5Gui -lQt5Sql -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/home/luxan/PROJECTS/ClientServerCOmmunication/pro/Server/../../lib/crypto++/installed/lib/ -lcryptopp -L/home/luxan/Qt5.7.0/5.7/gcc_64/lib -lQt5Widgets -L/usr/lib64 -lQt5Gui -lQt5Sql -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -61,6 +61,7 @@ SOURCES       = ../../src/shared/buffer_spitter.cpp \
 		../../src/server/controller_messagecollector_messageprocessor.cpp \
 		../../src/server/controller_messageprocessor_messageworker.cpp \
 		../../src/server/controller_tcpchannel_messagecollector.cpp \
+		../../src/server/crypto_processor.cpp \
 		../../src/server/database.cpp \
 		../../src/server/epoll_tcpchannel.cpp \
 		../../src/server/interface_communication.cpp \
@@ -74,7 +75,7 @@ SOURCES       = ../../src/shared/buffer_spitter.cpp \
 		../../src/server/task.cpp \
 		../../src/server/task_queue.cpp \
 		../../src/server/tcpchannel.cpp \
-		../../src/server/epoll_tcpchannel.cpp moc_mainwindow.cpp
+		../../src/server/crypto_processor.cpp moc_mainwindow.cpp
 OBJECTS       = ../../obj/Server/buffer_spitter.o \
 		../../obj/Server/clientid.o \
 		../../obj/Server/log.o \
@@ -88,6 +89,7 @@ OBJECTS       = ../../obj/Server/buffer_spitter.o \
 		../../obj/Server/controller_messagecollector_messageprocessor.o \
 		../../obj/Server/controller_messageprocessor_messageworker.o \
 		../../obj/Server/controller_tcpchannel_messagecollector.o \
+		../../obj/Server/crypto_processor.o \
 		../../obj/Server/database.o \
 		../../obj/Server/epoll_tcpchannel.o \
 		../../obj/Server/interface_communication.o \
@@ -101,7 +103,7 @@ OBJECTS       = ../../obj/Server/buffer_spitter.o \
 		../../obj/Server/task.o \
 		../../obj/Server/task_queue.o \
 		../../obj/Server/tcpchannel.o \
-		../../obj/Server/epoll_tcpchannel.o \
+		../../obj/Server/crypto_processor.o \
 		../../obj/Server/moc_mainwindow.o
 DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/common/unix.conf \
@@ -275,6 +277,8 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../include/shared/package_user_to_user.h \
 		../../include/shared/status.h \
 		../../include/shared/user.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
 		../../include/server/clientsocket.h \
 		../../include/server/controller_gui_messagecollector.h \
 		../../include/server/controller_gui_messageprocessor.h \
@@ -299,11 +303,8 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../include/server/task_queue.h \
 		../../include/server/tcpchannel.h \
 		../../include/server/thread_worker.h \
-		../../include/server/processor.h \
-		../../include/shared/hash.h \
-		../../include/server/epoll_tcpchannel.h \
-		../../include/shared/cipher.h \
-		../../include/shared/hasher.h ../../src/shared/buffer_spitter.cpp \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h ../../src/shared/buffer_spitter.cpp \
 		../../src/shared/clientid.cpp \
 		../../src/shared/log.cpp \
 		../../src/shared/message.cpp \
@@ -316,6 +317,7 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../src/server/controller_messagecollector_messageprocessor.cpp \
 		../../src/server/controller_messageprocessor_messageworker.cpp \
 		../../src/server/controller_tcpchannel_messagecollector.cpp \
+		../../src/server/crypto_processor.cpp \
 		../../src/server/database.cpp \
 		../../src/server/epoll_tcpchannel.cpp \
 		../../src/server/interface_communication.cpp \
@@ -329,7 +331,7 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../src/server/task.cpp \
 		../../src/server/task_queue.cpp \
 		../../src/server/tcpchannel.cpp \
-		../../src/server/epoll_tcpchannel.cpp
+		../../src/server/crypto_processor.cpp
 QMAKE_TARGET  = Server
 DESTDIR       = ../../bin/Server/
 TARGET        = ../../bin/Server/Server
@@ -338,7 +340,7 @@ TARGET        = ../../bin/Server/Server
 first: all
 ####### Build rules
 
-$(TARGET): ui_mainwindow.h $(OBJECTS)  
+$(TARGET): /home/luxan/PROJECTS/ClientServerCOmmunication/pro/Server/../../lib/crypto++/installed/lib/libcryptopp.a ui_mainwindow.h $(OBJECTS)  
 	@test -d ../../bin/Server/ || mkdir -p ../../bin/Server/
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
@@ -665,8 +667,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../../include/shared/buffer.h ../../include/shared/buffer_spitter.h ../../include/shared/cipher.h ../../include/shared/configuration.h ../../include/shared/crypto.h ../../include/shared/error_enum.h ../../include/shared/hash.h ../../include/shared/hasher.h ../../include/shared/id_client.h ../../include/shared/id_message.h ../../include/shared/id_room.h ../../include/shared/iv.h ../../include/shared/key.h ../../include/shared/log.h ../../include/shared/message.h ../../include/shared/package.h ../../include/shared/package_buffer.h ../../include/shared/package_instant_replay.h ../../include/shared/package_signal.h ../../include/shared/package_update.h ../../include/shared/package_user_to_user.h ../../include/shared/status.h ../../include/shared/user.h ../../include/server/clientsocket.h ../../include/server/controller_gui_messagecollector.h ../../include/server/controller_gui_messageprocessor.h ../../include/server/controller_gui_tcpchannel.h ../../include/server/controller_messagecollector_messageprocessor.h ../../include/server/controller_messageprocessor_messageworker.h ../../include/server/controller_tcpchannel_messagecollector.h ../../include/server/crypto_processor.h ../../include/server/database.h ../../include/server/epoll_tcpchannel.h ../../include/server/impulse.h ../../include/server/interface_communication.h ../../include/server/interface_communication_controller.h ../../include/server/interface_thread.h ../../include/server/mainwindow.h ../../include/server/message_collector.h ../../include/server/message_processor.h ../../include/server/processor.h ../../include/server/slog.h ../../include/server/systemevents.h ../../include/server/task.h ../../include/server/task_queue.h ../../include/server/tcpchannel.h ../../include/server/thread_worker.h ../../include/server/processor.h ../../include/shared/hash.h ../../include/server/epoll_tcpchannel.h ../../include/shared/cipher.h ../../include/shared/hasher.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../src/shared/buffer_spitter.cpp ../../src/shared/clientid.cpp ../../src/shared/log.cpp ../../src/shared/message.cpp ../../src/shared/package_buffer.cpp ../../src/shared/user.cpp ../../src/server/__main.cpp ../../src/server/controller_gui_messagecollector.cpp ../../src/server/controller_gui_messageprocessor.cpp ../../src/server/controller_gui_tcpchannel.cpp ../../src/server/controller_messagecollector_messageprocessor.cpp ../../src/server/controller_messageprocessor_messageworker.cpp ../../src/server/controller_tcpchannel_messagecollector.cpp ../../src/server/database.cpp ../../src/server/epoll_tcpchannel.cpp ../../src/server/interface_communication.cpp ../../src/server/interface_communication_controller.cpp ../../src/server/interface_thread.cpp ../../src/server/mainwindow.cpp ../../src/server/message_collector.cpp ../../src/server/message_processor.cpp ../../src/server/message_worker.cpp ../../src/server/slog.cpp ../../src/server/task.cpp ../../src/server/task_queue.cpp ../../src/server/tcpchannel.cpp ../../src/server/epoll_tcpchannel.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../include/shared/buffer.h ../../include/shared/buffer_spitter.h ../../include/shared/cipher.h ../../include/shared/configuration.h ../../include/shared/crypto.h ../../include/shared/error_enum.h ../../include/shared/hash.h ../../include/shared/hasher.h ../../include/shared/id_client.h ../../include/shared/id_message.h ../../include/shared/id_room.h ../../include/shared/iv.h ../../include/shared/key.h ../../include/shared/log.h ../../include/shared/message.h ../../include/shared/package.h ../../include/shared/package_buffer.h ../../include/shared/package_instant_replay.h ../../include/shared/package_signal.h ../../include/shared/package_update.h ../../include/shared/package_user_to_user.h ../../include/shared/status.h ../../include/shared/user.h ../../include/shared/user_credentials.h ../../include/shared/user_relations.h ../../include/server/clientsocket.h ../../include/server/controller_gui_messagecollector.h ../../include/server/controller_gui_messageprocessor.h ../../include/server/controller_gui_tcpchannel.h ../../include/server/controller_messagecollector_messageprocessor.h ../../include/server/controller_messageprocessor_messageworker.h ../../include/server/controller_tcpchannel_messagecollector.h ../../include/server/crypto_processor.h ../../include/server/database.h ../../include/server/epoll_tcpchannel.h ../../include/server/impulse.h ../../include/server/interface_communication.h ../../include/server/interface_communication_controller.h ../../include/server/interface_thread.h ../../include/server/mainwindow.h ../../include/server/message_collector.h ../../include/server/message_processor.h ../../include/server/processor.h ../../include/server/slog.h ../../include/server/systemevents.h ../../include/server/task.h ../../include/server/task_queue.h ../../include/server/tcpchannel.h ../../include/server/thread_worker.h ../../include/shared/user_credentials.h ../../include/shared/user_relations.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../src/shared/buffer_spitter.cpp ../../src/shared/clientid.cpp ../../src/shared/log.cpp ../../src/shared/message.cpp ../../src/shared/package_buffer.cpp ../../src/shared/user.cpp ../../src/server/__main.cpp ../../src/server/controller_gui_messagecollector.cpp ../../src/server/controller_gui_messageprocessor.cpp ../../src/server/controller_gui_tcpchannel.cpp ../../src/server/controller_messagecollector_messageprocessor.cpp ../../src/server/controller_messageprocessor_messageworker.cpp ../../src/server/controller_tcpchannel_messagecollector.cpp ../../src/server/crypto_processor.cpp ../../src/server/database.cpp ../../src/server/epoll_tcpchannel.cpp ../../src/server/interface_communication.cpp ../../src/server/interface_communication_controller.cpp ../../src/server/interface_thread.cpp ../../src/server/mainwindow.cpp ../../src/server/message_collector.cpp ../../src/server/message_processor.cpp ../../src/server/message_worker.cpp ../../src/server/slog.cpp ../../src/server/task.cpp ../../src/server/task_queue.cpp ../../src/server/tcpchannel.cpp ../../src/server/crypto_processor.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../forms/server/mainwindow.ui $(DISTDIR)/
 
 
@@ -806,11 +808,13 @@ moc_mainwindow.cpp: ../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/mainwindow.h \
 		../../../../Qt5.7.0/5.7/gcc_64/bin/moc
-	/home/luxan/Qt5.7.0/5.7/gcc_64/bin/moc $(DEFINES) -I/home/luxan/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++ -I/home/luxan/PROJECTS/ClientServerCOmmunication/pro/Server -I/home/luxan/PROJECTS/ClientServerCOmmunication/lib/openssl/install/include -I/home/luxan/Qt5.7.0/5.7/gcc_64/include -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtWidgets -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtGui -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtSql -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I/usr/include/c++/4.9 -I/usr/include/x86_64-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../include/server/mainwindow.h -o moc_mainwindow.cpp
+	/home/luxan/Qt5.7.0/5.7/gcc_64/bin/moc $(DEFINES) -I/home/luxan/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++ -I/home/luxan/PROJECTS/ClientServerCOmmunication/pro/Server -I/home/luxan/PROJECTS/ClientServerCOmmunication/lib/crypto++/installed/include -I/home/luxan/Qt5.7.0/5.7/gcc_64/include -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtWidgets -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtGui -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtSql -I/home/luxan/Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I/usr/include/c++/4.9 -I/usr/include/x86_64-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../include/server/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -847,6 +851,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/message.o ../../src/shared/message.cpp
 
@@ -856,11 +862,54 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 
 ../../obj/Server/user.o: ../../src/shared/user.cpp ../../include/shared/user.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_room.h \
 		../../include/shared/package.h \
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/hash.h \
-		../../include/shared/status.h
+		../../include/shared/status.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtypetraits.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qisenum.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/user.o ../../src/shared/user.cpp
 
 ../../obj/Server/__main.o: ../../src/server/__main.cpp ../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QApplication \
@@ -981,6 +1030,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/database.h \
@@ -990,52 +1041,26 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
 		../../include/shared/status.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../include/server/epoll_tcpchannel.h \
 		../../include/server/tcpchannel.h \
 		../../include/server/interface_communication.h \
 		../../include/server/interface_thread.h \
+		../../include/shared/hasher.h \
+		../../lib/crypto++/installed/include/cryptopp/sha3.h \
+		../../lib/crypto++/installed/include/cryptopp/cryptlib.h \
+		../../lib/crypto++/installed/include/cryptopp/config.h \
+		../../lib/crypto++/installed/include/cryptopp/stdcpp.h \
+		../../lib/crypto++/installed/include/cryptopp/secblock.h \
+		../../lib/crypto++/installed/include/cryptopp/misc.h \
+		../../lib/crypto++/installed/include/cryptopp/smartptr.h \
 		../../include/shared/crypto.h \
-		../../lib/openssl/install/include/openssl/conf.h \
-		../../lib/openssl/install/include/openssl/bio.h \
-		../../lib/openssl/install/include/openssl/e_os2.h \
-		../../lib/openssl/install/include/openssl/opensslconf.h \
-		../../lib/openssl/install/include/openssl/crypto.h \
-		../../lib/openssl/install/include/openssl/stack.h \
-		../../lib/openssl/install/include/openssl/safestack.h \
-		../../lib/openssl/install/include/openssl/opensslv.h \
-		../../lib/openssl/install/include/openssl/ossl_typ.h \
-		../../lib/openssl/install/include/openssl/ebcdic.h \
-		../../lib/openssl/install/include/openssl/symhacks.h \
-		../../lib/openssl/install/include/openssl/lhash.h \
-		../../lib/openssl/install/include/openssl/pem.h \
-		../../lib/openssl/install/include/openssl/evp.h \
-		../../lib/openssl/install/include/openssl/objects.h \
-		../../lib/openssl/install/include/openssl/obj_mac.h \
-		../../lib/openssl/install/include/openssl/asn1.h \
-		../../lib/openssl/install/include/openssl/bn.h \
-		../../lib/openssl/install/include/openssl/x509.h \
-		../../lib/openssl/install/include/openssl/buffer.h \
-		../../lib/openssl/install/include/openssl/ec.h \
-		../../lib/openssl/install/include/openssl/rsa.h \
-		../../lib/openssl/install/include/openssl/dsa.h \
-		../../lib/openssl/install/include/openssl/dh.h \
-		../../lib/openssl/install/include/openssl/sha.h \
-		../../lib/openssl/install/include/openssl/x509_vfy.h \
-		../../lib/openssl/install/include/openssl/pkcs7.h \
-		../../lib/openssl/install/include/openssl/pem2.h \
-		../../lib/openssl/install/include/openssl/ssl.h \
-		../../lib/openssl/install/include/openssl/comp.h \
-		../../lib/openssl/install/include/openssl/hmac.h \
-		../../lib/openssl/install/include/openssl/async.h \
-		../../lib/openssl/install/include/openssl/ct.h \
-		../../lib/openssl/install/include/openssl/ssl2.h \
-		../../lib/openssl/install/include/openssl/ssl3.h \
-		../../lib/openssl/install/include/openssl/tls1.h \
-		../../lib/openssl/install/include/openssl/dtls1.h \
-		../../lib/openssl/install/include/openssl/srtp.h \
-		../../lib/openssl/install/include/openssl/err.h \
-		../../include/shared/key.h \
+		../../include/shared/cipher.h \
 		../../include/shared/iv.h \
-		../../include/server/slog.h \
+		../../include/shared/key.h \
 		../../include/server/clientsocket.h \
 		../../include/server/message_processor.h \
 		../../include/server/processor.h \
@@ -1044,6 +1069,7 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/server/task.h \
 		../../include/server/controller_messageprocessor_messageworker.h \
 		../../include/server/message_collector.h \
+		../../include/server/slog.h \
 		../../include/server/controller_gui_messagecollector.h \
 		../../include/server/controller_gui_messageprocessor.h \
 		../../include/server/controller_gui_tcpchannel.h \
@@ -1165,6 +1191,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/message_collector.h \
 		../../include/server/interface_communication.h \
@@ -1285,6 +1313,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/message_processor.h \
 		../../include/server/interface_communication.h \
@@ -1410,6 +1440,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/tcpchannel.h \
 		../../include/server/interface_communication.h \
@@ -1417,50 +1449,24 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
 		../../include/shared/status.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../include/shared/hasher.h \
+		../../lib/crypto++/installed/include/cryptopp/sha3.h \
+		../../lib/crypto++/installed/include/cryptopp/cryptlib.h \
+		../../lib/crypto++/installed/include/cryptopp/config.h \
+		../../lib/crypto++/installed/include/cryptopp/stdcpp.h \
+		../../lib/crypto++/installed/include/cryptopp/secblock.h \
+		../../lib/crypto++/installed/include/cryptopp/misc.h \
+		../../lib/crypto++/installed/include/cryptopp/smartptr.h \
 		../../include/shared/crypto.h \
-		../../lib/openssl/install/include/openssl/conf.h \
-		../../lib/openssl/install/include/openssl/bio.h \
-		../../lib/openssl/install/include/openssl/e_os2.h \
-		../../lib/openssl/install/include/openssl/opensslconf.h \
-		../../lib/openssl/install/include/openssl/crypto.h \
-		../../lib/openssl/install/include/openssl/stack.h \
-		../../lib/openssl/install/include/openssl/safestack.h \
-		../../lib/openssl/install/include/openssl/opensslv.h \
-		../../lib/openssl/install/include/openssl/ossl_typ.h \
-		../../lib/openssl/install/include/openssl/ebcdic.h \
-		../../lib/openssl/install/include/openssl/symhacks.h \
-		../../lib/openssl/install/include/openssl/lhash.h \
-		../../lib/openssl/install/include/openssl/pem.h \
-		../../lib/openssl/install/include/openssl/evp.h \
-		../../lib/openssl/install/include/openssl/objects.h \
-		../../lib/openssl/install/include/openssl/obj_mac.h \
-		../../lib/openssl/install/include/openssl/asn1.h \
-		../../lib/openssl/install/include/openssl/bn.h \
-		../../lib/openssl/install/include/openssl/x509.h \
-		../../lib/openssl/install/include/openssl/buffer.h \
-		../../lib/openssl/install/include/openssl/ec.h \
-		../../lib/openssl/install/include/openssl/rsa.h \
-		../../lib/openssl/install/include/openssl/dsa.h \
-		../../lib/openssl/install/include/openssl/dh.h \
-		../../lib/openssl/install/include/openssl/sha.h \
-		../../lib/openssl/install/include/openssl/x509_vfy.h \
-		../../lib/openssl/install/include/openssl/pkcs7.h \
-		../../lib/openssl/install/include/openssl/pem2.h \
-		../../lib/openssl/install/include/openssl/ssl.h \
-		../../lib/openssl/install/include/openssl/comp.h \
-		../../lib/openssl/install/include/openssl/hmac.h \
-		../../lib/openssl/install/include/openssl/async.h \
-		../../lib/openssl/install/include/openssl/ct.h \
-		../../lib/openssl/install/include/openssl/ssl2.h \
-		../../lib/openssl/install/include/openssl/ssl3.h \
-		../../lib/openssl/install/include/openssl/tls1.h \
-		../../lib/openssl/install/include/openssl/dtls1.h \
-		../../lib/openssl/install/include/openssl/srtp.h \
-		../../lib/openssl/install/include/openssl/err.h \
-		../../include/shared/key.h \
+		../../include/shared/cipher.h \
 		../../include/shared/iv.h \
-		../../include/server/slog.h \
-		../../include/server/clientsocket.h
+		../../include/shared/key.h \
+		../../include/server/clientsocket.h \
+		../../include/server/slog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/controller_gui_tcpchannel.o ../../src/server/controller_gui_tcpchannel.cpp
 
 ../../obj/Server/controller_messagecollector_messageprocessor.o: ../../src/server/controller_messagecollector_messageprocessor.cpp ../../include/server/controller_messagecollector_messageprocessor.h \
@@ -1474,6 +1480,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_thread.h \
 		../../include/server/message_processor.h \
@@ -1600,6 +1608,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/processor.h \
 		../../include/server/interface_thread.h \
@@ -1724,59 +1734,18 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_thread.h \
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
 		../../include/shared/status.h \
-		../../include/shared/crypto.h \
-		../../lib/openssl/install/include/openssl/conf.h \
-		../../lib/openssl/install/include/openssl/bio.h \
-		../../lib/openssl/install/include/openssl/e_os2.h \
-		../../lib/openssl/install/include/openssl/opensslconf.h \
-		../../lib/openssl/install/include/openssl/crypto.h \
-		../../lib/openssl/install/include/openssl/stack.h \
-		../../lib/openssl/install/include/openssl/safestack.h \
-		../../lib/openssl/install/include/openssl/opensslv.h \
-		../../lib/openssl/install/include/openssl/ossl_typ.h \
-		../../lib/openssl/install/include/openssl/ebcdic.h \
-		../../lib/openssl/install/include/openssl/symhacks.h \
-		../../lib/openssl/install/include/openssl/lhash.h \
-		../../lib/openssl/install/include/openssl/pem.h \
-		../../lib/openssl/install/include/openssl/evp.h \
-		../../lib/openssl/install/include/openssl/objects.h \
-		../../lib/openssl/install/include/openssl/obj_mac.h \
-		../../lib/openssl/install/include/openssl/asn1.h \
-		../../lib/openssl/install/include/openssl/bn.h \
-		../../lib/openssl/install/include/openssl/x509.h \
-		../../lib/openssl/install/include/openssl/buffer.h \
-		../../lib/openssl/install/include/openssl/ec.h \
-		../../lib/openssl/install/include/openssl/rsa.h \
-		../../lib/openssl/install/include/openssl/dsa.h \
-		../../lib/openssl/install/include/openssl/dh.h \
-		../../lib/openssl/install/include/openssl/sha.h \
-		../../lib/openssl/install/include/openssl/x509_vfy.h \
-		../../lib/openssl/install/include/openssl/pkcs7.h \
-		../../lib/openssl/install/include/openssl/pem2.h \
-		../../lib/openssl/install/include/openssl/ssl.h \
-		../../lib/openssl/install/include/openssl/comp.h \
-		../../lib/openssl/install/include/openssl/hmac.h \
-		../../lib/openssl/install/include/openssl/async.h \
-		../../lib/openssl/install/include/openssl/ct.h \
-		../../lib/openssl/install/include/openssl/ssl2.h \
-		../../lib/openssl/install/include/openssl/ssl3.h \
-		../../lib/openssl/install/include/openssl/tls1.h \
-		../../lib/openssl/install/include/openssl/dtls1.h \
-		../../lib/openssl/install/include/openssl/srtp.h \
-		../../lib/openssl/install/include/openssl/err.h \
-		../../include/shared/key.h \
-		../../include/shared/iv.h \
-		../../include/server/slog.h \
-		../../include/server/mainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
@@ -1799,26 +1768,45 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		../../include/shared/hasher.h \
+		../../lib/crypto++/installed/include/cryptopp/sha3.h \
+		../../lib/crypto++/installed/include/cryptopp/cryptlib.h \
+		../../lib/crypto++/installed/include/cryptopp/config.h \
+		../../lib/crypto++/installed/include/cryptopp/stdcpp.h \
+		../../lib/crypto++/installed/include/cryptopp/secblock.h \
+		../../lib/crypto++/installed/include/cryptopp/misc.h \
+		../../lib/crypto++/installed/include/cryptopp/smartptr.h \
+		../../include/shared/crypto.h \
+		../../include/shared/cipher.h \
+		../../include/shared/iv.h \
+		../../include/shared/key.h \
+		../../include/server/clientsocket.h \
+		../../include/server/message_collector.h \
+		../../include/server/slog.h \
+		../../include/server/mainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
@@ -1875,10 +1863,28 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qicon.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QTimer \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtimer.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasictimer.h \
-		../../include/server/clientsocket.h \
-		../../include/server/message_collector.h
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasictimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/controller_tcpchannel_messagecollector.o ../../src/server/controller_tcpchannel_messagecollector.cpp
+
+../../obj/Server/crypto_processor.o: ../../src/server/crypto_processor.cpp ../../include/server/crypto_processor.h \
+		../../include/server/processor.h \
+		../../include/server/interface_thread.h \
+		../../include/server/interface_communication.h \
+		../../include/server/impulse.h \
+		../../include/server/systemevents.h \
+		../../include/shared/message.h \
+		../../include/shared/package.h \
+		../../include/shared/package_buffer.h \
+		../../include/shared/buffer.h \
+		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
+		../../include/shared/log.h \
+		../../include/server/interface_communication_controller.h \
+		../../include/server/thread_worker.h \
+		../../include/server/task_queue.h \
+		../../include/server/task.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/crypto_processor.o ../../src/server/crypto_processor.cpp
 
 ../../obj/Server/database.o: ../../src/server/database.cpp ../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/QSqlQuery \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/qsqlquery.h \
@@ -1999,13 +2005,19 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/database.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/QSqlDatabase \
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
-		../../include/shared/status.h
+		../../include/shared/status.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/database.o ../../src/server/database.cpp
 
 ../../obj/Server/epoll_tcpchannel.o: ../../src/server/epoll_tcpchannel.cpp ../../include/server/epoll_tcpchannel.h \
@@ -2018,60 +2030,19 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/interface_thread.h \
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
 		../../include/shared/status.h \
-		../../include/shared/crypto.h \
-		../../lib/openssl/install/include/openssl/conf.h \
-		../../lib/openssl/install/include/openssl/bio.h \
-		../../lib/openssl/install/include/openssl/e_os2.h \
-		../../lib/openssl/install/include/openssl/opensslconf.h \
-		../../lib/openssl/install/include/openssl/crypto.h \
-		../../lib/openssl/install/include/openssl/stack.h \
-		../../lib/openssl/install/include/openssl/safestack.h \
-		../../lib/openssl/install/include/openssl/opensslv.h \
-		../../lib/openssl/install/include/openssl/ossl_typ.h \
-		../../lib/openssl/install/include/openssl/ebcdic.h \
-		../../lib/openssl/install/include/openssl/symhacks.h \
-		../../lib/openssl/install/include/openssl/lhash.h \
-		../../lib/openssl/install/include/openssl/pem.h \
-		../../lib/openssl/install/include/openssl/evp.h \
-		../../lib/openssl/install/include/openssl/objects.h \
-		../../lib/openssl/install/include/openssl/obj_mac.h \
-		../../lib/openssl/install/include/openssl/asn1.h \
-		../../lib/openssl/install/include/openssl/bn.h \
-		../../lib/openssl/install/include/openssl/x509.h \
-		../../lib/openssl/install/include/openssl/buffer.h \
-		../../lib/openssl/install/include/openssl/ec.h \
-		../../lib/openssl/install/include/openssl/rsa.h \
-		../../lib/openssl/install/include/openssl/dsa.h \
-		../../lib/openssl/install/include/openssl/dh.h \
-		../../lib/openssl/install/include/openssl/sha.h \
-		../../lib/openssl/install/include/openssl/x509_vfy.h \
-		../../lib/openssl/install/include/openssl/pkcs7.h \
-		../../lib/openssl/install/include/openssl/pem2.h \
-		../../lib/openssl/install/include/openssl/ssl.h \
-		../../lib/openssl/install/include/openssl/comp.h \
-		../../lib/openssl/install/include/openssl/hmac.h \
-		../../lib/openssl/install/include/openssl/async.h \
-		../../lib/openssl/install/include/openssl/ct.h \
-		../../lib/openssl/install/include/openssl/ssl2.h \
-		../../lib/openssl/install/include/openssl/ssl3.h \
-		../../lib/openssl/install/include/openssl/tls1.h \
-		../../lib/openssl/install/include/openssl/dtls1.h \
-		../../lib/openssl/install/include/openssl/srtp.h \
-		../../lib/openssl/install/include/openssl/err.h \
-		../../include/shared/key.h \
-		../../include/shared/iv.h \
-		../../include/server/slog.h \
-		../../include/server/mainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
@@ -2094,83 +2065,33 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmargins.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpaintdevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrect.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsize.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpalette.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qcolor.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qrgb.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qrgba64.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qbrush.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qmatrix.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpolygon.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qregion.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qdatastream.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qline.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtransform.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpainterpath.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qimage.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpixelformat.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpixmap.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfont.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfontmetrics.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfontinfo.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qsizepolicy.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qcursor.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qevent.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qurl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qurlquery.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfile.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qicon.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QTimer \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtimer.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasictimer.h \
+		../../include/shared/hasher.h \
+		../../lib/crypto++/installed/include/cryptopp/sha3.h \
+		../../lib/crypto++/installed/include/cryptopp/cryptlib.h \
+		../../lib/crypto++/installed/include/cryptopp/config.h \
+		../../lib/crypto++/installed/include/cryptopp/stdcpp.h \
+		../../lib/crypto++/installed/include/cryptopp/secblock.h \
+		../../lib/crypto++/installed/include/cryptopp/misc.h \
+		../../lib/crypto++/installed/include/cryptopp/smartptr.h \
+		../../include/shared/crypto.h \
+		../../include/shared/cipher.h \
+		../../include/shared/iv.h \
+		../../include/shared/key.h \
 		../../include/server/clientsocket.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/epoll_tcpchannel.o ../../src/server/epoll_tcpchannel.cpp
 
@@ -2182,6 +2103,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/interface_communication.o ../../src/server/interface_communication.cpp
@@ -2198,14 +2121,18 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/interface_thread.o ../../src/server/interface_thread.cpp
 
-../../obj/Server/mainwindow.o: ../../src/server/mainwindow.cpp ../../bin/Client/ui_mainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QVariant \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+../../obj/Server/mainwindow.o: ../../src/server/mainwindow.cpp ui_mainwindow.h \
+		../../include/server/mainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
@@ -2218,21 +2145,26 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
@@ -2243,105 +2175,60 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QAction \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qaction.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmargins.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpaintdevice.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrect.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsize.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpalette.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qcolor.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qrgb.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qrgba64.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qbrush.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qmatrix.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpolygon.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qregion.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qdatastream.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qline.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtransform.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpainterpath.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qimage.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpixelformat.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qpixmap.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfont.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfontmetrics.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qfontinfo.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qsizepolicy.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qcursor.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qevent.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qurl.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qurlquery.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfile.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qicon.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QApplication \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qapplication.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreapplication.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qeventloop.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qguiapplication.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qinputmethod.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QButtonGroup \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QHeaderView \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qheaderview.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qframe.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qabstractitemmodel.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qitemselectionmodel.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qvalidator.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregularexpression.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qslider.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qstyle.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qtabbar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qrubberband.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QLabel \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qlabel.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMenuBar \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmenubar.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmenu.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QStatusBar \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QWidget \
-		../../include/server/mainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qicon.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QTimer \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasictimer.h \
@@ -2352,6 +2239,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/mainwindow.o ../../src/server/mainwindow.cpp
@@ -2363,6 +2252,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/message_collector.h \
 		../../include/server/interface_communication.h \
@@ -2479,7 +2370,11 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/qsql.h \
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
-		../../include/shared/status.h
+		../../include/shared/status.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/message_collector.o ../../src/server/message_collector.cpp
 
 ../../obj/Server/message_processor.o: ../../src/server/message_processor.cpp ../../include/server/task.h \
@@ -2488,6 +2383,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/message_processor.h \
 		../../include/server/interface_communication.h \
@@ -2508,6 +2405,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/message_worker.o ../../src/server/message_worker.cpp
 
@@ -2622,6 +2521,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/slog.h
@@ -2633,6 +2534,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/task.o ../../src/server/task.cpp
 
@@ -2643,6 +2546,8 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../../obj/Server/task_queue.o ../../src/server/task_queue.cpp
 
@@ -2655,60 +2560,19 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../include/shared/package_buffer.h \
 		../../include/shared/buffer.h \
 		../../include/shared/id_client.h \
+		../../include/shared/id_message.h \
+		../../include/shared/id_room.h \
 		../../include/shared/log.h \
 		../../include/server/interface_communication_controller.h \
 		../../include/server/interface_thread.h \
 		../../include/shared/user.h \
 		../../include/shared/hash.h \
 		../../include/shared/status.h \
-		../../include/shared/crypto.h \
-		../../lib/openssl/install/include/openssl/conf.h \
-		../../lib/openssl/install/include/openssl/bio.h \
-		../../lib/openssl/install/include/openssl/e_os2.h \
-		../../lib/openssl/install/include/openssl/opensslconf.h \
-		../../lib/openssl/install/include/openssl/crypto.h \
-		../../lib/openssl/install/include/openssl/stack.h \
-		../../lib/openssl/install/include/openssl/safestack.h \
-		../../lib/openssl/install/include/openssl/opensslv.h \
-		../../lib/openssl/install/include/openssl/ossl_typ.h \
-		../../lib/openssl/install/include/openssl/ebcdic.h \
-		../../lib/openssl/install/include/openssl/symhacks.h \
-		../../lib/openssl/install/include/openssl/lhash.h \
-		../../lib/openssl/install/include/openssl/pem.h \
-		../../lib/openssl/install/include/openssl/evp.h \
-		../../lib/openssl/install/include/openssl/objects.h \
-		../../lib/openssl/install/include/openssl/obj_mac.h \
-		../../lib/openssl/install/include/openssl/asn1.h \
-		../../lib/openssl/install/include/openssl/bn.h \
-		../../lib/openssl/install/include/openssl/x509.h \
-		../../lib/openssl/install/include/openssl/buffer.h \
-		../../lib/openssl/install/include/openssl/ec.h \
-		../../lib/openssl/install/include/openssl/rsa.h \
-		../../lib/openssl/install/include/openssl/dsa.h \
-		../../lib/openssl/install/include/openssl/dh.h \
-		../../lib/openssl/install/include/openssl/sha.h \
-		../../lib/openssl/install/include/openssl/x509_vfy.h \
-		../../lib/openssl/install/include/openssl/pkcs7.h \
-		../../lib/openssl/install/include/openssl/pem2.h \
-		../../lib/openssl/install/include/openssl/ssl.h \
-		../../lib/openssl/install/include/openssl/comp.h \
-		../../lib/openssl/install/include/openssl/hmac.h \
-		../../lib/openssl/install/include/openssl/async.h \
-		../../lib/openssl/install/include/openssl/ct.h \
-		../../lib/openssl/install/include/openssl/ssl2.h \
-		../../lib/openssl/install/include/openssl/ssl3.h \
-		../../lib/openssl/install/include/openssl/tls1.h \
-		../../lib/openssl/install/include/openssl/dtls1.h \
-		../../lib/openssl/install/include/openssl/srtp.h \
-		../../lib/openssl/install/include/openssl/err.h \
-		../../include/shared/key.h \
-		../../include/shared/iv.h \
-		../../include/server/slog.h \
-		../../include/server/mainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		../../include/shared/user_credentials.h \
+		../../include/shared/user_relations.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QString \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
@@ -2731,26 +2595,44 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QStringList \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
-		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		../../include/shared/hasher.h \
+		../../lib/crypto++/installed/include/cryptopp/sha3.h \
+		../../lib/crypto++/installed/include/cryptopp/cryptlib.h \
+		../../lib/crypto++/installed/include/cryptopp/config.h \
+		../../lib/crypto++/installed/include/cryptopp/stdcpp.h \
+		../../lib/crypto++/installed/include/cryptopp/secblock.h \
+		../../lib/crypto++/installed/include/cryptopp/misc.h \
+		../../lib/crypto++/installed/include/cryptopp/smartptr.h \
+		../../include/shared/crypto.h \
+		../../include/shared/cipher.h \
+		../../include/shared/iv.h \
+		../../include/shared/key.h \
+		../../include/server/clientsocket.h \
+		../../include/server/slog.h \
+		../../include/server/mainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QMainWindow \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qmainwindow.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
@@ -2808,15 +2690,12 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QTimer \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qbasictimer.h \
-		../../include/server/clientsocket.h \
 		../../include/server/database.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/QSqlDatabase \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/qsqldatabase.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtSql/qsql.h \
 		../../include/shared/package_instant_replay.h \
 		../../include/shared/package_signal.h \
-		../../include/shared/id_message.h \
-		../../include/shared/id_room.h \
 		../../include/shared/error_enum.h \
 		../../include/shared/package_user_to_user.h \
 		../../include/shared/package_update.h \

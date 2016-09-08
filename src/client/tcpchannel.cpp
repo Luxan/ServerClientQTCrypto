@@ -68,7 +68,7 @@ bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSiz
 
 bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
 {
-    QByteArray dataWrite((const char *)buff, size);
+    Quint8_tArray dataWrite((const char *)buff, size);
 
     //for (size_t i = 0; i < size; i++)
     //{
@@ -76,12 +76,12 @@ bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
     //}
 
     _pSocket->write(dataWrite);
-    return _pSocket->waitForBytesWritten();
+    return _pSocket->waitForuint8_tsWritten();
 }
 
 bool TCPChannel::sendPackage(PackageWrapper *pw)
 {
-    //QByteArray data; // <-- fill with data
+    //Quint8_tArray data; // <-- fill with data
 
     if (!connectToServer())
     {
@@ -200,7 +200,7 @@ bool TCPChannel::sendPackage(PackageWrapper *pw)
 
 void TCPChannel::readTcpData()
 {
-    QByteArray data = _pSocket->readAll();
+    Quint8_tArray data = _pSocket->readAll();
 
     bufferSpitter b((uint8_t *)data.data(), data.length());
     std::list<PackageBuffer *> list;

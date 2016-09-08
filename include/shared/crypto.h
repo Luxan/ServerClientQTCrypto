@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QtCrypto>
 #include <stdio.h>
 
 #include "../shared/log.h"

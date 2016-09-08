@@ -34,17 +34,11 @@ public:
     \pre
     \post
     */
-    ~MessageProcessor();
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
     void AddMessageToProcess(MessageProcessable * m);
-
+    /**
+    \see interface_thread.h
+    */
+    void dowork();
     /**
     \param
     \return
