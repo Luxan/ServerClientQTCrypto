@@ -5,10 +5,9 @@
 
 #include <list>
 
-#include "../server/interface_communication.h"
+#include "interfaces/interface_communication.h"
 #include "../server/processor.h"
 #include "../shared/message.h"
-#include "../server/controller_messageprocessor_messageworker.h"
 
 /**
 \class

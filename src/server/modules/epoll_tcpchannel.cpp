@@ -14,7 +14,7 @@
 #include "../../include/server/epoll_tcpchannel.h"
 
 EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents):
-    TcpChannel(conf, portNumb),
+    interfaceTcpChannel(conf, portNumb),
     maxEvents(_maxEvents)
 {
     /* Buffer where events are returned */

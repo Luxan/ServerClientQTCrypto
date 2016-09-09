@@ -9,8 +9,8 @@
 #include <atomic>
 
 #include "task_queue.h"
-#include "interface_thread.h"
-#include "interface_communication.h"
+#include "interfaces/interface_thread.h"
+#include "interfaces/interface_communication.h"
 
 /**
 \class

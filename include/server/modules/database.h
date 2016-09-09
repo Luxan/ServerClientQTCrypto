@@ -11,13 +11,14 @@
 
 #include "../shared/id_client.h"
 #include "../shared/user.h"
+#include "../server/interfaces/interface_thread.h"
 
 
 /**
 \class
 \brief
 */
-class DataBase
+class DataBase : interfaceThread
 {
 private:
     struct CallbackData
@@ -25,22 +26,10 @@ private:
         User* u;
     };
 
-    static std::mutex map_lock;
-    static std::map<ClientID, std::shared_ptr<User>> mUsers;
-
-    static std::string path;
+    std::map<ClientID, std::shared_ptr<User>> mUsers;
+    std::string path;
 
     QSqlDatabase db;
-
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    DataBase();
 
 	/**
 	\param
@@ -86,7 +75,7 @@ private:
 	\pre
 	\post
 	*/
-    void insertUserToDatabase(std::shared_ptr<User> u);
+    void registerUserToDatabase(std::string name, ClientID id, std::string login, Hash *password, int iteration, uint32_t salt);
 
 	/**
 	\param
@@ -97,6 +86,15 @@ private:
 	\post
 	*/
     void CreateDatabase();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual void dowork();
 public:
     /**
     \param
@@ -106,8 +104,7 @@ public:
     \pre
     \post
     */
-    std::shared_ptr<User> getUser(std::string &login, std::string &password);
-
+    DataBase(ThreadConfiguration &conf, std::string _path);
     /**
     \param
     \return
@@ -116,7 +113,7 @@ public:
     \pre
     \post
     */
-    static bool LoadResources(std::string _path);
+    std::shared_ptr<User> getUser(std::string &login, std::string &password);
 
     /**
     \param
@@ -147,16 +144,6 @@ public:
     \post
     */
     ~DataBase();
-
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool addUser(std::shared_ptr<User> u);
 
     /**
     \param

@@ -1,10 +1,9 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef CONTROLLER_TCPCHANNEL_MESSAGECOLLECTOR_H
-#define CONTROLLER_TCPCHANNEL_MESSAGECOLLECTOR_H
+#pragma once
 
-#include "../server/interface_communication_controller.h"
+#include "../interfaces/interface_communication_controller.h"
 
 /**
 \class
@@ -23,4 +22,3 @@ private:
     void CheckModule2Events(void * module1, void * module2);
 };
 
-#endif // CONTROLLER_TCPCHANNEL_MESSAGECOLLECTOR_H

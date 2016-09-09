@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "../../include/server/controller_messageprocessor_messageworker.h"
+#include "../../include/server/controller_messageprocessor_threadworker.h"
 #include "../../include/server/message_processor.h"
 #include "../../include/server/thread_worker.h"
 #include "../../include/server/slog.h"
@@ -8,7 +8,7 @@
 /**
 \see interface_communication_controller.h
 */
-void Controller_MessageProcessor_MessageWorker::CheckModule1Events(void *module1, void *module2)
+void Controller_MessageProcessor_threadWorker::CheckModule1Events(void *module1, void *module2)
 {
     //MessageProcessor *messageProcessor = (MessageProcessor *)module1;
     ThreadWorker *eventGiver = (ThreadWorker *)module2;
@@ -61,7 +61,7 @@ void Controller_MessageProcessor_MessageWorker::CheckModule1Events(void *module1
 /**
 \see interface_communication_controller.h
 */
-void Controller_MessageProcessor_MessageWorker::CheckModule2Events(void *module1, void *module2)
+void Controller_MessageProcessor_threadWorker::CheckModule2Events(void *module1, void *module2)
 {
     ThreadWorker *messageWorker = (ThreadWorker *)module1;
     MessageProcessor *eventGiver = (MessageProcessor *)module2;

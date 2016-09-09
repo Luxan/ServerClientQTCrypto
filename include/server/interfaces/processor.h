@@ -1,11 +1,11 @@
 #pragma once
 
-#include "interface_thread.h"
+#include "interfaces/interface_thread.h"
 #include "thread_worker.h"
 
-#include "../server/interface_communication_controller.h"
-#include "../../include/server/systemevents.h"
-#include "../../include/server/impulse.h"
+#include "interfaces/interface_communication_controller.h"
+#include "systemevents.h"
+#include "impulse.h"
 
 class Processor : public interfaceThread
 {

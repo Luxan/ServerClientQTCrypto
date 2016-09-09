@@ -12,15 +12,20 @@
 */
 enum class eSystemEvent : uint8_t
 {
+    RequestStartDatabase,
+    RequestSleepDatabase,
+    ResponseStartDatabase,
+    ResponseSleepDatabase,
+
     RequestStartEncryptionProcessor,
     RequestSleepEncryptionProcessor,
     ResponseStartEncryptionProcessor,
     ResponseSleepEncryptionProcessor,
 
-    RequestStartDencryptionProcessor,
-    RequestSleepDencryptionProcessor,
-    ResponseStartDencryptionProcessor,
-    ResponseSleepDencryptionProcessor,
+    RequestStartDecryptionProcessor,
+    RequestSleepDecryptionProcessor,
+    ResponseStartDecryptionProcessor,
+    ResponseSleepDecryptionProcessor,
 
     RequestStartMessageCollector,
     RequestSleepMessageCollector,
@@ -54,8 +59,9 @@ enum class eSystemEvent : uint8_t
     ResponseSleepDencryptionWorker,
 
 //errors
+    ErrorDatabase,
     ErrorEncryptionProcessor,
-    ErrorDencryptionProcessor,
+    ErrorDecryptionProcessor,
     ErrorMessageCollector,
     ErrorTcpChannel,
     ErrorMessageProcessor,

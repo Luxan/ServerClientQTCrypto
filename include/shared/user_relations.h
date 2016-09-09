@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <stdint.h>
 #include <list>
 #include "id_client.h"
 #include "id_room.h"
@@ -20,19 +21,26 @@ class UserRelations
     {
         for (QString str : friendList.split(" "))
         {
-            this->friend_list.push_back((ClientID)str.toUInt());
+            uint32_t s = str.toUInt();
+            this->friend_list.push_back(ClientID(s));
         }
         for (QString str : blockedUserList.split(" "))
         {
-            this->blocked_user_list.push_back(ClientID(str.toUInt()));
+            uint32_t s = str.toUInt();
+            this->blocked_user_list.push_back(ClientID(s));
         }
         for (QString str : presenseInBlockedList.split(" "))
         {
-            this->presence_in_blocked_list.push_back(ClientID(str.toUInt()));
+            uint32_t s = str.toUInt();
+            this->presence_in_blocked_list.push_back(ClientID(s));
         }
         for (QString str : presenseInRooms.split(" "))
         {
-            this->presence_in_rooms.push_back(RoomID(str.toUInt()));
+            uint32_t s = str.toUInt();
+            this->presence_in_rooms.push_back(RoomID(s));
         }
     }
+
+    UserRelations()
+    {}
 };

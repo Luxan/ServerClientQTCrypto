@@ -6,8 +6,8 @@
 
 #include <queue>
 #include <mutex>
-#include "../server/impulse.h"
-#include "../server/interface_communication_controller.h"
+#include "../impulse.h"
+#include "interface_communication_controller.h"
 
 class Impulse;
 

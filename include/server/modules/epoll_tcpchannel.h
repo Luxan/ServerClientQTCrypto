@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tcpchannel.h"
+#include "interfaces/interface_tcpchannel.h"
 
-class EpollTCPChannel : public TcpChannel
+class EpollTCPChannel : public interfaceTcpChannel
 {
 public:
     /**

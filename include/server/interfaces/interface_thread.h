@@ -1,12 +1,11 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef INTERFACE_THREAD_H
-#define INTERFACE_THREAD_H
+#pragma once
 
 #include <thread>
 #include <atomic>
-#include "../server/interface_communication.h"
+#include "interface_communication.h"
 
 struct ThreadConfiguration
 {
@@ -124,5 +123,3 @@ public:
     */
     bool isRunning() const;
 };
-
-#endif // INTERFACE_THREAD_H

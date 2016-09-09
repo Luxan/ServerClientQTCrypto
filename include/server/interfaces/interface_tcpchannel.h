@@ -3,19 +3,19 @@
 #include <netinet/in.h>
 #include <sys/epoll.h>
 
-#include "../server/interface_communication.h"
-#include "../shared/package.h"
-#include "../server/interface_thread.h"
-#include "../shared/user.h"
-#include "../shared/hasher.h"
-#include "../shared/cipher.h"
-#include "../server/clientsocket.h"
+#include "interface_communication.h"
+#include "../../shared/package.h"
+#include "interface_thread.h"
+#include "../../shared/user.h"
+#include "../../shared/hasher.h"
+#include "../../shared/cipher.h"
+#include "../../server/clientsocket.h"
 
 /**
 \class
 \brief
 */
-class TcpChannel : public interfaceThread
+class interfaceTcpChannel : public interfaceThread
 {
 public:
     /**
@@ -35,7 +35,7 @@ public:
     \pre
     \post
     */
-    TcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
+    interfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
     /**
     \param
     \return
@@ -44,7 +44,7 @@ public:
     \pre
     \post
     */
-    virtual ~TcpChannel();
+    virtual ~interfaceTcpChannel();
     /**
     \param
     \return

@@ -98,7 +98,7 @@ class DecryptionProcessor : public CryptoProcessor
     DecryptionProcessor(ThreadConfiguration conf, int numberOfWorkers):
         CryptoProcessor(conf,
                         numberOfWorkers,
-                        eSystemEvent::ErrorDencryptionProcessor,
+                        eSystemEvent::ErrorDecryptionProcessor,
                         eSystemEvent::RequestStartDencryptionWorker,
                         eSystemEvent::RequestSleepDencryptionWorker,
                         eSystemEvent::ResponseStartDencryptionWorker,

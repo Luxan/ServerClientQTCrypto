@@ -4,10 +4,10 @@
 #ifndef MESSAGECOLLECTOR_H
 #define MESSAGECOLLECTOR_H
 
-#include "../server/interface_communication.h"
+#include "interfaces/interface_communication.h"
 #include "../shared/package.h"
 #include "../shared/message.h"
-#include "../server/interface_thread.h"
+#include "interfaces/interface_thread.h"
 
 /**
 \class
