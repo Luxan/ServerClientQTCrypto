@@ -4,20 +4,29 @@
 #include <sys/epoll.h>
 
 #include "interface_communication.h"
-#include "../../shared/package.h"
+#include "../../shared/packages/package.h"
 #include "interface_thread.h"
 #include "../../shared/user.h"
-#include "../../shared/hasher.h"
-#include "../../shared/cipher.h"
+#include "../../shared/crypto/hasher.h"
+#include "../../shared/crypto/cipher.h"
 #include "../../server/clientsocket.h"
 
 /**
 \class
 \brief
 */
-class interfaceTcpChannel : public interfaceThread
+class InterfaceTcpChannel : public interfaceThread
 {
 public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void prepareToSend(PackageWrapper * pw);
     /**
     \param
     \return
@@ -35,7 +44,7 @@ public:
     \pre
     \post
     */
-    interfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
+    InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
     /**
     \param
     \return
@@ -44,7 +53,7 @@ public:
     \pre
     \post
     */
-    virtual ~interfaceTcpChannel();
+    virtual ~InterfaceTcpChannel();
     /**
     \param
     \return
@@ -147,7 +156,7 @@ protected:
     \pre
     \post
     */
-    void LogError(std::string data);
+    void logError(std::string data);
 private:
     enum eChannelState
     {

@@ -5,9 +5,9 @@
 
 #include <list>
 
-#include "interfaces/interface_communication.h"
-#include "../server/processor.h"
-#include "../shared/message.h"
+#include "../interfaces/interface_communication.h"
+#include "../../server/interfaces/processor.h"
+#include "../../shared/messages/message.h"
 
 /**
 \class
@@ -34,6 +34,15 @@ public:
     \post
     */
     void AddMessageToProcess(MessageProcessable * m);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void missingMessage(Message * m);
     /**
     \see interface_thread.h
     */

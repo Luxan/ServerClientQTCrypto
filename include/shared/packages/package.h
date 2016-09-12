@@ -7,7 +7,7 @@
 #include <string>
 #include <stdio.h>
 
-#include "../shared/package_buffer.h"
+#include "../package_buffer.h"
 
 /**
 \struct
@@ -43,13 +43,15 @@ struct PackageWrapper
     {
         //strict size packages
         Ping,
-        RequestPublicKey,
+        SessionDetailRequest,
+        SessionDetailsResponse,
+
+
         RequestLeavingRoom,
         RequestMessageHistory,
         SetUserInBlackList,
         UnFriendUser,
         ResponseLogin,
-        ResponsePublicKey,
         Error,
         RequestJoinRoom,
         RequestUserDetails,
@@ -68,7 +70,6 @@ struct PackageWrapper
 
     Package *package;
 };
-
 /**
 \struct
 \brief
@@ -77,7 +78,6 @@ struct PackageStrictSize : Package
 {
 
 };
-
 
 /**
 \struct
@@ -117,6 +117,47 @@ struct PackageDynamicSize : Package
         thowNotEnoughSizeException(size, ((PackageDynamicSize*)p)->minSize());
     }
 };
+
+struct EncodedPackage : Package, PackageDynamicSize
+{
+    PackageBuffer * buff;
+
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual size_t minSize()const
+    {
+        return 2;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual size_t realSize()const
+    {
+        return buff->getLength();
+    }
+
+    EncodedPackage()
+    {
+
+    }
+
+    ~EncodedPackage()
+    {
+        delete buff;
+    }
+};
+
 
 /**
 \struct

@@ -68,7 +68,7 @@ public:
     \pre
     \post
     */
-    void CollectPackage(PackageWrapper *p);
+    void collectPackage(PackageWrapper *p);
 };
 
 #endif // MESSAGECOLLECTOR_H

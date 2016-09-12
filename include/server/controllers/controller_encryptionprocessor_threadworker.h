@@ -2,9 +2,7 @@
 \author Sergey Gorokh (ESEGORO)
 */
 #pragma once
-
-
-#include "../interfaces/interface_communication_controller.h"
+#include "../interfaces//interface_communication_controller.h"
 
 /**
 \class
@@ -22,4 +20,3 @@ private:
     */
     void CheckModule2Events(void * module1, void * module2);
 };
-

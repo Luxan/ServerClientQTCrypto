@@ -5,24 +5,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../include/server/tcpchannel.h"
-#include "../../include/shared/message.h"
+#include "../../include/server/interfaces/interface_tcpchannel.h"
+#include "../../include/shared/messages/message.h"
 #include "../../include/server/slog.h"
-#include "../../include/shared/key.h"
-#include "../../include/shared/crypto.h"
+#include "../../include/shared/crypto/key.h"
+#include "../../include/shared/crypto/crypto.h"
 #include "../../include/shared/user.h"
-#include "../../include/server/database.h"
+#include "../../include/server/modules/database.h"
 #include "../../include/shared/buffer.h"
-#include "../../include/shared/package_instant_replay.h"
-#include "../../include/shared/package_signal.h"
-#include "../../include/shared/package_user_to_user.h"
-#include "../../include/shared/package_update.h"
+#include "../../include/shared/packages/package_instant_replay.h"
+#include "../../include/shared/packages/package_signal.h"
+#include "../../include/shared/packages/package_user_to_user.h"
+#include "../../include/shared/packages/package_update.h"
 #include "../../include/shared/buffer_spitter.h"
 #include "../../include/shared/error_enum.h"
 
 #include <QDebug>
 
-TcpChannel::TcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents):
+InterfaceTcpChannel::InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents):
     interfaceThread(conf),
     maxEvents(maxEvents),
     portno(portNumb)
@@ -31,22 +31,27 @@ TcpChannel::TcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents):
     state = UnInitialized;
 }
 
-TcpChannel::~TcpChannel()
+InterfaceTcpChannel::~InterfaceTcpChannel()
 {
     delete[] connectedClients;
 }
 
-void TcpChannel::setCrypto(Hasher *hasher, Cipher * cipher)
+void InterfaceTcpChannel::prepareToSend(PackageWrapper * pw)
+{
+
+}
+
+void InterfaceTcpChannel::setCrypto(Hasher *hasher, Cipher * cipher)
 {
     this->hasher = hasher;
     this->cipher = cipher;
 }
 
-void TcpChannel::RequestStart()
+void InterfaceTcpChannel::RequestStart()
 {
     if (isRunning())
     {
-        LogError("Server is already running.");
+        logError("Server is already running.");
 
         return;
     }
@@ -54,11 +59,11 @@ void TcpChannel::RequestStart()
     unSleepThread();
 }
 
-void TcpChannel::RequestStop()
+void InterfaceTcpChannel::RequestStop()
 {
     if (!isRunning())
     {
-        LogError("Server is already stopped.");
+        logError("Server is already stopped.");
 
         return;
     }
@@ -66,7 +71,7 @@ void TcpChannel::RequestStop()
     sleepThread();
 }
 
-void TcpChannel::dowork()
+void InterfaceTcpChannel::dowork()
 {
     switch (state)
     {
@@ -109,7 +114,7 @@ void TcpChannel::dowork()
     }
 }
 
-bool TcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp, int i)
+bool InterfaceTcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp, int i)
 {
     uint8_t size = sizeof(type) + sizeof(mp->multiPackSize) +
                    sizeof(mp->multiPackCurrentSize) + mp->buff->getLength();
@@ -132,7 +137,7 @@ bool TcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
     return true;
 }
 
-bool TcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type, int i)
+bool InterfaceTcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type, int i)
 {
     uint8_t size = (uint8_t) strictSize + sizeof(type);
     if (!sendBuffer((uint8_t *)&size, sizeof(size), i))
@@ -147,7 +152,7 @@ bool TcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSiz
     return true;
 }
 
-bool TcpChannel::sendPackage(PackageWrapper *response, int i)
+bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
 {
     uint8_t strictSize;
     switch (response->type)
@@ -173,8 +178,8 @@ bool TcpChannel::sendPackage(PackageWrapper *response, int i)
         strictSize = ((PackageResponseLogin *) response->package)->strictSize();
         if (!sendStrictSizePackage((PackageStrictSize *) response->package, strictSize, response->type, i))
             return false;
-    case PackageWrapper::ePackageType::ResponsePublicKey:
-        strictSize = ((PackageResponsePublicKey *) response->package)->strictSize();
+    case PackageWrapper::ePackageType::SessionDetailsResponse:
+        strictSize = ((PackageSessionDetailsResponse *) response->package)->strictSize();
         if (!sendStrictSizePackage((PackageStrictSize *) response->package, strictSize, response->type, i))
             return false;
     case PackageWrapper::ePackageType::Error:
@@ -188,7 +193,7 @@ bool TcpChannel::sendPackage(PackageWrapper *response, int i)
     case PackageWrapper::ePackageType::RequestJoinRoom:
     case PackageWrapper::ePackageType::RequestLogin:
     case PackageWrapper::ePackageType::UnFriendUser:
-    case PackageWrapper::ePackageType::RequestPublicKey:
+    case PackageWrapper::ePackageType::SessionDetailRequest:
     case PackageWrapper::ePackageType::RequestLeavingRoom:
     case PackageWrapper::ePackageType::RequestMessageHistory:
     case PackageWrapper::ePackageType::SetUserInBlackList:
@@ -198,7 +203,7 @@ bool TcpChannel::sendPackage(PackageWrapper *response, int i)
     return true;
 }
 
-void TcpChannel::handleLoginPackage(Package *p, int i)
+void InterfaceTcpChannel::handleLoginPackage(Package *p, int i)
 {
     std::string login = (const char *)((PackageRequestLogin *)p)->login;
     std::string password = (const char *)((PackageRequestLogin *)p)->password;
@@ -239,7 +244,7 @@ void TcpChannel::handleLoginPackage(Package *p, int i)
     }
 }
 
-void TcpChannel::handleKeyRequestPackage(int i)
+void InterfaceTcpChannel::handleKeyRequestPackage(int i)
 {
     //PackageWrapper response;
     //response.package = new PackageResponsePublicKey(new PackageBuffer(cipher->getPublicKey()->getBuff(), KEY_LENGTH));
@@ -253,7 +258,7 @@ void TcpChannel::handleKeyRequestPackage(int i)
     //delete response.package;
 }
 
-void TcpChannel::processPacketExchange(int i)
+void InterfaceTcpChannel::processPacketExchange(int i)
 {
     while (1)
     {
@@ -289,7 +294,7 @@ void TcpChannel::processPacketExchange(int i)
     }
 }
 
-void TcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &list, int i)
+void InterfaceTcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &list, int i)
 {
     for (PackageBuffer *packageBuff : list)
     {
@@ -304,7 +309,7 @@ void TcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &list, int i)
             delete pw->package;
             return;
         }
-        if (pw->type == PackageWrapper::ePackageType::RequestPublicKey)
+        if (pw->type == PackageWrapper::ePackageType::SessionDetailRequest)
         {
             delete pw->package;
             handleKeyRequestPackage(i);
@@ -345,7 +350,7 @@ void TcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &list, int i)
     }
 }
 
-PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
+PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
 {
     if (buf == nullptr)
         return nullptr;
@@ -369,7 +374,7 @@ PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
         case PackageWrapper::ePackageType::ResponseAutocomplete:
             throw ("why would client send ResponseAutocomplete to server?!");
             break;
-        case PackageWrapper::ePackageType::ResponsePublicKey:
+        case PackageWrapper::ePackageType::SessionDetailsResponse:
             throw ("why would client send ResponsePublicKey to server?!");
             break;
         case PackageWrapper::ePackageType::ResponseLogin:
@@ -415,9 +420,9 @@ PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
             memcpy(pw->package, buf->getPointerToBuffer(), sizeof(PackageUnFriendUser));
             delete buf;
             break;
-        case PackageWrapper::ePackageType::RequestPublicKey:
-            pw->package = new PackageRequestPublicKey();
-            memcpy(pw->package, buf->getPointerToBuffer(), sizeof(PackageRequestPublicKey));
+        case PackageWrapper::ePackageType::SessionDetailRequest:
+            pw->package = new PackageSessionDetailRequest();
+            memcpy(pw->package, buf->getPointerToBuffer(), sizeof(PackageSessionDetailRequest));
             delete buf;
             break;
         case PackageWrapper::ePackageType::RequestMessageHistory:
@@ -447,7 +452,7 @@ PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
     }
     catch (std::string error)
     {
-        LogError(error);
+        logError(error);
         delete buf;
         delete pw;
 
@@ -455,7 +460,7 @@ PackageWrapper *TcpChannel::CreatePackage(PackageBuffer *buf)
     }
 }
 
-void TcpChannel::LogError(std::string data)
+void InterfaceTcpChannel::logError(std::string data)
 {
     AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorTcpChannel, data));
 }

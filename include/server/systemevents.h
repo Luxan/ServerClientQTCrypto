@@ -12,31 +12,31 @@
 */
 enum class eSystemEvent : uint8_t
 {
+    //Database
     RequestStartDatabase,
     RequestSleepDatabase,
     ResponseStartDatabase,
     ResponseSleepDatabase,
-
+    //Encryption Processpor
     RequestStartEncryptionProcessor,
     RequestSleepEncryptionProcessor,
     ResponseStartEncryptionProcessor,
     ResponseSleepEncryptionProcessor,
-
+    //Decryption Processor
     RequestStartDecryptionProcessor,
     RequestSleepDecryptionProcessor,
     ResponseStartDecryptionProcessor,
     ResponseSleepDecryptionProcessor,
-
+    //message Collector
     RequestStartMessageCollector,
     RequestSleepMessageCollector,
     ResponseStartMessageCollector,
     ResponseSleepMessageCollector,
-
+    //message Processor
     RequestStartMessageProcessor,
     RequestSleepMessageProcessor,
     ResponseStartMessageProcessor,
     ResponseSleepMessageProcessor,
-
     //channel
     RequestStartTcpChannel,
     RequestSleepTcpChannel,
@@ -53,20 +53,25 @@ enum class eSystemEvent : uint8_t
     ResponseStartEncryptionWorker,
     ResponseSleepEncryptionWorker,
 
-    RequestStartDencryptionWorker,
-    RequestSleepDencryptionWorker,
-    ResponseStartDencryptionWorker,
-    ResponseSleepDencryptionWorker,
+    RequestStartDecryptionWorker,
+    RequestSleepDecryptionWorker,
+    ResponseStartDecryptionWorker,
+    ResponseSleepDecryptionWorker,
 
 //errors
     ErrorDatabase,
+    ErrorCannotRemoveUserFromDatabase,
+    ErrorCannotFindUserFromDatabase,
     ErrorEncryptionProcessor,
     ErrorDecryptionProcessor,
     ErrorMessageCollector,
     ErrorTcpChannel,
     ErrorMessageProcessor,
-    ErrorGui,
     ErrorMessageWorker,
+    ErrorDecryptionWorker,
+    ErrorEncryptionWorker,
+    ErrorReceivedBadPackage,
+
 //data events
     EncryptPackage,
     DecryptPackage,
@@ -74,8 +79,16 @@ enum class eSystemEvent : uint8_t
     PackageToSend,
     MessageCollected,
     MessageProcessed,
-    GetUser,
-
+    DatabaseGetUserByID,
+    DatabaseLoginUser,
+    DatabaseDetermineUserSalt,
+    DatabaseLoginSuccessfull,
+    DatabaseUserSalt,
+    DatabaseRegisterUser,
+    DatabaseDeleteUser,
+    DatabaseMissingMessages,
+    DatabaseGetMissingMessages,
+//Undefuned Event
     Undefined
 };
 

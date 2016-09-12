@@ -203,27 +203,6 @@ struct PackageSetUserInBlackList : PackageStrictSize
 \struct
 \brief
 */
-struct PackageResponsePublicKey : PackageStrictSize
-{
-    uint8_t key[KEY_LENGTH];
-
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    size_t strictSize() const
-    {
-        return sizeof(key);
-    }
-};
-/**
-\struct
-\brief
-*/
 struct PackageRequestMessageHistory : PackageStrictSize
 {
     MessageID id;

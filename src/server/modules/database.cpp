@@ -9,7 +9,7 @@
 
 #include "../../include/server/slog.h"
 
-#include "../../include/server/database.h"
+#include "../../../include/server/modules/database.h"
 #include "../../include/shared/user_credentials.h"
 #include "../../include/shared/user_relations.h"
 
@@ -273,45 +273,57 @@ DataBase::~DataBase()
     db.close();
 }
 
-bool DataBase::removeUser(std::shared_ptr<User> u)
+void DataBase::removeUser(std::shared_ptr<User> u)
 {
-    std::lock_guard<std::mutex> guard(map_lock);
-
-    auto it = mUsers.find(u->getID());
-    if (it != mUsers.end())
-    {
-        mUsers.erase(u->getID());
-
-        deleteUserInDatabase(u->getID());
-        return true;
-    }
-
-    return false;
+    removeUser(u->getID());
 }
 
-std::shared_ptr<User> DataBase::getUser(ClientID id)
+void DataBase::removeUser(ClientID id)
 {
-    std::lock_guard<std::mutex> guard(map_lock);
-
     auto it = mUsers.find(id);
     if (it != mUsers.end())
     {
-        return (*it).second;
+        mUsers.erase(id);
+
+        deleteUserInDatabase(id);
     }
 
-    return nullptr;
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotRemoveUserFromDatabase, "User with id: " + std::to_string(id) + "is not exist in database!"));
 }
 
-std::shared_ptr<User> DataBase::getUser(std::string &login, std::string &password)
+void DataBase::getUserViaID(ClientID id)
+{
+    auto it = mUsers.find(id);
+    if (it != mUsers.end())
+    {
+        this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseGetUser, (*it).second));
+    }
+
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(u->getID()) + "is not exist in database!"));
+}
+
+void DataBase::saltRequest(std::string &login)
+{
+    for (auto it = mUsers.begin(); it != mUsers.end(); it++)
+    {
+        std::shared_ptr<User> u = (*it).second;
+        if (u->getLogin() == login)
+        {
+            this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseUserSalt, u->getSalt()));
+        }
+    }
+}
+
+void DataBase::loginRequest(std::string &login, Hash * &password)
 {
     for (auto it = mUsers.begin(); it != mUsers.end(); it++)
     {
         std::shared_ptr<User> u = (*it).second;
         if (u->LogIn(login, password))
         {
-            return u;
+            this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseLoginSuccessfull, (*it).second));
         }
     }
-    return nullptr;
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(u->getID()) + "is not exist in database!"));
 }
 

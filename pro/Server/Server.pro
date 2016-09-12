@@ -15,35 +15,19 @@ CONFIG += c++11
 OBJECTS_DIR = ../../obj/Server
 
 SOURCES += ../../src/shared/*.cpp \
-    ../../src/server/*.cpp
+    ../../src/server/*.cpp \
+    ../../src/server/modules/*.cpp \
+    ../../src/server/interfaces/*.cpp \
+    ../../src/server/controllers/*.cpp
 
 HEADERS  += ../../include/shared/*.h \
     ../../include/server/*.h \
-    ../../include/server/controller_gui_cryptoprocessor.h \
-    ../../include/server/controller_gui_database.h \
-    ../../include/server/controller_cryptoprocessor_threadworker.h \
-    ../../include/server/controller_encryptionprocessor_threadworker.h \
-    ../../include/server/controller_decryptionprocessor_threadworker.h \
-    ../../include/server/controllers/controller_todelete.h \
-    ../../include/server/controllers/controller_tcpchannel_encryptionprocessor.h \
-    ../../include/server/controllers/controller_tcpchannel_decryptionprocessor.h \
-    ../../include/server/controllers/controller_messageprocessor_threadworker.h \
-    ../../include/server/controllers/controller_messageprocessor_database.h \
-    ../../include/server/controllers/controller_messagecollector_messageprocessor.h \
-    ../../include/server/controllers/controller_messagecollector_encryptionprocessor.h \
-    ../../include/server/controllers/controller_messagecollector_decryptionprocessor.h \
-    ../../include/server/controllers/controller_gui_tcpchannel.h \
-    ../../include/server/controllers/controller_gui_messageprocessor.h \
-    ../../include/server/controllers/controller_gui_messagecollector.h \
-    ../../include/server/controllers/controller_gui_encryptionprocessor.h \
-    ../../include/server/controllers/controller_gui_decryptionprocessor.h \
-    ../../include/server/controllers/controller_gui_database.h \
-    ../../include/server/controllers/controller_encryptionprocessor_threadworker.h \
-    ../../include/server/controllers/controller_decryptionprocessor_threadworker.h \
-    ../../include/server/interfaces/interface_thread.h \
-    ../../include/server/interfaces/interface_tcpchannel.h \
-    ../../include/server/interfaces/interface_communication.h \
-    ../../include/server/interfaces/interface_communication_controller.h
+    ../../include/server/controllers/*.h \
+    ../../include/server/interfaces/*.h \
+    ../../include/shared/packages/*.h \
+    ../../include/shared/messages/*.h \
+    ../../include/shared/crypto/key.h \
+    ../../include/shared/crypto/*.h
 
 FORMS    += ../../forms/server/mainwindow.ui
 

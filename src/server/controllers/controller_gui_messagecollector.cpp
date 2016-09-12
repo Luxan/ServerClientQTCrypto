@@ -1,9 +1,9 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/controller_gui_messagecollector.h"
+#include "../../include/server/controllers/controller_gui_messagecollector.h"
 #include "../../include/server/mainwindow.h"
-#include "../../include/server/message_collector.h"
+#include "../../include/server/modules/message_collector.h"
 #include "../../include/server/impulse.h"
 #include "../../include/server/slog.h"
 

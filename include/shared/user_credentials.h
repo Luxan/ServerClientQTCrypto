@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mutex>
-#include "hash.h"
+#include "crypto/hash.h"
 #include "id_client.h"
 
 class UserCredentials
@@ -18,6 +18,11 @@ public:
     {
         std::lock_guard<std::mutex> guard(credentials_lock);
         return login;
+    }
+    Hash * getPassword()
+    {
+        std::lock_guard<std::mutex> guard(credentials_lock);
+        return password;
     }
 
     uint64_t getSalt()

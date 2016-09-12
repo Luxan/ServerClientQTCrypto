@@ -40,6 +40,9 @@ public:
 
     enum EnabledFlag
     {
+        Database,
+        EncryptionProcessor,
+        DecryptionProcessor,
         MessageCollector,
         MessageProcessor,
         TCP_Channel

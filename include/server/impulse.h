@@ -5,10 +5,13 @@
 #define IMPULSE_H
 
 #include <string>
+#include <memory>
 
 #include "../server/systemevents.h"
-#include "../shared/message.h"
-#include "../shared/package.h"
+#include "../shared/messages/message.h"
+#include "../shared/packages/package.h"
+#include "../shared/id_client.h"
+#include "../shared/user_credentials.h"
 
 class Message;
 
@@ -205,6 +208,89 @@ public:
         Impulse(e), pw(p)
     {}
 };
+/**
+\class
+\brief
+*/
+class ImpulseUser : public Impulse
+{
+    std::shared_ptr<User> u;
+public:
+    /**
+    \see impulse.h
+    */
+    std::shared_ptr<User> getData()
+    {
+        return u;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ImpulseUser(eSystemEvent e, std::shared_ptr<User> u):
+        Impulse(e), u(u)
+    {}
+};
 
+/**
+\class
+\brief
+*/
+class ImpulseUserID : public Impulse
+{
+    ClientID u;
+public:
+    /**
+    \see impulse.h
+    */
+    ClientID getData()
+    {
+        return u;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ImpulseUserID(eSystemEvent e, ClientID u):
+        Impulse(e), u(u)
+    {}
+};
+
+class ImpulseUserCredentialsPackage : public Impulse
+{
+    std::string name;
+    UserCredentials * credentials;
+public:
+    /**
+    \see impulse.h
+    */
+    std::string &getName()
+    {
+        return name;
+    }
+    UserCredentials *getCredentials()
+    {
+        return credentials;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ImpulseUserCredentialsPackage(eSystemEvent e, std::string name, UserCredentials * credentials):
+        Impulse(e), name(name), credentials(credentials)
+    {}
+};
 #endif // IMPULSE_H
 

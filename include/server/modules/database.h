@@ -9,9 +9,9 @@
 #include <atomic>
 #include <QSqlDatabase>
 
-#include "../shared/id_client.h"
-#include "../shared/user.h"
-#include "../server/interfaces/interface_thread.h"
+#include "../../shared/id_client.h"
+#include "../../shared/user.h"
+#include "../../server/interfaces/interface_thread.h"
 
 
 /**
@@ -113,7 +113,7 @@ public:
     \pre
     \post
     */
-    std::shared_ptr<User> getUser(std::string &login, std::string &password);
+    void loginRequest(std::string &login, Hash *&password);
 
     /**
     \param
@@ -144,6 +144,24 @@ public:
     \post
     */
     ~DataBase();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void removeUser(std::shared_ptr<User> u);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void removeUser(ClientID id);
 
     /**
     \param
@@ -153,17 +171,7 @@ public:
     \pre
     \post
     */
-    bool removeUser(std::shared_ptr<User> u);
-
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    std::shared_ptr<User> getUser(ClientID id);
+    void getUserViaID(ClientID id);
 };
 
 #endif // DATABASE_H

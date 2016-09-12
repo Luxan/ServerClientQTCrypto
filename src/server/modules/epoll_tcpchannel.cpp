@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../include/server/epoll_tcpchannel.h"
+#include "../../include/server/modules/epoll_tcpchannel.h"
 
 EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents):
-    interfaceTcpChannel(conf, portNumb),
+    InterfaceTcpChannel(conf, portNumb),
     maxEvents(_maxEvents)
 {
     /* Buffer where events are returned */
@@ -60,7 +60,7 @@ bool EpollTCPChannel::initialize()
     }
     catch (std::string e)
     {
-        LogError(e);
+        logError(e);
 
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepTcpChannel));
 
@@ -80,7 +80,7 @@ bool EpollTCPChannel::isSocketValid(int i)
     {
         /* An error has occured on this fd, or the socket is not
            ready for reading (why were we notified then?) */
-        LogError("epoll socket error or the socket is not ready for reading!");
+        logError("epoll socket error or the socket is not ready for reading!");
         closeSocket(i);
         return false;
     }
@@ -123,7 +123,7 @@ void EpollTCPChannel::handleNotificationOnListningSocket()
             }
             else
             {
-                LogError("epol accept error!");
+                logError("epol accept error!");
                 break;
             }
         }
@@ -149,7 +149,7 @@ void EpollTCPChannel::handleNotificationOnListningSocket()
         s = epoll_ctl(efd, EPOLL_CTL_ADD, infd, &event);
         if (s == -1)
         {
-            LogError("epoll_ctl");
+            logError("epoll_ctl");
             abort();
         }
     }
@@ -161,7 +161,7 @@ bool EpollTCPChannel::sendBuffer(uint8_t *buff, size_t size, int i)
 
     if (s == -1)
     {
-        LogError(std::string(" epoll event error: write : ") + gai_strerror(errno));
+        logError(std::string(" epoll event error: write : ") + gai_strerror(errno));
         return false;
     }
     return true;
@@ -175,7 +175,7 @@ bool EpollTCPChannel::readBuffer(uint8_t *buf, ssize_t aviableToRead, ssize_t &r
            data. So go back to the main loop. */
         if (errno != EAGAIN)
         {
-            LogError(std::string(" epoll event error: read!"));
+            logError(std::string(" epoll event error: read!"));
             return false;
         }
         return true;
@@ -202,7 +202,7 @@ int EpollTCPChannel::create_and_bind(int port)
     s = getaddrinfo(NULL, std::to_string(port).c_str(), &hints, &result);
     if (s != 0)
     {
-        LogError(std::string("getaddrinfo: ") + gai_strerror(s));
+        logError(std::string("getaddrinfo: ") + gai_strerror(s));
         return -1;
     }
 
@@ -224,7 +224,7 @@ int EpollTCPChannel::create_and_bind(int port)
 
     if (rp == NULL)
     {
-        LogError("Could not bind.");
+        logError("Could not bind.");
         return -1;
     }
 
@@ -240,7 +240,7 @@ int EpollTCPChannel::make_socket_non_blocking(int sfd)
     flags = fcntl(sfd, F_GETFL, 0);
     if (flags == -1)
     {
-        LogError("fcntl");
+        logError("fcntl");
         return -1;
     }
 
@@ -249,7 +249,7 @@ int EpollTCPChannel::make_socket_non_blocking(int sfd)
     s = fcntl(sfd, F_SETFL, flags);
     if (s == -1)
     {
-        LogError("fcntl");
+        logError("fcntl");
         return -1;
     }
 

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "processor.h"
+#include "../interfaces/processor.h"
+#include "../../shared/packages/package.h"
+#include "../systemevents.h"
+
 
 class CryptoProcessor : public Processor
 {
@@ -78,7 +81,7 @@ public:
     \pre
     \post
     */
-    void EncryptPackage(PackageBuffer *m);
+    void EncryptPackage(PackageWrapper *m);
     /**
     \see interface_thread.h
     */
@@ -99,10 +102,10 @@ class DecryptionProcessor : public CryptoProcessor
         CryptoProcessor(conf,
                         numberOfWorkers,
                         eSystemEvent::ErrorDecryptionProcessor,
-                        eSystemEvent::RequestStartDencryptionWorker,
-                        eSystemEvent::RequestSleepDencryptionWorker,
-                        eSystemEvent::ResponseStartDencryptionWorker,
-                        eSystemEvent::ResponseSleepDencryptionWorker)
+                        eSystemEvent::RequestStartDecryptionWorker,
+                        eSystemEvent::RequestSleepDecryptionWorker,
+                        eSystemEvent::ResponseStartDecryptionWorker,
+                        eSystemEvent::ResponseSleepDecryptionWorker)
     {}
 
     /**
@@ -113,7 +116,7 @@ class DecryptionProcessor : public CryptoProcessor
     \pre
     \post
     */
-    void DecryptPackage(PackageBuffer *m);
+    void DecryptPackage(PackageWrapper *m);
     /**
     \see interface_thread.h
     */

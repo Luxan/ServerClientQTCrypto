@@ -6,8 +6,8 @@
 
 #include "../../include/shared/user.h"
 #include "../../include/shared/id_client.h"
-#include "../../include/shared/package.h"
-#include "../../include/shared/hash.h"
+#include "../../include/shared/packages/package.h"
+#include "../../include/shared/crypto/hash.h"
 
 User::User(std::string name, UserCredentials * credentials, UserRelations * relations):
     name(name), credentials(credentials), relations(relations)

@@ -1,16 +1,13 @@
-/**
-\author Sergey Gorokh (ESEGORO)
-*/
-#include "../../include/server/controllers/controller_gui_tcpchannel.h"
+#include "../../include/server/controllers/controller_gui_encryptionprocessor.h"
 #include "../../include/server/mainwindow.h"
-#include "../../include/server/interfaces/interface_tcpchannel.h"
+#include "../../include/server/modules/crypto_processor.h"
 #include "../../include/server/impulse.h"
 #include "../../include/server/slog.h"
 
-void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2)
+void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
 {
     MainWindow *mainWindow = (MainWindow *)module1;
-    InterfaceTcpChannel *eventGiver = (TcpChannel *)module2;
+    EncryptionProcessor *eventGiver = (EncryptionProcessor *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
@@ -20,26 +17,28 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
     {
         switch (i->getEvent())
         {
-        case eSystemEvent::ResponseStartTcpChannel:
-            SLog::logInfo() << "tcpChannel Started.";
-            mainWindow->setChildEnabled(ChildController::EnabledFlag::TCP_Channel, true);
+        case eSystemEvent::ResponseStartEncryptionProcessor:
+            SLog::logInfo() << "Database Started.";
+            mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, true);
             if (mainWindow->isAllChildsEnabled())
             {
                 mainWindow->enableGui();
             }
+
             deleteAndNext = true;
             break;
-        case eSystemEvent::ResponseSleepTcpChannel:
-            SLog::logInfo() << "tcpChannel Stopped.";
-            mainWindow->setChildEnabled(ChildController::EnabledFlag::TCP_Channel, false);
+        case eSystemEvent::ResponseSleepEncryptionProcessor:
+            SLog::logInfo() << "Database Stopped.";
+            mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, false);
             if (mainWindow->isAllChildsDisabled())
             {
                 mainWindow->enableGui();
             }
+
             deleteAndNext = true;
             break;
-        case eSystemEvent::ErrorTcpChannel:
-            SLog::logError() << "tcpChannel Error: " + ((ImpulseError*)i)->getError();
+        case eSystemEvent::ErrorEncryptionProcessor:
+            SLog::logError() << "Database Error: " + ((ImpulseError *)i)->getError();
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
@@ -64,9 +63,9 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
     }
 }
 
-void Controller_GUI_tcpChannel::CheckModule2Events(void *module1, void *module2)
+void Controller_GUI_EncryptionProcessor::CheckModule2Events(void *module1, void * module2)
 {
-    TcpChannel *tcpChannel = (TcpChannel *)module1;
+    EncryptionProcessor *encp = (EncryptionProcessor *)module1;
     MainWindow *eventGiver = (MainWindow *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
@@ -77,12 +76,12 @@ void Controller_GUI_tcpChannel::CheckModule2Events(void *module1, void *module2)
     {
         switch (i->getEvent())
         {
-        case eSystemEvent::RequestStartTcpChannel:
-            tcpChannel->RequestStart();
+        case eSystemEvent::RequestStartEncryptionProcessor:
+            encp->RequestStart();
             deleteAndNext = true;
             break;
-        case eSystemEvent::RequestSleepTcpChannel:
-            tcpChannel->RequestStop();
+        case eSystemEvent::RequestSleepEncryptionProcessor:
+            encp->RequestStop();
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:

@@ -1,30 +1,28 @@
-/**
-\author Sergey Gorokh (ESEGORO)
-*/
-#include "../../include/server/controllers/controller_messagecollector_messageprocessor.h"
-#include "../../include/server/modules/message_collector.h"
-#include "../../include/server/modules/message_processor.h"
+#include "../../include/server/interfaces/interface_communication_controller.h"
+#include "../../include/server/controllers/controller_tcpchannel_encryptionprocessor.h"
+#include "../../include/server/interfaces/interface_tcpchannel.h"
+#include "../../include/server/modules/crypto_processor.h"
 #include "../../include/server/impulse.h"
 #include "../../include/server/slog.h"
-#include "../../include/shared/messages/message.h"
 
-void Controller_MessageCollector_MessageProcessor::CheckModule1Events(void *module1, void *nmodule2)
+
+void Controller_TCPChannel_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
 {
-    MessageCollector *messageCollector = (MessageCollector *)module1;
-    MessageProcessor *eventGiver = (MessageProcessor *)nmodule2;
+    InterfaceTcpChannel *tcpChannel = (InterfaceTcpChannel *)module1;
+    EncryptionProcessor *eventGiver = (EncryptionProcessor *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
+    PackageWrapper *p;
 
     i = eventGiver->getNextImpulse(i);
     while (i)
     {
-        Message *m;
         switch (i->getEvent())
         {
-        case eSystemEvent::MessageProcessed:
-            m = ((ImpulseMessage *)i)->getData();
-            messageCollector->storeMessageToSend((Message *)m);
+        case eSystemEvent::Undefined:
+            p = ((ImpulsePackage *)i)->getData();
+            tcpChannel->prepareToSend(p);
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
@@ -49,10 +47,10 @@ void Controller_MessageCollector_MessageProcessor::CheckModule1Events(void *modu
     }
 }
 
-void Controller_MessageCollector_MessageProcessor::CheckModule2Events(void *module1, void *module2)
+void Controller_TCPChannel_EncryptionProcessor::CheckModule2Events(void *module1, void * module2)
 {
-    MessageProcessor *messageProcessor = (MessageProcessor *)module1;
-    MessageCollector *eventGiver = (MessageCollector *)module2;
+    DecryptionProcessor *decryptionProcessor = (DecryptionProcessor *)module1;
+    InterfaceTcpChannel *eventGiver = (InterfaceTcpChannel *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
@@ -60,14 +58,8 @@ void Controller_MessageCollector_MessageProcessor::CheckModule2Events(void *modu
     i = eventGiver->getNextImpulse(i);
     while (i)
     {
-        Message *m;
         switch (i->getEvent())
         {
-        case eSystemEvent::MessageCollected:
-            m = ((ImpulseMessage *)i)->getData();
-            messageProcessor->AddMessageToProcess((MessageProcessable *)m);
-            deleteAndNext = true;
-            break;
         case eSystemEvent::Undefined:
             SLog::logError() << "Got Undefined event!";
             deleteAndNext = true;

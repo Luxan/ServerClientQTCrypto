@@ -85,10 +85,6 @@ void Controller_GUI_MessageProcessor::CheckModule2Events(void *module1, void *mo
             messageProcessor->RequestSleep();
             deleteAndNext = true;
             break;
-        case eSystemEvent::ErrorGui:
-            SLog::logError() << "Gui Error: " << ((ImpulseError *)i)->getError();
-            deleteAndNext = true;
-            break;
         case eSystemEvent::Undefined:
             SLog::logError() << "Got Undefined event!";
             deleteAndNext = true;

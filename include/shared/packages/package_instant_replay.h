@@ -1,40 +1,26 @@
 #pragma once
 
-#include "../shared/package.h"
-#include "../shared/status.h"
+#include "package.h"
+#include "../status.h"
+#include "../crypto/hash.h"
+#include "../crypto/key.h"
 
 /**
 \struct
 \brief
 */
-struct PackageInstantResponse
+struct PackagePing : Package
 {
-
-};
-
-/**
-\struct
-\brief
-*/
-struct PackagePing : PackageStrictSize, PackageInstantResponse
-{
+    PackageBuffer * login;
+    Hash * saltedPassword;
     Status status;
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    size_t strictSize() const
+
+    size_t size()const
     {
-        return sizeof(status);
+        return sizeof(status) + sizeof(uint8_t) + login->getLength() +  sizeof(uint8_t) + saltedPassword->getLength();
     }
-    PackagePing(Status status):
-        status(status)
-    {}
-    PackagePing()
+    PackagePing(std::string login, Hash * saltedPassword, Status status):
+        login(login.c_str(), login.length()), saltedPassword(saltedPassword), status(status)
     {}
 };
 
@@ -42,7 +28,7 @@ struct PackagePing : PackageStrictSize, PackageInstantResponse
 \struct
 \brief
 */
-struct PackageRequestPublicKey : PackageStrictSize, PackageInstantResponse
+struct PackageSessionDetailRequest : Package
 {
     /**
     \param
@@ -52,10 +38,30 @@ struct PackageRequestPublicKey : PackageStrictSize, PackageInstantResponse
     \pre
     \post
     */
-    size_t strictSize() const
+    size_t size() const
     {
         return 0;
     }
+};
+
+/**
+\struct
+\brief
+*/
+struct PackageSessionDetailsResponse : PackageDynamicSize
+{
+    Key * key;
+    PackageBuffer * certificate;
+
+    size_t size()const
+    {
+        return key->getKeyLength() + certificate->getLength();
+    }
+};
+
+struct PackageLoginCheck : Package
+{
+
 };
 
 //-----------------------------------
