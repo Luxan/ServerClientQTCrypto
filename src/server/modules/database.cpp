@@ -38,37 +38,13 @@ void DataBase::CreateDatabase()
 
     SLog::logInfo() << "Table created successfully.";
 }
-void DataBase::RequestStart()
-{
-    if (isRunning())
-    {
-        std::string error = "Database is already running.";
-        AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorDatabase, error));
-        return;
-    }
-
-    unSleepThread();
-}
-
-void DataBase::RequestStop()
-{
-    if (!isRunning())
-    {
-        std::string error = "Database is already stopped.";
-        AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorDatabase, error));
-        return;
-    }
-
-    sleepThread();
-}
 
 void DataBase::dowork()
 {
 
 }
 
-DataBase::DataBase(ThreadConfiguration &conf, std::string _path):
-    interfaceThread(conf)
+DataBase::DataBase(std::string _path)
 {
     path = _path;
     try
