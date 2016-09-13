@@ -6,9 +6,10 @@
 class MainWindow;
 class LoginWindow;
 
-#include "../shared/package.h"
+#include "../shared/packages/package.h"
 #include "../client/mainwindow.h"
 #include "../client/loginwindow.h"
+#include "../shared/crypto/certificate.h"
 
 class TCPChannel : public QObject
 {
@@ -23,7 +24,7 @@ public:
     \pre
     \post
     */
-    explicit TCPChannel(const char *serverIP, const int serverPort);
+    explicit TCPChannel(const char *serverIP, const int serverPort, CertificateAuthority * ca);
     /**
     \param
     \return
@@ -78,6 +79,7 @@ private:
     LoginWindow * lw;
     const char *serverIP;
     const int serverPort;
+    CertificateAuthority * ca;
 
     /**
     \param

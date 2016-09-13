@@ -1,8 +1,8 @@
 #include "../../include/shared/error_enum.h"
-#include "../../include/shared/package_instant_replay.h"
-#include "../../include/shared/package_information.h"
-#include "../../include/shared/package_signal.h"
-#include "../../include/shared/package_update.h"
+#include "../../include/shared/packages/package_instant_replay.h"
+#include "../../include/shared/packages/package_user_to_user.h"
+#include "../../include/shared/packages/package_signal.h"
+#include "../../include/shared/packages/package_update.h"
 #include "../../include/client/clog.h"
 #include "../../include/shared/buffer_spitter.h"
 
@@ -10,8 +10,10 @@
 #include "../../include/client/mainwindow.h"
 #include "../../include/client/tcpchannel.h"
 
-TCPChannel::TCPChannel(const char *serverIP, const int serverPort):
-    serverIP(serverIP), serverPort(serverPort)
+TCPChannel::TCPChannel(const char *serverIP, const int serverPort, CertificateAuthority * ca):
+    serverIP(serverIP),
+    serverPort(serverPort),
+    ca(ca)
 {}
 
 TCPChannel::~TCPChannel()
@@ -225,9 +227,15 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
         if (pw == nullptr)
             return;
 
-        if (pw->type == PackageWrapper::ePackageType::ResponseLogin)
+        if (pw->type == PackageWrapper::ePackageType::SessionDetailResponse)
         {
-            logInfo("Signed in Successfully!");
+            if (!ca->authorize(((PackageSessionDetailResponse*)pw->package)->certificate))
+                logError("Certificate Authority cannot authorize server's certificate!");
+            continue;
+        }
+        if (pw->type == PackageWrapper::ePackageType::)
+        {
+            //logInfo("Signed in Successfully!");
 
             mw->LoggedInAs(((PackageResponseLogin*)pw->package)->id);
 
@@ -297,6 +305,15 @@ PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)
 
         switch (pw->type)//change to if -> performance
         {
+        case PackageWrapper::ePackageType::SessionDetailRequest:
+            throw ("why would server send SessionDetailRequest to client?!");
+            break;
+        case PackageWrapper::ePackageType::SessionDetailResponse:
+            pw->package = new PackageSessionDetailResponse(buf);
+            delete buf;
+            break;
+
+
 
         case PackageWrapper::ePackageType::RequestUserDetails:
             throw ("why would server send RequestUserDetails to client?!");

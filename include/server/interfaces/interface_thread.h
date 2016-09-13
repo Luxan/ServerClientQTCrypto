@@ -38,7 +38,7 @@ struct ThreadConfiguration
     }
 };
 
-class interfaceThread : public interfaceCommunication
+class InterfaceThread : public interfaceCommunication
 {
 private:
     std::atomic_bool isTerminated;
@@ -102,8 +102,7 @@ public:
     \pre
     \post
     */
-    interfaceThread(ThreadConfiguration &conf);
-
+    InterfaceThread(ThreadConfiguration &conf);
     /**
     \param
     \return
@@ -112,7 +111,7 @@ public:
     \pre
     \post
     */
-    virtual ~interfaceThread();
+    virtual ~InterfaceThread();
     /**
     \param
     \return

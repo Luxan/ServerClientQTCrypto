@@ -9,13 +9,14 @@
 #include "../../shared/user.h"
 #include "../../shared/crypto/hasher.h"
 #include "../../shared/crypto/cipher.h"
+#include "../../shared/crypto/certificate.h"
 #include "../../server/clientsocket.h"
 
 /**
 \class
 \brief
 */
-class InterfaceTcpChannel : public interfaceThread
+class InterfaceTcpChannel : public InterfaceThread
 {
 public:
     /**
@@ -44,7 +45,7 @@ public:
     \pre
     \post
     */
-    InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
+    InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents, Certificate * certificate);
     /**
     \param
     \return
@@ -172,6 +173,7 @@ private:
     Cipher * cipher;
     RemoteClient *connectedClients;
     eChannelState state;
+    Certificate * certificate;
 
 
 
@@ -214,7 +216,7 @@ private:
     \pre
     \post
     */
-    void handleKeyRequestPackage(int i);
+    void handleSessionDetailRequestPackage(int i);
     /**
     \param
     \return

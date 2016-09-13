@@ -11,7 +11,7 @@
 #include "../../include/shared/messages/message.h"
 
 MessageProcessor::MessageProcessor(ThreadConfiguration conf, int numberOfWorkers):
-    interfaceThread(conf)
+    InterfaceThread(conf)
 {
     ThreadConfiguration workersConf;
     workersConf.loopSleepTime = 10;

@@ -13,7 +13,7 @@ public:
     \pre
     \post
     */
-    EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents);
+    EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents, Certificate * certificate);
     /**
     \param
     \return

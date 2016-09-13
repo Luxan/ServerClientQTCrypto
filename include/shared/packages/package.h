@@ -44,7 +44,7 @@ struct PackageWrapper
         //strict size packages
         Ping,
         SessionDetailRequest,
-        SessionDetailsResponse,
+        SessionDetailResponse,
 
 
         RequestLeavingRoom,

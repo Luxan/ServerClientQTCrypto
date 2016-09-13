@@ -18,7 +18,7 @@
 \class
 \brief
 */
-class DataBase : interfaceThread
+class DataBase : InterfaceThread
 {
 private:
     struct CallbackData

@@ -6,10 +6,10 @@
 #include "../../include/client/tcpchannel.h"
 #include "../../include/client/loginwindow.h"
 
-#include "../../include/shared/package_instant_replay.h"
-#include "../../include/shared/package_information.h"
-#include "../../include/shared/package_signal.h"
-#include "../../include/shared/package_update.h"
+#include "../../include/shared/packages/package_instant_replay.h"
+#include "../../include/shared/packages/package_user_to_user.h"
+#include "../../include/shared/packages/package_signal.h"
+#include "../../include/shared/packages/package_update.h"
 #include "../../include/shared/error_enum.h"
 #include "../../include/client/clog.h"
 #include "../../include/shared/buffer_spitter.h"
@@ -24,6 +24,33 @@ LoginWindow::LoginWindow(const int minLoginCharacters, const int minPasswordChar
 
     ui->passwordEdit->setEchoMode(QLineEdit::Password);
     ui->passwordEdit->setInputMethodHints(Qt::ImhHiddenText | Qt::ImhNoPredictiveText | Qt::ImhNoAutoUppercase);
+}
+
+void LoginWindow::setTCPChannel(TCPChannel * ch)
+{
+    tcpchannel = ch;
+
+    PackageWrapper wr;
+    try
+    {
+        wr.package = new PackageSessionDetailRequest();
+        wr.type = PackageWrapper::ePackageType::SessionDetailRequest;
+        tcpchannel->sendPackage(&wr);
+        delete wr.package;
+    }
+    catch (eError e)
+    {
+        switch (e)
+        {
+        case eError::ServerIsAnaviable:
+            logError("Server is unaviable!");
+            break;
+        default:
+            logError("Undefined error!");
+            break;
+        }
+        delete wr.package;
+    }
 }
 
 LoginWindow::~LoginWindow()

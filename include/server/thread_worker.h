@@ -16,7 +16,7 @@
 \class
 \brief
 */
-class ThreadWorker : public interfaceThread
+class ThreadWorker : public InterfaceThread
 {
 private:
     TaskQueue * queue;

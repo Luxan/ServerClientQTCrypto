@@ -4,6 +4,7 @@
 #include "../status.h"
 #include "../crypto/hash.h"
 #include "../crypto/key.h"
+#include "../crypto/certificate.h"
 
 /**
 \struct
@@ -48,14 +49,24 @@ struct PackageSessionDetailRequest : Package
 \struct
 \brief
 */
-struct PackageSessionDetailsResponse : PackageDynamicSize
+struct PackageSessionDetailResponse : PackageDynamicSize
 {
-    Key * key;
-    PackageBuffer * certificate;
+    Certificate * certificate;
 
     size_t size()const
     {
         return key->getKeyLength() + certificate->getLength();
+    }
+
+    PackageSessionDetailResponse(PackageBuffer *buf)
+    {
+        uint8_t * b = new uint8_t[buf->getLength()];
+        memcpy(b, buf->getPointerToBuffer(), buf->getLength());
+        certificate = new Certificate(new Buffer(b, buf->getLength()));
+    }
+    PackageSessionDetailResponse(Certificate *cert)
+    {
+        certificate = cert;
     }
 };
 

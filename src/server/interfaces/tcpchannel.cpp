@@ -22,10 +22,11 @@
 
 #include <QDebug>
 
-InterfaceTcpChannel::InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents):
-    interfaceThread(conf),
+InterfaceTcpChannel::InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents, Certificate *certificate):
+    InterfaceThread(conf),
     maxEvents(maxEvents),
-    portno(portNumb)
+    portno(portNumb),
+    certificate(certificate)
 {
     connectedClients = new RemoteClient[maxEvents];
     state = UnInitialized;
@@ -178,8 +179,8 @@ bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
         strictSize = ((PackageResponseLogin *) response->package)->strictSize();
         if (!sendStrictSizePackage((PackageStrictSize *) response->package, strictSize, response->type, i))
             return false;
-    case PackageWrapper::ePackageType::SessionDetailsResponse:
-        strictSize = ((PackageSessionDetailsResponse *) response->package)->strictSize();
+    case PackageWrapper::ePackageType::SessionDetailResponse:
+        strictSize = ((PackageSessionDetailResponse *) response->package)->strictSize();
         if (!sendStrictSizePackage((PackageStrictSize *) response->package, strictSize, response->type, i))
             return false;
     case PackageWrapper::ePackageType::Error:
@@ -244,10 +245,10 @@ void InterfaceTcpChannel::handleLoginPackage(Package *p, int i)
     }
 }
 
-void InterfaceTcpChannel::handleKeyRequestPackage(int i)
+void InterfaceTcpChannel::handleSessionDetailRequestPackage(int i)
 {
-    //PackageWrapper response;
-    //response.package = new PackageResponsePublicKey(new PackageBuffer(cipher->getPublicKey()->getBuff(), KEY_LENGTH));
+    PackageWrapper response;
+    response.package = new PackageSessionDetailResponse(certificate);
 
     //if (!sendPackage(&response, i))
     //{
@@ -312,7 +313,7 @@ void InterfaceTcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &lis
         if (pw->type == PackageWrapper::ePackageType::SessionDetailRequest)
         {
             delete pw->package;
-            handleKeyRequestPackage(i);
+            handleSessionDetailRequestPackage(i);
             return;
         }
 
@@ -374,7 +375,7 @@ PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
         case PackageWrapper::ePackageType::ResponseAutocomplete:
             throw ("why would client send ResponseAutocomplete to server?!");
             break;
-        case PackageWrapper::ePackageType::SessionDetailsResponse:
+        case PackageWrapper::ePackageType::SessionDetailResponse:
             throw ("why would client send ResponsePublicKey to server?!");
             break;
         case PackageWrapper::ePackageType::ResponseLogin:

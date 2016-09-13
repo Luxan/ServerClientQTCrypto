@@ -13,11 +13,14 @@ TEMPLATE = app
 CONFIG += c++11
 OBJECTS_DIR = ../../obj/Client
 
-SOURCES += ../../src/shared/*.cpp \
+SOURCES  += ../../src/shared/*.cpp \
     ../../src/client/*.cpp
 
-HEADERS  += ../../include/shared/*.h \
-    ../../include/client/*.h
+HEADERS  +=  ../../include/client/*.h \
+    ../../include/shared/*.h \
+    ../../include/shared/packages/*.h \
+    ../../include/shared/messages/*.h \
+    ../../include/shared/crypto/*.h
 
 FORMS    += \  
     ../../forms/client/loginwindow.ui \
