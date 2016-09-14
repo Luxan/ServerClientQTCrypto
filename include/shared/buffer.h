@@ -24,9 +24,11 @@ public:
     \param _buff - pointer to data that will be stored
     \param _length - length of data that will be stored
     */
-    Buffer(uint8_t *_buff, BUFF_SIZE _length):
-        buff(_buff),length(_length)
-    {}
+    Buffer(uint8_t *_buff, BUFF_SIZE _length)
+    {
+        uint8_t * b = new uint8_t[_length];
+        
+    }
 
     /*!
     \return uint8_t * - pointer to data buffer
