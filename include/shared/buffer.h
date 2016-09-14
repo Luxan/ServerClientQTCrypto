@@ -20,14 +20,15 @@ protected:
 
 public:
     /*!
-    \brief Constructor to store data inside class object
+    \brief Constructor to COPY and store given data.
     \param _buff - pointer to data that will be stored
     \param _length - length of data that will be stored
     */
     Buffer(uint8_t *_buff, BUFF_SIZE _length)
     {
-        uint8_t * b = new uint8_t[_length];
+        buff = new uint8_t[_length];
         
+        memcpy(b, _buff, _length);
     }
 
     /*!
