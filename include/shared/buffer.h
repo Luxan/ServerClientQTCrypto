@@ -10,7 +10,7 @@ class Buffer
 {
 protected:
     uint8_t *buff;
-    uint8_t length;
+    uint16_t length;
 
 public:
 	/**

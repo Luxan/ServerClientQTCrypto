@@ -32,9 +32,7 @@ class CertificateAuthority
 {
     Buffer * ca;
     Certificate * certificate;
-    ByteQueue googleq, thawteq, googletbs, thawtespki;
-    SecByteBlock certSignature;
-
+    ByteQueue caBQ, signedServerKey;
     void GetPublicKeyFromCert(CryptoPP::BufferedTransformation & certin, CryptoPP::BufferedTransformation & keyout)
     {
            BERSequenceDecoder x509Cert(certin);
@@ -87,6 +85,7 @@ public:
         ca(ca)
     {
         certificate = nullptr;
+        caBQ.Put(this->getBuffer()->getPointerToBuffer(), this->getBuffer()->getLength());
     }
 
     ~CertificateAuthority()
@@ -105,29 +104,32 @@ public:
 
     bool authorize(Certificate * cert)
     {
-        googleq.Put(this->getBuffer()->getPointerToBuffer(), this->getBuffer()->getLength());
-        thawteq.Put(cert->getBuffer()->getPointerToBuffer(), cert->getBuffer()->getLength());
+        ByteQueue servCertBQ, encodedServCertBQ, serverKey;
+        SecByteBlock certSignature;
+
+        servCertBQ.Put(cert->getBuffer()->getPointerToBuffer(), cert->getBuffer()->getLength());
+
         try
         {
-            GetPublicKeyFromCert(thawteq,thawtespki);
+            GetPublicKeyFromCert(caBQ,serverKey);
         }
         catch(std::exception &)
         {
             throw("Failed to extract the public key from the CA certificate.");
             //return false;
         }
-        //Public key read from Thawte CA certificate.
+        //Public key read from serv CA certificate.
 
         OID sigAlgOID;
 
         try
         {
                // first, extract the data that the signature covers
-               BERSequenceDecoder x509Cert(googleq);
-               BERSequenceDecoder tbsCert(x509Cert);
-               DERSequenceEncoder tbsEnc(googletbs);
-               tbsCert.TransferAllTo(tbsEnc);
-               tbsEnc.MessageEnd();
+               BERSequenceDecoder x509Cert(servCertBQ);
+               BERSequenceDecoder servCert(x509Cert);
+               DERSequenceEncoder encodedServCert(encodedServCertBQ);
+               servCert.TransferAllTo(encodedServCert);
+               encodedServCert.MessageEnd();
                // find the algorithm used to sign the data
                BERSequenceDecoder sigAlg(x509Cert);
                sigAlgOID.BERDecode(sigAlg);
@@ -146,12 +148,12 @@ public:
         PK_VerifierPtr verifier;
         if(sigAlgOID == md5withRSAEncryption())
         {
-               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::MD5>::Verifier(thawtespki));
+               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::MD5>::Verifier(serverKey));
                //cout << "Signature algorithm is RSA with MD5 hash." << endl;
         }
         else if(sigAlgOID == sha1withRSAEncryption())
         {
-               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::SHA1>::Verifier(thawtespki));
+               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::SHA1>::Verifier(serverKey));
                //cout << "Signature algorithm is RSA with SHA1 hash." << endl;
         }
         else
@@ -169,7 +171,7 @@ public:
         try
         {
                vf.Put(certSignature,certSignature.size());
-               googletbs.TransferAllTo(vf);
+               encodedServCertBQ.TransferAllTo(vf);
                vf.MessageEnd();
         }
         catch(std::exception &e)
@@ -181,6 +183,7 @@ public:
         {
                //cout << "The signature verified." << endl;
             certificate = cert;
+            signedServerKey = serverKey;
             return true;
         }
 

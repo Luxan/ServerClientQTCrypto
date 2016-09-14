@@ -1,7 +1,7 @@
 #include "../../include/shared/buffer_spitter.h"
 
 
-bufferSpitter::bufferSpitter(uint8_t *_buff, uint8_t _length):
+bufferSpitter::bufferSpitter(uint8_t *_buff, uint16_t _length):
     Buffer(_buff, _length)
 {}
 
@@ -45,12 +45,13 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
         else
         {
             //extract full package length
-            uint8_t packLength = *(buff++);
-            length--;
+            uint16_t packLength = *((uint16_t*)buff);
+            ((uint16_t*)buff)++;
+            length -= sizeof(uint16_t);
             //if full package length equals zero then skip that package
             if (packLength == 0)
                 continue;
-            //if input buffer has enough uint8_ts to fill in full package then try to fill
+            //if input buffer has enough bytes to fill in full package then try to fill
             if (packLength <= length)
             {
                 //push back ready to process new buffer

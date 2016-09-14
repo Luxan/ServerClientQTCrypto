@@ -85,15 +85,6 @@ struct PackageStrictSize : Package
 */
 struct PackageDynamicSize : Package
 {
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    virtual size_t minSize()const = 0;
 	/**
 	\param
 	\return
@@ -102,7 +93,7 @@ struct PackageDynamicSize : Package
 	\pre
 	\post
 	*/
-    virtual size_t realSize()const = 0;
+    virtual size_t size()const = 0;
 
 	/**
 	\param

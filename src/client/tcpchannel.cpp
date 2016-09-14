@@ -53,6 +53,20 @@ bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
     return true;
 }
 
+bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff)
+{
+    if (!sendBuffer(&size, sizeof(size)))
+        return false;
+
+    if (!sendBuffer((uint8_t *)&type, sizeof(type)))
+        return false;
+
+    if (!sendBuffer(buff, sizeOfBuff))
+        return false;
+
+    return true;
+}
+
 bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type)
 {
     uint8_t size = (uint8_t) strictSize + sizeof(type);
@@ -91,10 +105,19 @@ bool TCPChannel::sendPackage(PackageWrapper *pw)
     }
     PackageRequestLogin *rl;
     PackageRequestAutocomplete *ra;
-    uint8_t size;
+    uint16_t size;
     uint8_t strictSize;
     switch (pw->type)
     {
+    case PackageWrapper::ePackageType::SessionDetailRequest:
+        size = sizeof(pw->type);
+
+        if (!sendBuffer(&size, sizeof(size)))
+            return false;
+
+        if (!sendBuffer((uint8_t *)&pw->type, sizeof(pw->type)))
+            return false;
+
     //dynamic size packages
     case PackageWrapper::ePackageType::RequestLogin:
         rl = (PackageRequestLogin *)pw->package;

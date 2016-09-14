@@ -138,6 +138,20 @@ bool InterfaceTcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType t
     return true;
 }
 
+bool InterfaceTcpChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff, int i)
+{
+    if (!sendBuffer(&size, sizeof(size), i))
+        return false;
+
+    if (!sendBuffer((uint8_t *)&type, sizeof(type), i))
+        return false;
+
+    if (!sendBuffer(buff, sizeOfBuff, i))
+        return false;
+
+    return true;
+}
+
 bool InterfaceTcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type, int i)
 {
     uint8_t size = (uint8_t) strictSize + sizeof(type);
@@ -155,9 +169,27 @@ bool InterfaceTcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t 
 
 bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
 {
-    uint8_t strictSize;
+    uint16_t wholeBuffSize;
+    uint8_t * buff;
+    uint16_t sizeOfBuff;
+    PackageSessionDetailResponse * ssdr;
     switch (response->type)
     {
+    case PackageWrapper::ePackageType::SessionDetailResponse:
+        ssdr = (PackageSessionDetailResponse*) response->package;
+        wholeBuffSize = sizeof(type) + sizeof(uint16_t) + ssdr->size();
+        buff = ssdr->certificate->getBuffer()->getPointerToBuffer();
+        sizeOfBuff = ssdr->certificate->getBuffer()->getLength();
+        if (!sendPackageDynamicMessage(response->type, wholeBuffSize, buff, sizeOfBuff, i))
+            return false;
+        break;
+
+
+
+
+
+
+
 //dynamic size packages
     case PackageWrapper::ePackageType::ResponseUserDetails:
     case PackageWrapper::ePackageType::ResponseAutocomplete:
@@ -250,13 +282,13 @@ void InterfaceTcpChannel::handleSessionDetailRequestPackage(int i)
     PackageWrapper response;
     response.package = new PackageSessionDetailResponse(certificate);
 
-    //if (!sendPackage(&response, i))
-    //{
-    //    delete response.package;
-    //    return;
-    //}
+    if (!sendPackage(&response, i))
+    {
+        delete response.package;
+        return;
+    }
 
-    //delete response.package;
+    delete response.package;
 }
 
 void InterfaceTcpChannel::processPacketExchange(int i)
@@ -350,7 +382,7 @@ void InterfaceTcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &lis
         }
     }
 }
-
+//always copy content of buf!!! splitter already delete received Data!
 PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
 {
     if (buf == nullptr)
@@ -363,6 +395,22 @@ PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
 
         switch (pw->type)//change to if -> performance
         {
+        case PackageWrapper::ePackageType::SessionDetailRequest:
+            pw->package = new PackageSessionDetailRequest();
+            break;
+
+
+
+
+
+
+
+
+
+
+
+
+
         case PackageWrapper::ePackageType::RequestAutocomplete:
             pw->package = new PackageRequestAutocomplete(buf);
             break;

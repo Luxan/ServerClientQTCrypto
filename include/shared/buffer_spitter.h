@@ -17,7 +17,7 @@ public:
     \pre
     \post
     */
-    bufferSpitter(uint8_t *_buff, uint8_t _length);
+    bufferSpitter(uint8_t *_buff, uint16_t _length);
 
     /**
     \param

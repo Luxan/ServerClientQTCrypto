@@ -198,6 +198,15 @@ private:
     \pre
     \post
     */
+    bool sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff, int i);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
     bool sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type, int i);
     /**
     \param

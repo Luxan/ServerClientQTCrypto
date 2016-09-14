@@ -53,7 +53,7 @@ struct PackageSessionDetailResponse : PackageDynamicSize
 {
     Certificate * certificate;
 
-    size_t size()const
+    virtual size_t size()const
     {
         return key->getKeyLength() + certificate->getLength();
     }
