@@ -63,13 +63,19 @@ file_name = download(download_path, url)
 #unzip file and install to specified path
 with open(download_path + file_name, 'rwb') as f:
   z = zipfile.ZipFile(f)
+    ret = z.testzip()
+
+    if ret is not None:
+        print "Bad archive file: %s" % ret
+        sys.exit(1)
+  
   for name in z.namelist():
       outfile = open(name, 'wb')
       outfile.write(install_path + z.read(name))
       outfile.close()
 #veryfy that all files are correct
 corrupted_file = ""
-is_corrupted = false
+is_corrupted = False
 try:
   with open(install_path + veryfication_file_name, "r") as f:
     for line in f:
@@ -80,12 +86,12 @@ try:
 except IOError:
     # verification file do not exist
     if corrupted_file == "":
-      print "Error: verification file do not exist"
+      print "Error: verification file does not exist"
       is_corrupted = true
     else:
       print "Error: " + corrupted_file + " is corrupted!"
       is_corrupted = true
 
 if is_corrupted:
-  sys.exit()
+  sys.exit(1)
 
