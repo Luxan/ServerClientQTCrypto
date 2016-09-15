@@ -6,14 +6,24 @@
 #include <list>
 #include "id_client.h"
 #include "id_room.h"
-
+/*!
+\class UserRelations
+\brief class that contains User's relations to other Users.
+*/
 class UserRelations
 {
-    std::list<ClientID> friend_list;
-    std::list<ClientID> blocked_user_list;
-    std::list<ClientID> presence_in_blocked_list;
-    std::list<RoomID> presence_in_rooms;
+    std::list<ClientID> friend_list; /*! User's friends list */
+    std::list<ClientID> blocked_user_list; /*! User's blocked list. Make impossible to receive messages from Users in this list. */
+    std::list<ClientID> presence_in_blocked_list; /*! User's presense in blocked list. Make impossible to send to Users in this list*/
+    std::list<RoomID> presence_in_rooms; /*! User's presense in room list. List of rooms in which User was participated. */
 
+    /*!
+    \brief constructor to initialize UserRelations class
+    \param friendList - list of friends
+    \param blockedUserList - list of blocked users
+    \param presenseInBlockedList - list of users which blocked this user
+    \param presenseInRooms - list of rooms
+    */
     UserRelations(QString friendList,
                   QString blockedUserList,
                   QString presenseInBlockedList,
@@ -40,7 +50,9 @@ class UserRelations
             this->presence_in_rooms.push_back(RoomID(s));
         }
     }
-
+    /*! 
+    \brief default contructor that creates empty lists.
+    */
     UserRelations()
     {}
 };
