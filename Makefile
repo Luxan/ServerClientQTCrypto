@@ -20,7 +20,7 @@ crypto++clean:
 	cd lib/crypto++/src; make clean
 	$(RM) -rf lib/crypto++/installed
 is_crypto++_installed:
-	test -d lib/crypto++/installed && echo "Library crypto++ is already installed." || $(MAKE) crypto++
+	test -f lib/crypto++/installed/lib/libcryptopp.a && echo "Library crypto++ is already installed." || $(MAKE) crypto++
 #################[Client]#################
 client:	is_lib_installed make_client clean_temp_client test_client
 rebuild_client: clean_client client

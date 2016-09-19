@@ -8,12 +8,14 @@
 #include <cryptopp/rsa.h>
 #include <cryptopp/md5.h>
 
+#define DEFINE_OID2(value, name)	inline CryptoPP::OID name() {return value;}
+
 // a smart pointer for PK_Verifier so less cleanup is needed if something throws
 typedef std::auto_ptr<CryptoPP::PK_Verifier> PK_VerifierPtr;
 
 // Signature Algorithm OIDs commonly used in certs that have RSA keys
-DEFINE_OID(CryptoPP::ASN1::pkcs_1()+4, md5withRSAEncryption);
-DEFINE_OID(CryptoPP::ASN1::pkcs_1()+5, sha1withRSAEncryption);
+DEFINE_OID2(CryptoPP::ASN1::pkcs_1()+4, md5withRSAEncryption);
+DEFINE_OID2(CryptoPP::ASN1::pkcs_1()+5, sha1withRSAEncryption);
 
 class Certificate
 {
