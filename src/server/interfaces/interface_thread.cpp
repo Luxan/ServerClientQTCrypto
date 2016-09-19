@@ -1,31 +1,35 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/interface_thread.h"
+#include "../../include/server/interfaces/interface_thread.h"
 
-interfaceThread::interfaceThread(ThreadConfiguration &conf):
+InterfaceThread::InterfaceThread(ThreadConfiguration &conf):
     configuration(conf)
 {
     doTerminate = false;
-    isTerminated = false;
-    doSleep = true;
-
-    th = std::thread(&interfaceThread::loop, this);
+    isTerminated = true;
+    doSleep = false;
 }
 
-interfaceThread::~interfaceThread()
+InterfaceThread::~InterfaceThread()
+{
+    terminate();
+}
+
+void InterfaceThread::terminate()
 {
     doTerminate = true;
+
+//    if (th.joinable())
+//        th.join();
 
     while (!isTerminated)
     {
         std::this_thread::yield();
     }
-
-    th.join();
 }
 
-void interfaceThread::loop()
+void InterfaceThread::loop()
 {
     id = std::this_thread::get_id();
 
@@ -54,21 +58,35 @@ void interfaceThread::loop()
     isTerminated = true;
 }
 
-bool interfaceThread::isRunning() const
+bool InterfaceThread::isRunning() const
 {
     return !doSleep.load() && !isTerminated.load();
 }
 
-void interfaceThread::sleepThread()
+void InterfaceThread::sleepThread()
 {
     doSleep = true;
 }
 
-void interfaceThread::unSleepThread()
+void InterfaceThread::startMainLoop()
+{
+    if(!isTerminated)
+    {
+        AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorThread, "Thread is not yet stopped to start again!"));
+        return;
+    }
+    doTerminate = false;
+    isTerminated = false;
+    doSleep = true;
+
+    th = std::thread(&InterfaceThread::loop, this);
+}
+
+void InterfaceThread::unSleepThread()
 {
     doSleep = false;
 }
-const std::thread::id interfaceThread::getThreadID() const
+const std::thread::id InterfaceThread::getThreadID() const
 {
     return id;
 }

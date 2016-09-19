@@ -49,7 +49,7 @@ public:
         return password->operator ==(*passwordToCheck);
     }
 
-    UserCredentials(std::string login,
+    UserCredentials(std::string &login,
                     Hash * password,
                     uint32_t password_hash_iteration_count,
                     uint64_t user_salt,

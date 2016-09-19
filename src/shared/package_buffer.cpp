@@ -1,8 +1,8 @@
 #include "../../include/shared/package_buffer.h"
 
-size_t PackageBuffer::getLength() const
+BUFF_SIZE PackageBuffer::getLength() const
 {
-	return (size_t)(length - offset);
+    return length - offset;
 }
 
 uint8_t * PackageBuffer::getPointerToBuffer() const
@@ -10,7 +10,7 @@ uint8_t * PackageBuffer::getPointerToBuffer() const
 	return buff + offset;
 }
 
-void PackageBuffer::fillBuffer(uint8_t *_buff, size_t size)
+void PackageBuffer::fillBuffer(uint8_t *_buff, BUFF_SIZE size)
 {
 	if (size <= getLength())
 	{
@@ -27,7 +27,7 @@ void PackageBuffer::fillBuffer(uint8_t *_buff, size_t size)
 	}
 }
 
-PackageBuffer::PackageBuffer(const uint8_t *_buff, uint8_t _length) :
+PackageBuffer::PackageBuffer(const uint8_t *_buff, BUFF_SIZE _length) :
 	Buffer(nullptr, _length)
 {
 	buff = new uint8_t[_length + 1];
@@ -39,7 +39,7 @@ PackageBuffer::~PackageBuffer()
 {
 }
 
-void PackageBuffer::concatBuff(uint8_t *_buff, uint8_t _length)
+void PackageBuffer::concatBuff(uint8_t *_buff, BUFF_SIZE _length)
 {
 	if (_length == 0)
 		return;

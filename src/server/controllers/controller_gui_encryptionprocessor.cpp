@@ -18,7 +18,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartEncryptionProcessor:
-            SLog::logInfo() << "Database Started.";
+            SLog::logInfo() << "EncryptionProcessor Started.";
             mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -28,7 +28,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepEncryptionProcessor:
-            SLog::logInfo() << "Database Stopped.";
+            SLog::logInfo() << "EncryptionProcessor Stopped.";
             mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -38,7 +38,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorEncryptionProcessor:
-            SLog::logError() << "Database Error: " + ((ImpulseError *)i)->getError();
+            SLog::logError() << "EncryptionProcessor Error: " + ((ImpulseError *)i)->getError();
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
@@ -104,4 +104,14 @@ void Controller_GUI_EncryptionProcessor::CheckModule2Events(void *module1, void 
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_GUI_EncryptionProcessor::setMainWindowObj(MainWindow * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_GUI_EncryptionProcessor::setEncryptionProcessorObj(EncryptionProcessor * module)
+{
+    setModule2Obj(module);
 }

@@ -20,7 +20,7 @@ void Controller_TCPChannel_EncryptionProcessor::CheckModule1Events(void *module1
     {
         switch (i->getEvent())
         {
-        case eSystemEvent::Undefined:
+        case eSystemEvent::PackageToSend:
             p = ((ImpulsePackage *)i)->getData();
             tcpChannel->prepareToSend(p);
             deleteAndNext = true;
@@ -49,7 +49,7 @@ void Controller_TCPChannel_EncryptionProcessor::CheckModule1Events(void *module1
 
 void Controller_TCPChannel_EncryptionProcessor::CheckModule2Events(void *module1, void * module2)
 {
-    DecryptionProcessor *decryptionProcessor = (DecryptionProcessor *)module1;
+    //DecryptionProcessor *decryptionProcessor = (DecryptionProcessor *)module1;
     InterfaceTcpChannel *eventGiver = (InterfaceTcpChannel *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
@@ -80,4 +80,14 @@ void Controller_TCPChannel_EncryptionProcessor::CheckModule2Events(void *module1
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_TCPChannel_EncryptionProcessor::setTCPChannelObj(InterfaceTcpChannel * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_TCPChannel_EncryptionProcessor::setEncryptionProcessorObj(EncryptionProcessor * module)
+{
+    setModule2Obj(module);
 }

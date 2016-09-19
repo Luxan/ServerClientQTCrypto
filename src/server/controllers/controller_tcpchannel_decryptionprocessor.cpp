@@ -81,3 +81,13 @@ void Controller_TCPChannel_DecryptionProcessor::CheckModule2Events(void *module1
         }
     }
 }
+
+void Controller_TCPChannel_DecryptionProcessor::setTCPChannelObj(InterfaceTcpChannel * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_TCPChannel_DecryptionProcessor::setDecryptionProcessorObj(DecryptionProcessor * module)
+{
+    setModule2Obj(module);
+}

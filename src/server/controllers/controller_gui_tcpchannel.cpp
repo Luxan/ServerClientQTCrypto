@@ -10,7 +10,7 @@
 void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2)
 {
     MainWindow *mainWindow = (MainWindow *)module1;
-    InterfaceTcpChannel *eventGiver = (TcpChannel *)module2;
+    InterfaceTcpChannel *eventGiver = (InterfaceTcpChannel *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
@@ -66,7 +66,7 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
 
 void Controller_GUI_tcpChannel::CheckModule2Events(void *module1, void *module2)
 {
-    TcpChannel *tcpChannel = (TcpChannel *)module1;
+    InterfaceTcpChannel *tcpChannel = (InterfaceTcpChannel *)module1;
     MainWindow *eventGiver = (MainWindow *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
@@ -105,4 +105,14 @@ void Controller_GUI_tcpChannel::CheckModule2Events(void *module1, void *module2)
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_GUI_tcpChannel::setMainWindowObj(MainWindow * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_GUI_tcpChannel::setTCPChannelObj(InterfaceTcpChannel * module)
+{
+    setModule2Obj(module);
 }

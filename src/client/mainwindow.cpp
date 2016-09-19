@@ -1,7 +1,7 @@
 #include "ui_mainwindow.h"
 #include <QTimer>
 #include "../../include/client/mainwindow.h"
-#include "../../include/shared/package_instant_replay.h"
+#include "../../include/shared/packages/package_user_to_user.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -49,13 +49,13 @@ void MainWindow::LoggedInAs(ClientID id)
 void MainWindow::getUserDetail(ClientID id)
 {
 
-    PackageWrapper * pw = new PackageWrapper();
+    //PackageWrapper * pw = new PackageWrapper();
 
-    pw->type = PackageWrapper::ePackageType::Ping;
-    pw->package = new PackagePing();
-    tcpchannel->sendPackage(pw);
-    delete pw->package;
-    delete pw;
+    //pw->type = PackageWrapper::ePackageType::Ping;
+    //pw->package = new PackagePing();
+   // tcpchannel->sendPackage(pw);
+    //delete pw->package;
+    //delete pw;
 }
 
 void MainWindow::checkFriendsStatus()
@@ -75,12 +75,12 @@ void MainWindow::checkFriendsStatus()
 
 void MainWindow::sendMyStatusToServer()
 {
-    PackageWrapper * pw = new PackageWrapper();
-    pw->type = PackageWrapper::ePackageType::Ping;
-    pw->package = new PackagePing(activeUser->getStatus());
+    //PackageWrapper * pw = new PackageWrapper();
+    //pw->type = PackageWrapper::ePackageType::Ping;
+    //pw->package = new PackagePing(activeUser->getStatus());
 
-    tcpchannel->sendPackage(pw);
+    //tcpchannel->sendPackage(pw);
 
-    delete pw->package;
-    delete pw;
+    //delete pw->package;
+    //delete pw;
 }

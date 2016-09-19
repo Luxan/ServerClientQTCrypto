@@ -93,7 +93,7 @@ struct PackageDynamicSize : Package
 	\pre
 	\post
 	*/
-    virtual size_t size()const = 0;
+    virtual BUFF_SIZE size()const = 0;
 
 	/**
 	\param
@@ -103,13 +103,13 @@ struct PackageDynamicSize : Package
 	\pre
 	\post
 	*/
-    virtual void checkIfEnoughSize(Package *p, size_t size)const
+    virtual void checkIfEnoughSize(Package *p, BUFF_SIZE size)const
     {
-        thowNotEnoughSizeException(size, ((PackageDynamicSize*)p)->minSize());
+        thowNotEnoughSizeException(size, ((PackageDynamicSize*)p)->size());
     }
 };
 
-struct EncodedPackage : Package, PackageDynamicSize
+struct EncodedPackage : PackageDynamicSize
 {
     PackageBuffer * buff;
 
@@ -121,19 +121,7 @@ struct EncodedPackage : Package, PackageDynamicSize
     \pre
     \post
     */
-    virtual size_t minSize()const
-    {
-        return 2;
-    }
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    virtual size_t realSize()const
+    virtual BUFF_SIZE size()const
     {
         return buff->getLength();
     }

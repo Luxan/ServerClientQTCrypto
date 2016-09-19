@@ -98,10 +98,10 @@ void LoginWindow::on_loginButton_clicked()
     PackageWrapper wr;
     try
     {
-        wr.package = new PackageRequestLogin(login.toStdString(), password.toStdString());
-        wr.type = PackageWrapper::ePackageType::RequestLogin;
-        tcpchannel->sendPackage(&wr);
-        delete wr.package;
+        //wr.package = new PackageRequestLogin(login.toStdString(), password.toStdString());
+        //wr.type = PackageWrapper::ePackageType::RequestLogin;
+        //tcpchannel->sendPackage(&wr);
+        //delete wr.package;
     }
     catch (eError e)
     {

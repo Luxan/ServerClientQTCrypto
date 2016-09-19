@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include "../shared/log.h"
+#include "../log.h"
 
 class CryptographyBase
 {

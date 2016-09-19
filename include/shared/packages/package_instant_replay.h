@@ -21,8 +21,13 @@ struct PackagePing : Package
         return sizeof(status) + sizeof(uint8_t) + login->getLength() +  sizeof(uint8_t) + saltedPassword->getLength();
     }
     PackagePing(std::string login, Hash * saltedPassword, Status status):
-        login(login.c_str(), login.length()), saltedPassword(saltedPassword), status(status)
+        login(new PackageBuffer((const uint8_t *)login.c_str(), login.length())), saltedPassword(saltedPassword), status(status)
     {}
+
+    virtual ~PackagePing()
+    {
+        delete login;
+    }
 };
 
 /**
@@ -53,11 +58,10 @@ struct PackageSessionDetailResponse : PackageDynamicSize
 {
     Certificate * certificate;
 
-    virtual size_t size()const
+    virtual BUFF_SIZE size()const
     {
-        return key->getKeyLength() + certificate->getLength();
+        return certificate->getBuffer()->getLength() + sizeof(BUFF_SIZE);
     }
-
     PackageSessionDetailResponse(PackageBuffer *buf)
     {
         uint8_t * b = new uint8_t[buf->getLength()];
@@ -80,7 +84,7 @@ struct PackageLoginCheck : Package
 \struct
 \brief
 */
-struct PackageRequestLogin : PackageInstantResponse, PackageDynamicSize
+struct PackageRequestLogin : PackageDynamicSize
 {
     uint8_t loginSize;
     uint8_t passwordSize;

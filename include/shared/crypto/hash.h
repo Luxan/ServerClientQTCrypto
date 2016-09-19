@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdint.h>
-
+#include "../buffer.h"
 /**
 \class
 \brief
@@ -12,9 +12,9 @@
 class Hash
 {
     uint8_t * buff;
-    const size_t hash_length;
+    const BUFF_SIZE hash_length;
 public:
-    size_t getLength() const
+    BUFF_SIZE getLength() const
     {
         return hash_length;
     }

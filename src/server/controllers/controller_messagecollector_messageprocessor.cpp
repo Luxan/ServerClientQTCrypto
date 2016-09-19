@@ -89,3 +89,13 @@ void Controller_MessageCollector_MessageProcessor::CheckModule2Events(void *modu
         }
     }
 }
+
+void Controller_MessageCollector_MessageProcessor::setMessageCollectorObj(MessageCollector * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_MessageCollector_MessageProcessor::setMessageProcessorObj(MessageProcessor * module)
+{
+    setModule2Obj(module);
+}

@@ -23,7 +23,7 @@ private:
     /**
     \see interface_thread.h
     */
-    void dowork();
+    virtual void dowork();
 public:
     /**
     \threadsafe using interfaceThread and std::atomic_bool stopExecuted

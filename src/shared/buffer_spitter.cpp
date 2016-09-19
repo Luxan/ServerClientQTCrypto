@@ -1,11 +1,11 @@
 #include "../../include/shared/buffer_spitter.h"
 
 
-bufferSpitter::bufferSpitter(uint8_t *_buff, uint16_t _length):
+bufferSpitter::bufferSpitter(uint8_t *_buff, BUFF_SIZE _length):
     Buffer(_buff, _length)
 {}
 
-void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, size_t &incompletePackageFullLength)
+void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, BUFF_SIZE &incompletePackageFullLength)
 {
     //check if temporary package exist
     bool isTempPackageExist = incompletePackageFullLength > 0;
@@ -45,9 +45,9 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
         else
         {
             //extract full package length
-            uint16_t packLength = *((uint16_t*)buff);
-            ((uint16_t*)buff)++;
-            length -= sizeof(uint16_t);
+            BUFF_SIZE packLength = *((BUFF_SIZE*)buff);
+            buff += sizeof(BUFF_SIZE);
+            length -= sizeof(BUFF_SIZE);
             //if full package length equals zero then skip that package
             if (packLength == 0)
                 continue;

@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     Buffer b(thawtecert, sizeof(thawtecert));
     CertificateAuthority ca(&b);
 
-    LoginWindow lw(globalConfiguration.minLoginCharacters, globalConfiguration.minPasswordCharacters, &ca);
+    LoginWindow lw(globalConfiguration.minLoginCharacters, globalConfiguration.minPasswordCharacters);
     MainWindow mw;
     TCPChannel tcpChannel(globalConfiguration.serverIP, globalConfiguration.serverPort, &ca);
 

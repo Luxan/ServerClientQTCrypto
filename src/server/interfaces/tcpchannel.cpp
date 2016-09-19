@@ -42,12 +42,6 @@ void InterfaceTcpChannel::prepareToSend(PackageWrapper * pw)
 
 }
 
-void InterfaceTcpChannel::setCrypto(Hasher *hasher, Cipher * cipher)
-{
-    this->hasher = hasher;
-    this->cipher = cipher;
-}
-
 void InterfaceTcpChannel::RequestStart()
 {
     if (isRunning())
@@ -140,7 +134,7 @@ bool InterfaceTcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType t
 
 bool InterfaceTcpChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff, int i)
 {
-    if (!sendBuffer(&size, sizeof(size), i))
+    if (!sendBuffer((uint8_t *)&size, sizeof(size), i))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type), i))
@@ -177,7 +171,7 @@ bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
     {
     case PackageWrapper::ePackageType::SessionDetailResponse:
         ssdr = (PackageSessionDetailResponse*) response->package;
-        wholeBuffSize = sizeof(type) + sizeof(uint16_t) + ssdr->size();
+        wholeBuffSize = sizeof(response->type) + sizeof(uint16_t) + ssdr->size();
         buff = ssdr->certificate->getBuffer()->getPointerToBuffer();
         sizeOfBuff = ssdr->certificate->getBuffer()->getLength();
         if (!sendPackageDynamicMessage(response->type, wholeBuffSize, buff, sizeOfBuff, i))
@@ -185,11 +179,7 @@ bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
         break;
 
 
-
-
-
-
-
+        /*
 //dynamic size packages
     case PackageWrapper::ePackageType::ResponseUserDetails:
     case PackageWrapper::ePackageType::ResponseAutocomplete:
@@ -232,49 +222,50 @@ bool InterfaceTcpChannel::sendPackage(PackageWrapper *response, int i)
     case PackageWrapper::ePackageType::SetUserInBlackList:
         SLog::logError() << "Incorrect package to send!";
         break;
+        */
     }
     return true;
 }
 
 void InterfaceTcpChannel::handleLoginPackage(Package *p, int i)
 {
-    std::string login = (const char *)((PackageRequestLogin *)p)->login;
-    std::string password = (const char *)((PackageRequestLogin *)p)->password;
+//    std::string login = (const char *)((PackageRequestLogin *)p)->login;
+//    std::string password = (const char *)((PackageRequestLogin *)p)->password;
 
-    std::shared_ptr<User> u = DataBase::GetDataBase().getUser(login, password);
+//    std::shared_ptr<User> u = DataBase::GetDataBase().getUser(login, password);
 
-    PackageWrapper response;
+//    PackageWrapper response;
 
-    if (u)
-    {
-        connectedClients[i].connectUser(u);
+//    if (u)
+//    {
+//        connectedClients[i].connectUser(u);
 
-        response.package = new PackageResponseLogin(u->getID());
-        response.type = PackageWrapper::ePackageType::ResponseLogin;
+//        response.package = new PackageResponseLogin(u->getID());
+//        response.type = PackageWrapper::ePackageType::ResponseLogin;
 
-        if (!sendPackage(&response, i))
-        {
-            delete response.package;
-            return;
-        }
+//        if (!sendPackage(&response, i))
+//        {
+//            delete response.package;
+//            return;
+//        }
 
-        delete response.package;
+//        delete response.package;
 
-        //SendLoginPackageSequense(u);
-    }
-    else
-    {
-        response.package = new PackageError(eError::WrongLoginOrPassword);
-        response.type = PackageWrapper::ePackageType::Error;
+//        //SendLoginPackageSequense(u);
+//    }
+//    else
+//    {
+//        response.package = new PackageError(eError::WrongLoginOrPassword);
+//        response.type = PackageWrapper::ePackageType::Error;
 
-        if (!sendPackage(&response, i))
-        {
-            delete response.package;
-            return;
-        }
+//        if (!sendPackage(&response, i))
+//        {
+//            delete response.package;
+//            return;
+//        }
 
-        delete response.package;
-    }
+//        delete response.package;
+//    }
 }
 
 void InterfaceTcpChannel::handleSessionDetailRequestPackage(int i)
@@ -296,7 +287,7 @@ void InterfaceTcpChannel::processPacketExchange(int i)
     while (1)
     {
         ssize_t size;
-        char buf[512];
+        uint8_t buf[512];
 
         if(!readBuffer(buf, sizeof buf, size, i))
         {
@@ -399,18 +390,7 @@ PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
             pw->package = new PackageSessionDetailRequest();
             break;
 
-
-
-
-
-
-
-
-
-
-
-
-
+            /*
         case PackageWrapper::ePackageType::RequestAutocomplete:
             pw->package = new PackageRequestAutocomplete(buf);
             break;
@@ -494,6 +474,7 @@ PackageWrapper *InterfaceTcpChannel::CreatePackage(PackageBuffer *buf)
             memcpy(pw->package, buf->getPointerToBuffer(), sizeof(PackageError));
             delete buf;
             break;
+            */
         default:
             throw ("Undefined package type!");
         }

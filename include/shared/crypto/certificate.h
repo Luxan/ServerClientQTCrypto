@@ -1,6 +1,12 @@
 #pragma once
 
 #include "../buffer.h"
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/oids.h>
+#include <cryptopp/queue.h>
+#include <cryptopp/asn.h>
+#include <cryptopp/rsa.h>
+#include <cryptopp/md5.h>
 
 // a smart pointer for PK_Verifier so less cleanup is needed if something throws
 typedef std::auto_ptr<CryptoPP::PK_Verifier> PK_VerifierPtr;
@@ -32,46 +38,46 @@ class CertificateAuthority
 {
     Buffer * ca;
     Certificate * certificate;
-    ByteQueue caBQ, signedServerKey;
+    CryptoPP::ByteQueue caBQ, signedServerKey;
     void GetPublicKeyFromCert(CryptoPP::BufferedTransformation & certin, CryptoPP::BufferedTransformation & keyout)
     {
-           BERSequenceDecoder x509Cert(certin);
-           BERSequenceDecoder tbsCert(x509Cert);
+           CryptoPP::BERSequenceDecoder x509Cert(certin);
+           CryptoPP::BERSequenceDecoder tbsCert(x509Cert);
 
            // ASN.1 from RFC 3280
            // TBSCertificate  ::=  SEQUENCE  {
            // version         [0]  EXPLICIT Version DEFAULT v1,
 
            // consume the context tag on the version
-           BERGeneralDecoder context(tbsCert,0xa0);
-           word32 ver;
+           CryptoPP::BERGeneralDecoder context(tbsCert,0xa0);
+           CryptoPP::word32 ver;
 
            // only want a v3 cert
-           BERDecodeUnsigned<word32>(context,ver,INTEGER,2,2);
+           CryptoPP::BERDecodeUnsigned<CryptoPP::word32>(context,ver,CryptoPP::INTEGER,2,2);
 
            // serialNumber         CertificateSerialNumber,
-           Integer serial;
+           CryptoPP::Integer serial;
            serial.BERDecode(tbsCert);
 
            // signature            AlgorithmIdentifier,
-           BERSequenceDecoder signature(tbsCert);
+           CryptoPP::BERSequenceDecoder signature(tbsCert);
            signature.SkipAll();
 
            // issuer               Name,
-           BERSequenceDecoder issuerName(tbsCert);
+           CryptoPP::BERSequenceDecoder issuerName(tbsCert);
            issuerName.SkipAll();
 
            // validity             Validity,
-           BERSequenceDecoder validity(tbsCert);
+           CryptoPP::BERSequenceDecoder validity(tbsCert);
            validity.SkipAll();
 
            // subject              Name,
-           BERSequenceDecoder subjectName(tbsCert);
+           CryptoPP::BERSequenceDecoder subjectName(tbsCert);
            subjectName.SkipAll();
 
            // subjectPublicKeyInfo SubjectPublicKeyInfo,
-           BERSequenceDecoder spki(tbsCert);
-           DERSequenceEncoder spkiEncoder(keyout);
+           CryptoPP::BERSequenceDecoder spki(tbsCert);
+           CryptoPP::DERSequenceEncoder spkiEncoder(keyout);
 
            spki.CopyTo(spkiEncoder);
            spkiEncoder.MessageEnd();
@@ -104,8 +110,8 @@ public:
 
     bool authorize(Certificate * cert)
     {
-        ByteQueue servCertBQ, encodedServCertBQ, serverKey;
-        SecByteBlock certSignature;
+        CryptoPP::ByteQueue servCertBQ, encodedServCertBQ, serverKey;
+        CryptoPP::SecByteBlock certSignature;
 
         servCertBQ.Put(cert->getBuffer()->getPointerToBuffer(), cert->getBuffer()->getLength());
 
@@ -120,23 +126,23 @@ public:
         }
         //Public key read from serv CA certificate.
 
-        OID sigAlgOID;
+        CryptoPP::OID sigAlgOID;
 
         try
         {
                // first, extract the data that the signature covers
-               BERSequenceDecoder x509Cert(servCertBQ);
-               BERSequenceDecoder servCert(x509Cert);
-               DERSequenceEncoder encodedServCert(encodedServCertBQ);
+               CryptoPP::BERSequenceDecoder x509Cert(servCertBQ);
+               CryptoPP::BERSequenceDecoder servCert(x509Cert);
+               CryptoPP::DERSequenceEncoder encodedServCert(encodedServCertBQ);
                servCert.TransferAllTo(encodedServCert);
                encodedServCert.MessageEnd();
                // find the algorithm used to sign the data
-               BERSequenceDecoder sigAlg(x509Cert);
+               CryptoPP::BERSequenceDecoder sigAlg(x509Cert);
                sigAlgOID.BERDecode(sigAlg);
                sigAlg.SkipAll();
                // extract the actual signature
-               uint8_t unused = 0;
-               BERDecodeBitString(x509Cert, certSignature, unused);
+               uint32_t unused = 0;
+               CryptoPP::BERDecodeBitString(x509Cert, certSignature, unused);
                //cout << "Signature decoded. " << unused << " bits unused in the encoding." << endl;
                x509Cert.SkipAll();
         }
@@ -148,12 +154,12 @@ public:
         PK_VerifierPtr verifier;
         if(sigAlgOID == md5withRSAEncryption())
         {
-               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::MD5>::Verifier(serverKey));
+               verifier = PK_VerifierPtr(new CryptoPP::RSASS<CryptoPP::PKCS1v15,CryptoPP::MD5>::Verifier(serverKey));
                //cout << "Signature algorithm is RSA with MD5 hash." << endl;
         }
         else if(sigAlgOID == sha1withRSAEncryption())
         {
-               verifier = PK_VerifierPtr(new RSASS<PKCS1v15,CryptoPP::SHA1>::Verifier(serverKey));
+               verifier = PK_VerifierPtr(new CryptoPP::RSASS<CryptoPP::PKCS1v15,CryptoPP::SHA1>::Verifier(serverKey));
                //cout << "Signature algorithm is RSA with SHA1 hash." << endl;
         }
         else

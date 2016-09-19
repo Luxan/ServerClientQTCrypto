@@ -18,7 +18,7 @@ public:
     \param _buff - pointer to initial huge data buffer 
     \param _length - length of initial huge data buffer 
     */
-    bufferSpitter(uint8_t *_buff, uint16_t _length);
+    bufferSpitter(uint8_t *_buff, BUFF_SIZE _length);
 
     /*!
     \param &list - reference to list of PackageBuffer where will be stored splitted packages
@@ -27,5 +27,5 @@ public:
     \brief splits initial huge buffer data into smaller package buffers.
     \pre initial huge data buffer must be present!
     */
-    void splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, size_t &incompletePackageFullLength);
+    void splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, BUFF_SIZE &incompletePackageFullLength);
 };

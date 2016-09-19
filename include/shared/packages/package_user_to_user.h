@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include "../shared/package.h"
-#include "../shared/buffer.h"
-#include "../shared/status.h"
-#include "../shared/user.h"
+#include "../../shared/packages/package.h"
+#include "../../shared/buffer.h"
+#include "../../shared/status.h"
+#include "../../shared/user.h"
 
 /**
 \struct

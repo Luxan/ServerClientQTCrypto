@@ -1,4 +1,4 @@
-#include "../../include/server/interface_communication.h"
+#include "../../include/server/interfaces/interface_communication.h"
 
 void interfaceCommunication::AddImpulseToQueue(Impulse *i)
 {
@@ -8,13 +8,13 @@ void interfaceCommunication::AddImpulseToQueue(Impulse *i)
 
 void interfaceCommunication::CheckAllEvents()
 {
-    for (interfaceCommunicationController *c : vControllers)
+    for (InterfaceCommunicationController *c : vControllers)
     {
         c->CheckEvents(this);
     }
 }
 
-void interfaceCommunication::AddEventController(interfaceCommunicationController *c)
+void interfaceCommunication::AddEventController(InterfaceCommunicationController *c)
 {
     vControllers.push_back(c);
 }
@@ -120,4 +120,5 @@ interfaceCommunication::~interfaceCommunication()
     {
         delete i;
     }
+    vImpulses.clear();
 }

@@ -123,3 +123,13 @@ void Controller_GUI_Database::CheckModule2Events(void *module1, void * module2)
         }
     }
 }
+
+void Controller_GUI_Database::setMainWindowObj(MainWindow * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_GUI_Database::setDataBaseObj(DataBase * module)
+{
+    setModule2Obj(module);
+}

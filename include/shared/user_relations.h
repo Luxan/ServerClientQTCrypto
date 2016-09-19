@@ -13,7 +13,7 @@ class UserRelations
     std::list<ClientID> blocked_user_list;
     std::list<ClientID> presence_in_blocked_list;
     std::list<RoomID> presence_in_rooms;
-
+public:
     UserRelations(QString friendList,
                   QString blockedUserList,
                   QString presenseInBlockedList,

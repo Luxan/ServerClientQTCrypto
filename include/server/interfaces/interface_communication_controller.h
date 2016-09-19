@@ -1,8 +1,7 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef COMMUNICATIONCONTROLLER_H
-#define COMMUNICATIONCONTROLLER_H
+#pragma once
 
 #include <list>
 
@@ -10,7 +9,7 @@
 \class
 \brief
 */
-class interfaceCommunicationController
+class InterfaceCommunicationController
 {
 private:
     std::list<void *> module1;
@@ -34,16 +33,6 @@ protected:
     \post
     */
     virtual void CheckModule2Events(void * module1, void * module2) = 0;
-public:
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void CheckEvents(void * module);
     /**
     \param
     \return
@@ -62,6 +51,23 @@ public:
     \post
     */
     void setModule2Obj(void *_m2);
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void CheckEvents(void *module);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void detach(void *module);
 };
-
-#endif // COMMUNICATIONCONTROLLER_H

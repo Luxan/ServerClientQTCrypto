@@ -56,7 +56,7 @@ void Controller_MessageProcessor_Database::CheckModule2Events(void *module1, voi
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
-    Message *m;
+    //Message *m;
     std::shared_ptr<User> u;
     ClientID id;
     UserCredentials * c;
@@ -78,12 +78,12 @@ void Controller_MessageProcessor_Database::CheckModule2Events(void *module1, voi
             break;
         case eSystemEvent::DatabaseGetUserByID:
             id = ((ImpulseUserID *)i)->getData();
-            database->getUser(id);
+            database->getUserViaID(id);
             deleteAndNext = true;
             break;
         case eSystemEvent::DatabaseDeleteUser:
-            m = ((ImpulseMessage *)i)->getData();
-            database->();
+            id = ((ImpulseUserID *)i)->getData();
+            database->removeUser(id);
             deleteAndNext = true;
             break;
         case eSystemEvent::DatabaseGetMissingMessages:
@@ -111,4 +111,14 @@ void Controller_MessageProcessor_Database::CheckModule2Events(void *module1, voi
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_MessageProcessor_Database::setMessageProcessorObj(MessageProcessor * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_MessageProcessor_Database::setDataBaseObj(DataBase * module)
+{
+    setModule2Obj(module);
 }

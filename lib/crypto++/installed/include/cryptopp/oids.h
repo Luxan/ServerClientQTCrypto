@@ -15,7 +15,7 @@ NAMESPACE_BEGIN(CryptoPP)
 
 NAMESPACE_BEGIN(ASN1)
 
-#define DEFINE_OID(value, name)	inline OID name() {return value;}
+#define DEFINE_OID(value, name)	inline CryptoPP::OID name() {return value;}
 
 DEFINE_OID(1, iso)
 	DEFINE_OID(iso()+2, member_body)

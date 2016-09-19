@@ -85,6 +85,25 @@ protected:
     */
     virtual void dowork() = 0;
 public:
+
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void startMainLoop();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void terminate();
     /**
     \param
     \return

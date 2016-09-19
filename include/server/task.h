@@ -1,12 +1,11 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef TASK_H
-#define TASK_H
+#pragma once
 
 #include <mutex>
 
-#include "../shared/message.h"
+#include "../shared/messages/message.h"
 
 /**
 \struct
@@ -39,7 +38,7 @@ struct MessageContext : Context
 */
 struct CryptoContext : Context
 {
-    PackageBuffer * m;
+    PackageWrapper * m;
 
     /**
     \brief
@@ -76,6 +75,14 @@ public:
     \post
     */
     virtual void execute() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
     virtual ~Task();
 };
 
@@ -101,7 +108,7 @@ public:
     /**
     \see task.h
     */
-    void execute();
+    virtual void execute();
 };
 
 
@@ -127,6 +134,5 @@ public:
     /**
     \see task.h
     */
-    void execute();
+    virtual void execute();
 };
-#endif // TASK_H

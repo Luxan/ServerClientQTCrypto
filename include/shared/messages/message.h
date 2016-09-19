@@ -8,11 +8,11 @@
 #include <list>
 #include <time.h>
 
-#include "../shared/package.h"
-#include "../shared/id_client.h"
-#include "../shared/id_message.h"
-#include "../shared/id_room.h"
-#include "../shared/log.h"
+#include "../packages/package.h"
+#include "../id_client.h"
+#include "../id_message.h"
+#include "../id_room.h"
+#include "../log.h"
 
 /**
 \class

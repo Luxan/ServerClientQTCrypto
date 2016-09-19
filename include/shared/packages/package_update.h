@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include "../shared/package.h"
-#include "../shared/package_buffer.h"
-#include "../shared/id_client.h"
-#include "../shared/user.h"
+#include "../../shared/packages/package.h"
+#include "../../shared/package_buffer.h"
+#include "../../shared/id_client.h"
+#include "../../shared/user.h"
 
 /**
 \struct
@@ -129,12 +129,12 @@ struct PackageResponseUserDetails : PackageUpdate
     PackageResponseUserDetails(std::shared_ptr<User> u):
         PackageUpdate(new PackageBuffer((uint8_t*)nullptr, 0))
     {
-        uint8_t size = u->getName().length();
+        //BUFF_SIZE size = u->getName().length();
 
-        this->buff->concatBuff(&size, sizeof(size));
-        this->buff->concatBuff((uint8_t*)&u->getStatus(), sizeof(Status));
-        this->buff->concatBuff((uint8_t*)&u->getID(), sizeof(ClientID));
-        this->buff->concatBuff((uint8_t*)u->getName().c_str(), size);
+        //this->buff->concatBuff((uint8_t*)&size, sizeof(size));
+        //this->buff->concatBuff(&(uint8_t)u->getStatus(), sizeof(Status));
+        //this->buff->concatBuff((uint8_t*)&u->getID(), sizeof(ClientID));
+        //this->buff->concatBuff((uint8_t*)u->getName().c_str(), size);
     }
 };
 

@@ -1,7 +1,8 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#pragma once
+
+#include <sstream>
 
 #include "../../include/server/interfaces/interface_communication_controller.h"
 #include "../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
@@ -12,7 +13,7 @@
 
 void Controller_DecryptionProcessor_ThreadWorker::CheckModule1Events(void *module1, void *module2)
 {
-    DecryptionProcessor *decryptionProcessor = (DecryptionProcessor *)module1;
+    //DecryptionProcessor *decryptionProcessor = (DecryptionProcessor *)module1;
     ThreadWorker *eventGiver = (ThreadWorker *)module2;
     Impulse *i = nullptr;
     Impulse *todelete = nullptr;
@@ -83,7 +84,7 @@ void Controller_DecryptionProcessor_ThreadWorker::CheckModule2Events(void *modul
 
             deleteAndNext = true;
             break;
-        case eSystemEvent::RequestSleepDecryptionWorker:
+        case eSystemEvent::RequestStartDecryptionWorker:
             if (((ImpulseSignal *)i)->getThreadID() != decryptionWorker->getThreadID())
             {
                 break;
@@ -112,4 +113,14 @@ void Controller_DecryptionProcessor_ThreadWorker::CheckModule2Events(void *modul
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_DecryptionProcessor_ThreadWorker::setDecryptionProcessorObj(DecryptionProcessor * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_DecryptionProcessor_ThreadWorker::setThreadWorkerObj(ThreadWorker * module)
+{
+    setModule2Obj(module);
 }

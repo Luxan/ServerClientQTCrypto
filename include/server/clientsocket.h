@@ -11,7 +11,7 @@ class RemoteClient
     bool isConn;
 public:
     PackageBuffer *incompletePackageBuffer;
-    size_t incompletePackageFullLength;
+    BUFF_SIZE incompletePackageFullLength;
 
 	/**
 	\param

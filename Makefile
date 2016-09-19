@@ -57,8 +57,6 @@ make_server:
 	$(MAKE) -C pro/Server/
 clean_temp_server:
 	$(RM) pro/Server/Makefile
-	$(RM) pro/Server/moc_mainwindow.cpp
-	$(RM) pro/Server/ui_mainwindow.h
 ###[Server test]###
 test_server: clean_test_server make_test_server clean_temp_test_server test_server_run
 test_server_run:

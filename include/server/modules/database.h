@@ -18,7 +18,7 @@
 \class
 \brief
 */
-class DataBase : InterfaceThread
+class DataBase : public InterfaceThread
 {
 private:
     struct CallbackData
@@ -67,25 +67,15 @@ private:
 	\post
 	*/
     void loadAllUsersFromDatabase();
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    void registerUserToDatabase(std::string name, ClientID id, std::string login, Hash *password, int iteration, uint32_t salt);
-
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    void CreateDatabase();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void createDatabase();
     /**
     \param
     \return
@@ -104,6 +94,33 @@ public:
     \pre
     \post
     */
+    void saltRequest(std::string login);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void RequestStart();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void RequestStop();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
     DataBase(ThreadConfiguration &conf, std::string _path);
     /**
     \param
@@ -113,8 +130,7 @@ public:
     \pre
     \post
     */
-    void loginRequest(std::string &login, Hash *&password);
-
+    void loginRequest(std::string login, Hash *password);
     /**
     \param
     \return
@@ -123,8 +139,7 @@ public:
     \pre
     \post
     */
-    static void ReleaseResources();
-
+    void registerUserToDatabase(std::string name, ClientID id, std::string login, Hash *password, int iteration, uint32_t salt);
     /**
     \param
     \return
@@ -133,8 +148,7 @@ public:
     \pre
     \post
     */
-    static DataBase &GetDataBase();
-
+    void ReleaseResources();
     /**
     \param
     \return

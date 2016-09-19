@@ -1,14 +1,14 @@
 #include <sstream>
 
-#include "../../include/server/controller_messageprocessor_threadworker.h"
-#include "../../include/server/message_processor.h"
+#include "../../include/server/controllers/controller_messageprocessor_threadworker.h"
+#include "../../include/server/modules/message_processor.h"
 #include "../../include/server/thread_worker.h"
 #include "../../include/server/slog.h"
 
 /**
 \see interface_communication_controller.h
 */
-void Controller_MessageProcessor_threadWorker::CheckModule1Events(void *module1, void *module2)
+void Controller_MessageProcessor_ThreadWorker::CheckModule1Events(void *module1, void *module2)
 {
     //MessageProcessor *messageProcessor = (MessageProcessor *)module1;
     ThreadWorker *eventGiver = (ThreadWorker *)module2;
@@ -61,7 +61,7 @@ void Controller_MessageProcessor_threadWorker::CheckModule1Events(void *module1,
 /**
 \see interface_communication_controller.h
 */
-void Controller_MessageProcessor_threadWorker::CheckModule2Events(void *module1, void *module2)
+void Controller_MessageProcessor_ThreadWorker::CheckModule2Events(void *module1, void *module2)
 {
     ThreadWorker *messageWorker = (ThreadWorker *)module1;
     MessageProcessor *eventGiver = (MessageProcessor *)module2;
@@ -117,4 +117,14 @@ void Controller_MessageProcessor_threadWorker::CheckModule2Events(void *module1,
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_MessageProcessor_ThreadWorker::setMessageProcessorObj(MessageProcessor * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_MessageProcessor_ThreadWorker::setThreadWorkerObj(ThreadWorker * module)
+{
+    setModule2Obj(module);
 }

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "interfaces/interface_thread.h"
-#include "thread_worker.h"
+#include "../interfaces/interface_thread.h"
+#include "../thread_worker.h"
 
-#include "interfaces/interface_communication_controller.h"
-#include "systemevents.h"
-#include "impulse.h"
+#include "../interfaces/interface_communication_controller.h"
+#include "../systemevents.h"
+#include "../impulse.h"
 
-class Processor : public interfaceThread
+class Processor : public InterfaceThread
 {
 private:
     int numberOfWorkers;
     std::list<ThreadWorker *> lWorkers;
     TaskQueue tq;
 protected:
-    interfaceCommunicationController *controller;
+    InterfaceCommunicationController *controller;
 
     void sendEventToWorkers(eSystemEvent e)
     {
@@ -24,37 +24,32 @@ protected:
         }
     }
 
-    Processor(ThreadConfiguration &conf):
-        interfaceThread(conf)
-    {
-
-    }
-
     virtual ~Processor()
     {
+        terminate();
         for (ThreadWorker *w : lWorkers)
         {
+            w->terminate();
+            controller->detach(w);
             delete w;
         }
+        lWorkers.clear();
     }
 
-    void CreateWorkers(ThreadConfiguration conf, int _numberOfWorkers)
+    ThreadWorker * CreateWorker(ThreadConfiguration conf)
     {
-        numberOfWorkers = _numberOfWorkers;
-        controller->setModule1Obj(this);
-        this->AddEventController(controller);
+        ThreadWorker *worker = new ThreadWorker(conf, &tq);
 
-        for (int i = 0; i < numberOfWorkers; i++)
-        {
-            ThreadWorker *worker = new ThreadWorker(conf, &tq);
+        lWorkers.push_back(worker);
 
-            controller->setModule2Obj(worker);
-            worker->AddEventController(controller);
+        worker->startMainLoop();
 
-            lWorkers.push_back(worker);
-        }
+        return worker;
     }
 public:
+    Processor(ThreadConfiguration &conf, InterfaceCommunicationController *controller, int numberOfWorkers):
+        InterfaceThread(conf), numberOfWorkers(numberOfWorkers), controller(controller)
+    {}
     /**
     \threadsafe using threadsafe TaskQueue tq
     \param

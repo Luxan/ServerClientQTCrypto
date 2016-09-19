@@ -10,17 +10,26 @@
 #include "../../include/server/impulse.h"
 #include "../../include/shared/messages/message.h"
 
-MessageProcessor::MessageProcessor(ThreadConfiguration conf, int numberOfWorkers):
-    InterfaceThread(conf)
+MessageProcessor::MessageProcessor(ThreadConfiguration conf, Controller_MessageProcessor_ThreadWorker *controller, int numberOfWorkers):
+    Processor(conf, controller, numberOfWorkers)
 {
     ThreadConfiguration workersConf;
     workersConf.loopSleepTime = 10;
-    workersConf.unsleepReactionTime = 1000;
+    workersConf.unsleepReactionTime = 1010;
     workersConf.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
     workersConf.responseSleepEvent = eSystemEvent::ResponseSleepMessageWorker;
     workersConf.responseStartEvent = eSystemEvent::ResponseStartMessageWorker;
 
-    CreateWorkers(workersConf, numberOfWorkers);
+    this->AddEventController(controller);
+
+    controller->setMessageProcessorObj(this);
+
+    for (int i = 0; i < numberOfWorkers; i++)
+    {
+        ThreadWorker *worker = CreateWorker(workersConf);
+        controller->setThreadWorkerObj(worker);
+        worker->AddEventController(controller);
+    }
 }
 
 void MessageProcessor::RequestSleep()

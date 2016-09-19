@@ -13,7 +13,7 @@
 #include "../../include/shared/user_credentials.h"
 #include "../../include/shared/user_relations.h"
 
-void DataBase::CreateDatabase()
+void DataBase::createDatabase()
 {
     QSqlQuery query;
     try
@@ -43,8 +43,32 @@ void DataBase::dowork()
 {
 
 }
+void DataBase::RequestStart()
+{
+    if (isRunning())
+    {
+        std::string error = "Database is already running.";
+        AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorDatabase, error));
+        return;
+    }
 
-DataBase::DataBase(std::string _path)
+    unSleepThread();
+}
+
+void DataBase::RequestStop()
+{
+    if (!isRunning())
+    {
+        std::string error = "Database is already stopped.";
+        AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorDatabase, error));
+        return;
+    }
+
+    sleepThread();
+}
+
+DataBase::DataBase(ThreadConfiguration& conf, std::string _path):
+    InterfaceThread(conf)
 {
     path = _path;
     try
@@ -52,7 +76,7 @@ DataBase::DataBase(std::string _path)
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(QString(path.c_str()));
         db.open();
-        db->CreateDatabase();
+        createDatabase();
         loadAllUsersFromDatabase();
     }
     catch (std::string e)
@@ -83,17 +107,17 @@ std::shared_ptr<User> DataBase::selectUserFromDatabase(ClientID id)
         while (query.next())
         {
             std::string name = query.value(fieldNameNo).toString().toStdString();
-            int id = query.value(fieldIDNo).toInt();
+            uint32_t id = query.value(fieldIDNo).toUInt();
             std::string login = query.value(fieldLoginNo).toString().toStdString();
             QByteArray password = query.value(fieldPasswordNo).toByteArray();
-            int iteration = query.value(fieldIterationNo).toInt();
-            uint32_t salt = query.value(fieldSaltNo).toUInt();
+            uint32_t iteration = query.value(fieldIterationNo).toUInt();
+            uint64_t salt = query.value(fieldSaltNo).toULongLong();
             QString friendList = query.value(fieldFriendListNo).toString();
             QString blockedUserList = query.value(fieldBlockedUserListNo).toString();
             QString presenceInBlockedList = query.value(fieldPresenceInBlockedListNo).toString();
             QString presenceInRooms = query.value(fieldPresenceInRoomsNo).toString();
 
-            Hash * hashedPassword = new Hash(password.data_ptr(), password.length());
+            Hash * hashedPassword = new Hash((uint8_t*)password.constData(), password.length());
             UserCredentials *uc = new UserCredentials(login, hashedPassword, iteration, salt, id);
             UserRelations * ur = new UserRelations(friendList, blockedUserList, presenceInBlockedList, presenceInRooms);
             user = new User(name, uc, ur);
@@ -130,17 +154,17 @@ void DataBase::loadAllUsersFromDatabase()
         while (query.next())
         {
             std::string name = query.value(fieldNameNo).toString().toStdString();
-            int id = query.value(fieldIDNo).toInt();
+            uint32_t id = query.value(fieldIDNo).toUInt();
             std::string login = query.value(fieldLoginNo).toString().toStdString();
             QByteArray password = query.value(fieldPasswordNo).toByteArray();
-            int iteration = query.value(fieldIterationNo).toInt();
-            uint32_t salt = query.value(fieldSaltNo).toUInt();
+            uint32_t iteration = query.value(fieldIterationNo).toUInt();
+            uint64_t salt = query.value(fieldSaltNo).toULongLong();
             QString friendList = query.value(fieldFriendListNo).toString();
             QString blockedUserList = query.value(fieldBlockedUserListNo).toString();
             QString presenceInBlockedList = query.value(fieldPresenceInBlockedListNo).toString();
             QString presenceInRooms = query.value(fieldPresenceInRoomsNo).toString();
 
-            Hash * hashedPassword = new Hash(password.data_ptr(), password.length());
+            Hash * hashedPassword = new Hash((uint8_t*)password.constData(), password.length());
             UserCredentials *uc = new UserCredentials(login, hashedPassword, iteration, salt, id);
             UserRelations * ur = new UserRelations(friendList, blockedUserList, presenceInBlockedList, presenceInRooms);
             user = new User(name, uc, ur);
@@ -184,10 +208,10 @@ void DataBase::registerUserToDatabase(std::string name, ClientID id, std::string
         query.prepare("INSERT INTO USER (NAME,ID,LOGIN,PASSWORD,ITERATION,SALT) "
                       "VALUES (:name, :id, :login, :password, "\
                       ":iteration, :salt)");
-        query.bindValue(":name", name);
-        query.bindValue(":id", id.operator uint32_t);
-        query.bindValue(":login", login);
-        query.bindValue(":password", QByteArray(password->getBuff(), password->getLength()));
+        query.bindValue(":name", name.c_str());
+        query.bindValue(":id", id.operator uint32_t());
+        query.bindValue(":login", login.c_str());
+        query.bindValue(":password", QByteArray((const char *)password->getBuff(), password->getLength()));
         query.bindValue(":iteration", iteration);
         query.bindValue(":salt", salt);
         query.exec();
@@ -202,33 +226,21 @@ void DataBase::registerUserToDatabase(std::string name, ClientID id, std::string
     SLog::logInfo() << "User inserted successfully.";
 }
 
-QSqlQuery query(QString("SELECT * from USER"));
-int fieldNameNo = query.record().indexOf("NAME");
-int fieldIDNo = query.record().indexOf("ID");
-int fieldLoginNo = query.record().indexOf("LOGIN");
-int fieldPasswordNo = query.record().indexOf("PASSWORD");
-int fieldIterationNo = query.record().indexOf("ITERATION");
-int fieldSaltNo = query.record().indexOf("SALT");
-int fieldFriendListNo = query.record().indexOf("FRIENDLIST");
-int fieldBlockedUserListNo = query.record().indexOf("BLOCKEDUSERLIST");
-int fieldPresenceInBlockedListNo = query.record().indexOf("PRESENCEINBLOCKEDLIST");
-int fieldPresenceInRoomsNo = query.record().indexOf("PRESENCEINROOMS");
-
 void DataBase::updateUserInDatabase(std::shared_ptr<User> u)
 {
     QSqlQuery query;
     try
     {
-        query.prepare("INSERT INTO USER (NAME,FRIENDLIST,BLOCKEDUSERLIST,PRESENCEINBLOCKEDLIST,PRESENCEINROOMS) "
-                      "VALUES (:name, :friendlist, "\
-                      ":blockuserlist, :presenceblockedlist, "\
-                      ":presenceinrooms)");
-        query.bindValue(":name", u->getName());
-        query.bindValue(":friendlist", u->getPassword().c_str());
-        query.bindValue(":blockuserlist", u->getPassword().c_str());
-        query.bindValue(":presenceblockedlist", u->getPassword().c_str());
-        query.bindValue(":presenceinrooms", u->getPassword().c_str());
-        query.exec();
+//        query.prepare("INSERT INTO USER (NAME,FRIENDLIST,BLOCKEDUSERLIST,PRESENCEINBLOCKEDLIST,PRESENCEINROOMS) "
+//                      "VALUES (:name, :friendlist, "\
+//                      ":blockuserlist, :presenceblockedlist, "\
+//                      ":presenceinrooms)");
+//        query.bindValue(":name", u->getName().c_str());
+//        query.bindValue(":friendlist", u->getPassword().c_str());
+//        query.bindValue(":blockuserlist", u->getPassword().c_str());
+//        query.bindValue(":presenceblockedlist", u->getPassword().c_str());
+//        query.bindValue(":presenceinrooms", u->getPassword().c_str());
+//        query.exec();
     }
     catch(std::string e)
     {
@@ -240,13 +252,13 @@ void DataBase::updateUserInDatabase(std::shared_ptr<User> u)
 
 void DataBase::ReleaseResources()
 {
-    std::lock_guard<std::mutex> guard(map_lock);
     mUsers.clear();
 }
 
 DataBase::~DataBase()
 {
     db.close();
+    ReleaseResources();
 }
 
 void DataBase::removeUser(std::shared_ptr<User> u)
@@ -272,25 +284,25 @@ void DataBase::getUserViaID(ClientID id)
     auto it = mUsers.find(id);
     if (it != mUsers.end())
     {
-        this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseGetUser, (*it).second));
+        this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseGetUserByID, (*it).second));
     }
 
-    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(u->getID()) + "is not exist in database!"));
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(id) + "is not exist in database!"));
 }
 
-void DataBase::saltRequest(std::string &login)
+void DataBase::saltRequest(std::string login)
 {
     for (auto it = mUsers.begin(); it != mUsers.end(); it++)
     {
         std::shared_ptr<User> u = (*it).second;
         if (u->getLogin() == login)
         {
-            this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseUserSalt, u->getSalt()));
+            this->AddImpulseToQueue(new ImpulseSalt(eSystemEvent::DatabaseUserSalt, u->getSalt()));
         }
     }
 }
 
-void DataBase::loginRequest(std::string &login, Hash * &password)
+void DataBase::loginRequest(std::string login, Hash * password)
 {
     for (auto it = mUsers.begin(); it != mUsers.end(); it++)
     {
@@ -300,6 +312,6 @@ void DataBase::loginRequest(std::string &login, Hash * &password)
             this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseLoginSuccessfull, (*it).second));
         }
     }
-    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(u->getID()) + "is not exist in database!"));
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with login: " + login + "is not exist in database!"));
 }
 

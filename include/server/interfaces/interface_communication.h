@@ -20,7 +20,7 @@ class interfaceCommunication
 private:
     std::mutex lock_queue;
     std::vector<Impulse *> vImpulses;
-    std::vector<interfaceCommunicationController *> vControllers;
+    std::vector<InterfaceCommunicationController *> vControllers;
 protected:
     /**
     \threadsafe is thread safe!
@@ -50,7 +50,7 @@ public:
     \pre
     \post
     */
-    void AddEventController(interfaceCommunicationController *c);
+    void AddEventController(InterfaceCommunicationController *c);
     /**
     \param
     \return

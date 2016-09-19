@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "../../include/server/interfaces/interface_communication_controller.h"
 #include "../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
 #include "../../include/server/thread_worker.h"
@@ -106,4 +108,14 @@ void Controller_EncryptionProcessor_ThreadWorker::CheckModule2Events(void *modul
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_EncryptionProcessor_ThreadWorker::setEncryptionProcessorObj(EncryptionProcessor * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_EncryptionProcessor_ThreadWorker::setThreadWorkerObj(ThreadWorker * module)
+{
+    setModule2Obj(module);
 }

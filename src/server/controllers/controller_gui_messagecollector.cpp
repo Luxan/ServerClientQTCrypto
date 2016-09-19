@@ -87,10 +87,6 @@ void Controller_GUI_MessageCollector::CheckModule2Events(void *module1, void * m
             messageCollector->RequestStop();
             deleteAndNext = true;
             break;
-        case eSystemEvent::ErrorGui:
-            SLog::logError() << "Gui Error: " << ((ImpulseError *)i)->getError();
-            deleteAndNext = true;
-            break;
         case eSystemEvent::Undefined:
             SLog::logError() << "Got Undefined event!";
             deleteAndNext = true;
@@ -111,4 +107,14 @@ void Controller_GUI_MessageCollector::CheckModule2Events(void *module1, void * m
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_GUI_MessageCollector::setMainWindowObj(MainWindow * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_GUI_MessageCollector::setMessageCollectorObj(MessageCollector * module)
+{
+    setModule2Obj(module);
 }

@@ -180,7 +180,7 @@ private:
     /**
     \see interface_thread.h
     */
-    void dowork();
+    virtual void dowork();
     /**
     \param
     \return

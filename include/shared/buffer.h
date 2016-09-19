@@ -26,9 +26,9 @@ public:
     */
     Buffer(uint8_t *_buff, BUFF_SIZE _length)
     {
-        buff = new uint8_t[_length];
+        buff = new uint8_t[_length + 1];
         
-        memcpy(b, _buff, _length);
+        memcpy(buff, _buff, _length);
     }
 
     /*!
@@ -44,7 +44,7 @@ public:
     \return size of data
     \brief returns size of data buffer stored inside class object
     */
-    virtual size_t getLength() const
+    virtual BUFF_SIZE getLength() const
     {
         return length;
     }
@@ -55,7 +55,6 @@ public:
     virtual ~Buffer()
     {
         if (buff != nullptr)
-        delete[] buff;
+            delete[] buff;
     }
 };
-

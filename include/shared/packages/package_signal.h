@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../shared/package.h"
-#include "../shared/key.h"
-#include "../shared/id_client.h"
-#include "../shared/id_message.h"
-#include "../shared/id_room.h"
-#include "../shared/error_enum.h"
-
-
+#include "../../shared/packages/package.h"
+#include "../../shared/crypto/key.h"
+#include "../../shared/id_client.h"
+#include "../../shared/id_message.h"
+#include "../../shared/id_room.h"
+#include "../../shared/error_enum.h"
 
 /**
 \struct

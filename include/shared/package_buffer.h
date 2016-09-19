@@ -16,7 +16,7 @@ public:
 	\brief give length of buffer with offset stored inside of object of class
 	\return length of buffer with offset.
 	*/
-	virtual size_t getLength() const;
+    virtual BUFF_SIZE getLength() const;
 
 	/*!
 	\brief give pointer to buffer with offset stored inside of object of class

@@ -22,7 +22,18 @@
 #include "../../include/server/controllers/controller_gui_messagecollector.h"
 #include "../../include/server/controllers/controller_gui_messageprocessor.h"
 #include "../../include/server/controllers/controller_gui_tcpchannel.h"
+#include "../../include/server/controllers/controller_gui_database.h"
+#include "../../include/server/controllers/controller_gui_decryptionprocessor.h"
+#include "../../include/server/controllers/controller_gui_encryptionprocessor.h"
 #include "../../include/server/controllers/controller_messagecollector_messageprocessor.h"
+#include "../../include/server/controllers/controller_messagecollector_decryptionprocessor.h"
+#include "../../include/server/controllers/controller_messagecollector_encryptionprocessor.h"
+#include "../../include/server/controllers/controller_messageprocessor_database.h"
+#include "../../include/server/controllers/controller_tcpchannel_encryptionprocessor.h"
+#include "../../include/server/controllers/controller_tcpchannel_decryptionprocessor.h"
+#include "../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
+#include "../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
+#include "../../include/server/controllers/controller_messageprocessor_threadworker.h"
 #include "../../include/shared/configuration.h"
 
 uint8_t googlecert[] = {
@@ -79,11 +90,259 @@ uint8_t googlecert[] = {
 0xD5,0xE3,0x59,0x68,0x81
 };
 
+namespace controllers
+{
+//controller gui - module
+Controller_GUI_MessageCollector cgmc;
+Controller_GUI_MessageProcessor cgmp;
+Controller_GUI_tcpChannel cgtc;
+Controller_GUI_Database cgd;
+Controller_GUI_DecryptionProcessor cgdp;
+Controller_GUI_EncryptionProcessor cgep;
+
+//controllers module module
+Controller_MessageCollector_MessageProcessor cmcmp;
+Controller_MessageCollector_DecryptionProcessor cmcdp;
+Controller_MessageCollector_EncryptionProcessor cmcep;
+Controller_MessageProcessor_Database cmpd;
+Controller_TCPChannel_DecryptionProcessor ctcdp;
+Controller_TCPChannel_EncryptionProcessor ctcep;
+
+//controller module worker thread
+Controller_MessageProcessor_ThreadWorker mpth;
+Controller_EncryptionProcessor_ThreadWorker enth;
+Controller_DecryptionProcessor_ThreadWorker deth;
+
+void initializeControllers();
+
+}
+
+namespace modules
+{
+MessageProcessor *mp;
+MessageCollector *collector;
+EpollTCPChannel *server;
+DataBase *db;
+EncryptionProcessor *encr;
+DecryptionProcessor *decr;
+MainWindow *w;
+
+void zero()
+{
+    mp = nullptr;
+    collector = nullptr;
+    server = nullptr;
+    db = nullptr;
+    encr = nullptr;
+    decr = nullptr;
+    w = nullptr;
+}
+
+void initializeMessageProcessor()
+{
+    ThreadConfiguration conf1;
+    conf1.loopSleepTime = 10;
+    conf1.unsleepReactionTime = 1001;
+    conf1.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
+    conf1.responseSleepEvent = eSystemEvent::ResponseSleepMessageProcessor;
+    conf1.responseStartEvent = eSystemEvent::ResponseStartMessageProcessor;
+    modules::mp = new MessageProcessor(conf1, &controllers::mpth, 5);
+    modules::mp->startMainLoop();
+
+    modules::mp->AddEventController(&controllers::cgmp);
+    modules::mp->AddEventController(&controllers::cmcmp);
+    modules::mp->AddEventController(&controllers::cmpd);
+}
+
+void initializeMessageCollector()
+{
+    //create MessageCollector
+    ThreadConfiguration conf2;
+    conf2.loopSleepTime = 10;
+    conf2.unsleepReactionTime = 1002;
+    conf2.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
+    conf2.responseSleepEvent = eSystemEvent::ResponseSleepMessageCollector;
+    conf2.responseStartEvent = eSystemEvent::ResponseStartMessageCollector;
+    modules::collector = new MessageCollector(conf2);
+    modules::collector->startMainLoop();
+
+    modules::collector->AddEventController(&controllers::cgmc);
+    modules::collector->AddEventController(&controllers::cmcmp);
+    modules::collector->AddEventController(&controllers::cmcdp);
+    modules::collector->AddEventController(&controllers::cmcep);
+}
+
+void initializeEpollTCPChannel(Certificate * certificate)
+{
+    //create EpollTCPChannel
+    ThreadConfiguration conf3;
+    conf3.loopSleepTime = 0;
+    conf3.unsleepReactionTime = 1003;
+    conf3.sleepLoopMode = ThreadConfiguration::doNotSleepInsideLoop;
+    conf3.responseSleepEvent = eSystemEvent::ResponseSleepTcpChannel;
+    conf3.responseStartEvent = eSystemEvent::ResponseStartTcpChannel;
+    modules::server = new EpollTCPChannel(conf3, globalConfiguration.serverPort, 64, certificate);
+    modules::server->startMainLoop();
+
+    modules::server->AddEventController(&controllers::cgtc);
+    modules::server->AddEventController(&controllers::ctcdp);
+    modules::server->AddEventController(&controllers::ctcep);
+}
+
+void initializeDataBase()
+{
+    //create DataBase
+    ThreadConfiguration conf4;
+    conf4.loopSleepTime = 10;
+    conf4.unsleepReactionTime = 1004;
+    conf4.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
+    conf4.responseSleepEvent = eSystemEvent::ResponseSleepDatabase;
+    conf4.responseStartEvent = eSystemEvent::ResponseStartDatabase;
+    modules::db = new DataBase(conf4, "user.db");
+    modules::db->startMainLoop();
+
+    modules::db->AddEventController(&controllers::cgd);
+    modules::db->AddEventController(&controllers::cmpd);
+}
+
+void initializeEncryptionProcessor()
+{
+    //create CryptoProcessor
+    ThreadConfiguration conf5;
+    conf5.loopSleepTime = 10;
+    conf5.unsleepReactionTime = 1005;
+    conf5.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
+    conf5.responseSleepEvent = eSystemEvent::ResponseSleepEncryptionProcessor;
+    conf5.responseStartEvent = eSystemEvent::ResponseStartEncryptionProcessor;
+    modules::encr = new EncryptionProcessor(conf5, &controllers::enth, 5);
+    modules::encr->startMainLoop();
+
+    modules::encr->AddEventController(&controllers::cgep);
+    modules::encr->AddEventController(&controllers::cmcep);
+    modules::encr->AddEventController(&controllers::ctcep);
+}
+
+void initializeDecryptionProcessor()
+{
+    ThreadConfiguration conf6;
+    conf6.loopSleepTime = 10;
+    conf6.unsleepReactionTime = 1006;
+    conf6.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
+    conf6.responseSleepEvent = eSystemEvent::ResponseSleepDecryptionProcessor;
+    conf6.responseStartEvent = eSystemEvent::ResponseStartDecryptionProcessor;
+    modules::decr = new DecryptionProcessor(conf6, &controllers::deth, 5);
+    modules::decr->startMainLoop();
+
+    modules::decr->AddEventController(&controllers::cmcdp);
+    modules::decr->AddEventController(&controllers::ctcdp);
+    modules::decr->AddEventController(&controllers::cgdp);
+
+}
+
+void initializeMainWindow()
+{
+    modules::w = new MainWindow();
+    //set controllers to modules
+    modules::w->AddEventController(&controllers::cgmc);
+    modules::w->AddEventController(&controllers::cgmp);
+    modules::w->AddEventController(&controllers::cgtc);
+    modules::w->AddEventController(&controllers::cgd);
+    modules::w->AddEventController(&controllers::cgdp);
+    modules::w->AddEventController(&controllers::cgep);
+
+    modules::w->show();
+}
+
+void deinitializeAll()
+{
+    if (mp != nullptr)
+        delete mp;
+    if (collector != nullptr)
+        delete collector;
+    if (server != nullptr)
+        delete server;
+    if (db != nullptr)
+        delete db;
+    if (encr != nullptr)
+        delete encr;
+    if (decr != nullptr)
+        delete decr;
+    if (w != nullptr)
+        delete w;
+}
+
+}
+
+void controllers::initializeControllers()
+{
+
+    //controller gui - module
+    if (modules::w != nullptr)
+        cgmc.setMainWindowObj(modules::w);
+    if (modules::collector != nullptr)
+        cgmc.setMessageCollectorObj(modules::collector);
+
+    if (modules::w != nullptr)
+        cgmp.setMainWindowObj(modules::w);
+    if (modules::mp != nullptr)
+        cgmp.setMessageProcessorObj(modules::mp);
+
+    if (modules::w != nullptr)
+        cgtc.setMainWindowObj(modules::w);
+    if (modules::server != nullptr)
+        cgtc.setTCPChannelObj(modules::server);
+
+    if (modules::w != nullptr)
+        cgd.setMainWindowObj(modules::w);
+    if (modules::db != nullptr)
+        cgd.setDataBaseObj(modules::db);
+
+    if (modules::w != nullptr)
+        cgdp.setMainWindowObj(modules::w);
+    if (modules::decr != nullptr)
+        cgdp.setDecryptionProcessorObj(modules::decr);
+
+    if (modules::w != nullptr)
+        cgep.setMainWindowObj(modules::w);
+    if (modules::encr != nullptr)
+        cgep.setEncryptionProcessorObj(modules::encr);
+
+    //controller module - module
+    if (modules::collector != nullptr)
+        cmcmp.setMessageCollectorObj(modules::collector);
+    if (modules::mp != nullptr)
+        cmcmp.setMessageProcessorObj(modules::mp);
+
+    if (modules::collector != nullptr)
+        cmcdp.setMessageCollectorObj(modules::collector);
+    if (modules::decr != nullptr)
+        cmcdp.setDecryptionProcessorObj(modules::decr);
+
+    if (modules::collector != nullptr)
+        cmcep.setMessageCollectorObj(modules::collector);
+    if (modules::encr != nullptr)
+        cmcep.setEncryptionProcessorObj(modules::encr);
+
+    if (modules::mp != nullptr)
+        cmpd.setMessageProcessorObj(modules::mp);
+    if (modules::db != nullptr)
+        cmpd.setDataBaseObj(modules::db);
+
+    if (modules::server != nullptr)
+        ctcdp.setTCPChannelObj(modules::server);
+    if (modules::decr != nullptr)
+        ctcdp.setDecryptionProcessorObj(modules::decr);
+
+    if (modules::server != nullptr)
+        ctcep.setTCPChannelObj(modules::server);
+    if (modules::encr != nullptr)
+        ctcep.setEncryptionProcessorObj(modules::encr);
+}
+
 void signal_callback_handler(int signum)
 {
-    printf("Caught signal %d\n",signum);
-    // Cleanup and close up stuff here
-    // Terminate program
+    modules::deinitializeAll();
+
     exit(signum);
 }
 
@@ -95,114 +354,60 @@ void addUsersTest()
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
+    modules::zero();
     // Register signal and signal handler
-    signal(SIGINT, signal_callback_handler);
-
     QApplication a(argc, argv);
 
-    Buffer b(googlecert, sizeof(googlecert));
-    Certificate certificate(&b);
+    Certificate certificate(new Buffer(googlecert, sizeof(googlecert)));
 
-    Controller_GUI_MessageCollector cgmc;
-    Controller_GUI_MessageProcessor cgmp;
-    Controller_GUI_tcpChannel cgtc;
-    //Controller_MessageCollector_MessageProcessor cmcmp;
-    //Controller_tcpChannel_MessageCollector ctcms;
+    //modules
+    modules::initializeMainWindow();
 
-    MainWindow w;
 
-    //create MessageProcessor
-    ThreadConfiguration conf1;
-    conf1.loopSleepTime = 10;
-    conf1.unsleepReactionTime = 1000;
-    conf1.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
-    conf1.responseSleepEvent = eSystemEvent::ResponseSleepMessageProcessor;
-    conf1.responseStartEvent = eSystemEvent::ResponseStartMessageProcessor;
-    MessageProcessor mp(conf1, 10);
+    SLog::logInfo().setGuiLevel(modules::w);
 
-    //create MessageCollector
-    ThreadConfiguration conf2;
-    conf2.loopSleepTime = 10;
-    conf2.unsleepReactionTime = 1000;
-    conf2.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
-    conf2.responseSleepEvent = eSystemEvent::ResponseSleepMessageCollector;
-    conf2.responseStartEvent = eSystemEvent::ResponseStartMessageCollector;
-    MessageCollector collector(conf2);
+    if (signal(SIGHUP, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGHUP";
+    if (signal(SIGINT, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGINT";
+    if (signal(SIGQUIT, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGQUIT";
+    if (signal(SIGILL, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGILL";
+    if (signal(SIGTRAP, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGTRAP";
+    if (signal(SIGABRT, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGABRT";
+    if (signal(SIGIOT, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGIOT";
+    if (signal(SIGBUS, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGBUS";
+    if (signal(SIGFPE, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGFPE";
+    if (signal(SIGKILL, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGKILL";
+    if (signal(SIGSEGV, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGSEGV";
+    if (signal(SIGTERM, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGTERM";
+    if (signal(SIGSTKFLT, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGSTKFLT";
+    if (signal(SIGTSTP, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGTSTP";
+    if (signal(SIGPWR, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGPWR";
+    if (signal(SIGSYS, signal_callback_handler) == SIG_ERR)
+            SLog::logWarn() << " Can't catch SIGSYS";
 
-    //create EpollTCPChannel
-    ThreadConfiguration conf3;
-    conf3.loopSleepTime = 0;
-    conf3.unsleepReactionTime = 1000;
-    conf3.sleepLoopMode = ThreadConfiguration::doNotSleepInsideLoop;
-    conf3.responseSleepEvent = eSystemEvent::ResponseSleepTcpChannel;
-    conf3.responseStartEvent = eSystemEvent::ResponseStartTcpChannel;
-    EpollTCPChannel server(conf3, globalConfiguration.serverPort, 64, &certificate);
-
-    //create DataBase
-    ThreadConfiguration conf4;
-    conf4.loopSleepTime = 10;
-    conf4.unsleepReactionTime = 1000;
-    conf4.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
-    conf4.responseSleepEvent = eSystemEvent::ResponseSleepDatabase;
-    conf4.responseStartEvent = eSystemEvent::ResponseStartDatabase;
-    DataBase db(conf4);
-
-    //create CryptoProcessor
-    ThreadConfiguration conf5;
-    conf5.loopSleepTime = 10;
-    conf5.unsleepReactionTime = 1000;
-    conf5.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
-    conf5.responseSleepEvent = eSystemEvent::ResponseSleepEncryptionProcessor;
-    conf5.responseStartEvent = eSystemEvent::ResponseStartEncryptionProcessor;
-    EncryptionProcessor encr(conf5);
-
-    ThreadConfiguration conf6;
-    conf6.loopSleepTime = 10;
-    conf6.unsleepReactionTime = 1000;
-    conf6.sleepLoopMode = ThreadConfiguration::doSleepInsideLoop;
-    conf6.responseSleepEvent = eSystemEvent::ResponseSleepDecryptionProcessor;
-    conf6.responseStartEvent = eSystemEvent::ResponseStartDecryptionProcessor;
-    EncryptionProcessor decr(conf6);
-    Sha256Hasher hasher;
-    Cipher rsaCipher;
-    server.setCrypto(&hasher, &rsaCipher);
-
-    SLog::logInfo().setGuiLevel(&w);
-
-    cgmc.setModule1Obj(&w);
-    cgmc.setModule2Obj(&collector);
-
-    cgmp.setModule1Obj(&w);
-    cgmp.setModule2Obj(&mp);
-
-    cgtc.setModule1Obj(&w);
-    cgtc.setModule2Obj(&server);
-
-    cmcmp.setModule1Obj(&collector);
-    cmcmp.setModule2Obj(&mp);
-
-    ctcms.setModule1Obj(&server);
-    ctcms.setModule2Obj(&collector);
-
-    w.AddEventController(&cgmc);
-    w.AddEventController(&cgmp);
-    w.AddEventController(&cgtc);
-
-    mp.AddEventController(&cgmp);
-    mp.AddEventController(&cmcmp);
-
-    collector.AddEventController(&cgmc);
-    collector.AddEventController(&cmcmp);
-    collector.AddEventController(&ctcms);
-
-    server.AddEventController(&cgtc);
-    server.AddEventController(&ctcms);
-
-    w.show();
+    //modules::initializeDecryptionProcessor();
+    //modules::initializeEncryptionProcessor();
+    modules::initializeMessageProcessor();
+    modules::initializeMessageCollector();
+    modules::initializeDataBase();
+    modules::initializeEpollTCPChannel(&certificate);
+    controllers::initializeControllers();
 
     int i = a.exec();
-
-    DataBase::ReleaseResources();
-
+    modules::deinitializeAll();
     return i;
 }

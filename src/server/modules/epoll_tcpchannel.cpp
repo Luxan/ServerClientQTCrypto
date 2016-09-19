@@ -14,8 +14,7 @@
 #include "../../include/server/modules/epoll_tcpchannel.h"
 
 EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents, Certificate *certificate):
-    InterfaceTcpChannel(conf, portNumb, _maxEvents, certificate),
-    maxEvents(_maxEvents)
+    InterfaceTcpChannel(conf, portNumb, _maxEvents, certificate)
 {
     /* Buffer where events are returned */
     events = (epoll_event *)calloc(maxEvents, sizeof event);
@@ -71,7 +70,7 @@ bool EpollTCPChannel::initialize()
 
 int EpollTCPChannel::doListen()
 {
-    return epoll_wait(efd, events, maxEvents, -1);
+    return epoll_wait(efd, events, maxEvents, 1000);
 }
 
 bool EpollTCPChannel::isSocketValid(int i)

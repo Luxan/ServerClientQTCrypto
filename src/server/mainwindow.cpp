@@ -1,10 +1,13 @@
 
-#include "../../bin/Client/ui_mainwindow.h"
+#include "../../forms/server/ui_mainwindow.h"
 #include "../../include/server/mainwindow.h"
 #include "../../include/server/impulse.h"
 
 ChildController::ChildController()
 {
+    db = false;
+    ep = false;
+    dp = false;
 	mc = false;
 	mp = false;
 	tcpc = false;
@@ -12,17 +15,27 @@ ChildController::ChildController()
 
 bool ChildController::isAllChildsEnabled()const
 {
-	return mc && mp && tcpc;
+    return db && ep && dp && mc && mp && tcpc;
 }
 
 bool ChildController::isAllChildsDisabled()const
 {
-	return (!mc) && (!mp) && (!tcpc);
+    return (!db) && (!ep) && (!dp) && (!mc) && (!mp) && (!tcpc);
 }
+
 void ChildController::enableChild(ChildController::EnabledFlag child, bool enable)
 {
 	switch (child)
 	{
+    case Database:
+        db = enable;
+        break;
+    case EncryptionProcessor:
+        ep = enable;
+        break;
+    case DecryptionProcessor:
+        dp = enable;
+        break;
 	case MessageCollector:
 		mc = enable;
 		break;
@@ -119,6 +132,9 @@ void MainWindow::on_pushButton_clicked()
     {
 //        ui->pushButton->setText("Stop");
 
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartDatabase));
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartDecryptionProcessor));
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartEncryptionProcessor));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartTcpChannel));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartMessageCollector));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestStartMessageProcessor));
@@ -129,6 +145,10 @@ void MainWindow::on_pushButton_clicked()
     {
 //        ui->pushButton->setText("Start");
 
+
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepDatabase));
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepEncryptionProcessor));
+        AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepDecryptionProcessor));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepTcpChannel));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepMessageCollector));
         AddImpulseToQueue(new ImpulseSignal(eSystemEvent::RequestSleepMessageProcessor));
@@ -147,7 +167,7 @@ void MainWindow::AddImpulseToQueue(Impulse *i)
 
 void MainWindow::checkAllEvents()
 {
-    for (interfaceCommunicationController *c : vControllers)
+    for (InterfaceCommunicationController *c : vControllers)
     {
         c->CheckEvents(this);
     }
@@ -245,7 +265,7 @@ Impulse *MainWindow::eraseImpulseAndGetNext(Impulse *i)
     return nullptr;
 }
 
-void MainWindow::AddEventController(interfaceCommunicationController *c)
+void MainWindow::AddEventController(InterfaceCommunicationController *c)
 {
     vControllers.push_back(c);
 }

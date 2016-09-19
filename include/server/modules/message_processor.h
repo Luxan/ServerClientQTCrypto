@@ -8,6 +8,9 @@
 #include "../interfaces/interface_communication.h"
 #include "../../server/interfaces/processor.h"
 #include "../../shared/messages/message.h"
+#include "../../include/server/controllers/controller_messageprocessor_threadworker.h"
+
+class Controller_MessageProcessor_ThreadWorker;
 
 /**
 \class
@@ -24,7 +27,7 @@ public:
     \pre
     \post
     */
-    MessageProcessor(ThreadConfiguration conf, int numberOfWorkers);
+    MessageProcessor(ThreadConfiguration conf, Controller_MessageProcessor_ThreadWorker *controller, int numberOfWorkers);
     /**
     \param
     \return
@@ -46,7 +49,7 @@ public:
     /**
     \see interface_thread.h
     */
-    void dowork();
+    virtual void dowork();
     /**
     \param
     \return
@@ -65,5 +68,7 @@ public:
     \post
     */
     void RequestSleep();
+
+    virtual ~MessageProcessor(){}
 };
 

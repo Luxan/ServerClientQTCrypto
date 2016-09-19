@@ -3,11 +3,11 @@
 */
 #include <thread>
 
-#include "../../include/server/message_worker.h"
+#include "../../include/server/thread_worker.h"
 #include "../../include/server/task_queue.h"
 
 ThreadWorker::ThreadWorker(ThreadConfiguration conf, TaskQueue *_queue):
-    interfaceThread(conf), queue(_queue)
+    InterfaceThread(conf), queue(_queue)
 {}
 
 ThreadWorker::~ThreadWorker()

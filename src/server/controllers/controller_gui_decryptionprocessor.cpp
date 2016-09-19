@@ -18,7 +18,7 @@ void Controller_GUI_DecryptionProcessor::CheckModule1Events(void *module1, void 
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartDecryptionProcessor:
-            SLog::logInfo() << "Database Started.";
+            SLog::logInfo() << "DecryptionProcessor Started.";
             mainWindow->setChildEnabled(ChildController::EnabledFlag::DecryptionProcessor, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -28,7 +28,7 @@ void Controller_GUI_DecryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepDecryptionProcessor:
-            SLog::logInfo() << "Database Stopped.";
+            SLog::logInfo() << "DecryptionProcessor Stopped.";
             mainWindow->setChildEnabled(ChildController::EnabledFlag::DecryptionProcessor, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -38,7 +38,7 @@ void Controller_GUI_DecryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorDecryptionProcessor:
-            SLog::logError() << "Database Error: " + ((ImpulseError *)i)->getError();
+            SLog::logError() << "DecryptionProcessor Error: " + ((ImpulseError *)i)->getError();
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
@@ -104,4 +104,14 @@ void Controller_GUI_DecryptionProcessor::CheckModule2Events(void *module1, void 
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_GUI_DecryptionProcessor::setMainWindowObj(MainWindow * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_GUI_DecryptionProcessor::setDecryptionProcessorObj(DecryptionProcessor * module)
+{
+    setModule2Obj(module);
 }

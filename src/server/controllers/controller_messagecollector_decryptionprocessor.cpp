@@ -81,3 +81,13 @@ void Controller_MessageCollector_DecryptionProcessor::CheckModule2Events(void *m
         }
     }
 }
+
+void Controller_MessageCollector_DecryptionProcessor::setMessageCollectorObj(MessageCollector * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_MessageCollector_DecryptionProcessor::setDecryptionProcessorObj(DecryptionProcessor * module)
+{
+    setModule2Obj(module);
+}

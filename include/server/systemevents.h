@@ -71,6 +71,7 @@ enum class eSystemEvent : uint8_t
     ErrorDecryptionWorker,
     ErrorEncryptionWorker,
     ErrorReceivedBadPackage,
+    ErrorThread,
 
 //data events
     EncryptPackage,

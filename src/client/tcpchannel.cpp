@@ -55,7 +55,7 @@ bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
 
 bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff)
 {
-    if (!sendBuffer(&size, sizeof(size)))
+    if (!sendBuffer((uint8_t *)&size, sizeof(size)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
@@ -84,7 +84,7 @@ bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSiz
 
 bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
 {
-    Quint8_tArray dataWrite((const char *)buff, size);
+    QByteArray dataWrite((const char *)buff, size);
 
     //for (size_t i = 0; i < size; i++)
     //{
@@ -92,7 +92,7 @@ bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
     //}
 
     _pSocket->write(dataWrite);
-    return _pSocket->waitForuint8_tsWritten();
+    return _pSocket->waitForBytesWritten();
 }
 
 bool TCPChannel::sendPackage(PackageWrapper *pw)
@@ -112,12 +112,12 @@ bool TCPChannel::sendPackage(PackageWrapper *pw)
     case PackageWrapper::ePackageType::SessionDetailRequest:
         size = sizeof(pw->type);
 
-        if (!sendBuffer(&size, sizeof(size)))
+        if (!sendBuffer((uint8_t *)&size, sizeof(size)))
             return false;
 
         if (!sendBuffer((uint8_t *)&pw->type, sizeof(pw->type)))
             return false;
-
+/*
     //dynamic size packages
     case PackageWrapper::ePackageType::RequestLogin:
         rl = (PackageRequestLogin *)pw->package;
@@ -219,18 +219,19 @@ bool TCPChannel::sendPackage(PackageWrapper *pw)
     case PackageWrapper::ePackageType::ResponseUserDetails:
         CLog::logError() << "Incorrect package to send!";
         break;
+        */
     }
     return true;
 }
 
 void TCPChannel::readTcpData()
 {
-    Quint8_tArray data = _pSocket->readAll();
+    QByteArray data = _pSocket->readAll();
 
     bufferSpitter b((uint8_t *)data.data(), data.length());
     std::list<PackageBuffer *> list;
     static PackageBuffer incompletePackageBuffer(nullptr, 0);
-    static size_t incompletePackageFullLength = 0;
+    static BUFF_SIZE incompletePackageFullLength = 0;
     b.splitBufferIntoList(list, &incompletePackageBuffer, incompletePackageFullLength);
     processReceivedBuffers(list);
 }
@@ -256,7 +257,7 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
                 logError("Certificate Authority cannot authorize server's certificate!");
             continue;
         }
-        if (pw->type == PackageWrapper::ePackageType::)
+        /*if (pw->type == PackageWrapper::ePackageType::)
         {
             //logInfo("Signed in Successfully!");
 
@@ -264,7 +265,7 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
 
             delete pw->package;
             return;
-        }
+        }*/
         if (pw->type == PackageWrapper::ePackageType::Error)
         {
             uint8_t error = ((PackageError*)pw->package)->errorNumber;
@@ -337,7 +338,7 @@ PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)
             break;
 
 
-
+/*
         case PackageWrapper::ePackageType::RequestUserDetails:
             throw ("why would server send RequestUserDetails to client?!");
             break;
@@ -410,6 +411,7 @@ PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)
             memcpy(pw->package, buf->getPointerToBuffer(), sizeof(PackageError));
             delete buf;
             break;
+            */
         default:
             throw ("Undefined package type!");
         }

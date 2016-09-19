@@ -3,7 +3,11 @@
 #include "../interfaces/processor.h"
 #include "../../shared/packages/package.h"
 #include "../systemevents.h"
+#include "../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
+#include "../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
 
+class Controller_DecryptionProcessor_ThreadWorker;
+class Controller_EncryptionProcessor_ThreadWorker;
 
 class CryptoProcessor : public Processor
 {
@@ -11,10 +15,6 @@ protected:
     eSystemEvent errorEvent;
     eSystemEvent requestStartWorkerEvent;
     eSystemEvent requestSleepWorkerEvent;
-    /**
-    \see interface_thread.h
-    */
-    void dowork();
 public:
     /**
     \param
@@ -25,12 +25,11 @@ public:
     \post
     */
     CryptoProcessor(ThreadConfiguration &conf,
+                    InterfaceCommunicationController *controller,
                     int numberOfWorkers,
                     eSystemEvent errorEvent,
                     eSystemEvent requestStartWorkerEvent,
-                    eSystemEvent requestSleepWorkerEvent,
-                    eSystemEvent responseSleepWorkerEvent,
-                    eSystemEvent responseStartWorkerEvent);
+                    eSystemEvent requestSleepWorkerEvent);
 
 
     /**
@@ -50,11 +49,17 @@ public:
     \pre
     \post
     */
-    void RequestSleep();
+    void RequestStop();
+
+    virtual ~CryptoProcessor(){}
 };
 
 class EncryptionProcessor : public CryptoProcessor
 {
+    /**
+    \see interface_thread.h
+    */
+    virtual void dowork();
 public:
     /**
     \param
@@ -64,15 +69,7 @@ public:
     \pre
     \post
     */
-    EncryptionProcessor(ThreadConfiguration conf, int numberOfWorkers):
-        CryptoProcessor(conf,
-                        numberOfWorkers,
-                        eSystemEvent::ErrorEncryptionProcessor,
-                        eSystemEvent::RequestStartEncryptionWorker,
-                        eSystemEvent::RequestSleepEncryptionWorker,
-                        eSystemEvent::ResponseStartEncryptionWorker,
-                        eSystemEvent::ResponseSleepEncryptionWorker)
-    {}    
+    EncryptionProcessor(ThreadConfiguration conf, Controller_EncryptionProcessor_ThreadWorker *controller, int numberOfWorkers);
     /**
     \param
     \return
@@ -82,14 +79,17 @@ public:
     \post
     */
     void EncryptPackage(PackageWrapper *m);
-    /**
-    \see interface_thread.h
-    */
-    void dowork();
+
+    virtual ~EncryptionProcessor(){}
 };
 
 class DecryptionProcessor : public CryptoProcessor
 {
+    /**
+    \see interface_thread.h
+    */
+    virtual void dowork();
+public:
     /**
     \param
     \return
@@ -98,15 +98,7 @@ class DecryptionProcessor : public CryptoProcessor
     \pre
     \post
     */
-    DecryptionProcessor(ThreadConfiguration conf, int numberOfWorkers):
-        CryptoProcessor(conf,
-                        numberOfWorkers,
-                        eSystemEvent::ErrorDecryptionProcessor,
-                        eSystemEvent::RequestStartDecryptionWorker,
-                        eSystemEvent::RequestSleepDecryptionWorker,
-                        eSystemEvent::ResponseStartDecryptionWorker,
-                        eSystemEvent::ResponseSleepDecryptionWorker)
-    {}
+    DecryptionProcessor(ThreadConfiguration conf, Controller_DecryptionProcessor_ThreadWorker *controller, int numberOfWorkers);
 
     /**
     \param
@@ -117,8 +109,6 @@ class DecryptionProcessor : public CryptoProcessor
     \post
     */
     void DecryptPackage(PackageWrapper *m);
-    /**
-    \see interface_thread.h
-    */
-    void dowork();
+
+    virtual ~DecryptionProcessor(){}
 };

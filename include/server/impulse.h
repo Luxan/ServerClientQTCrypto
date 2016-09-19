@@ -12,6 +12,7 @@
 #include "../shared/packages/package.h"
 #include "../shared/id_client.h"
 #include "../shared/user_credentials.h"
+#include "../shared/user.h"
 
 class Message;
 
@@ -236,6 +237,33 @@ public:
     {}
 };
 
+/**
+\class
+\brief
+*/
+class ImpulseSalt : public Impulse
+{
+    uint64_t salt;
+public:
+    /**
+    \see impulse.h
+    */
+    uint64_t getData()
+    {
+        return salt;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ImpulseSalt(eSystemEvent e, uint64_t salt):
+        Impulse(e), salt(salt)
+    {}
+};
 /**
 \class
 \brief

@@ -1,28 +1,27 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#ifndef MESSAGECOLLECTOR_H
-#define MESSAGECOLLECTOR_H
+#pragma once
 
-#include "interfaces/interface_communication.h"
-#include "../shared/package.h"
-#include "../shared/message.h"
-#include "interfaces/interface_thread.h"
+#include "../interfaces/interface_communication.h"
+#include "../../shared/packages/package.h"
+#include "../../shared/messages/message.h"
+#include "../interfaces/interface_thread.h"
 
 /**
 \class
 \brief
 */
 //interface
-class MessageCollector : public interfaceThread
+class MessageCollector : public InterfaceThread
 {
 private:
-    std::queue<MessageProcessable *> qMessages;
+    //std::list<MessageProcessable *> qMessages;
 
     /**
     \see interface_thread.h
     */
-    void dowork();
+    virtual void dowork();
 public:
     /**
     \param
@@ -69,6 +68,6 @@ public:
     \post
     */
     void collectPackage(PackageWrapper *p);
-};
 
-#endif // MESSAGECOLLECTOR_H
+    virtual ~MessageCollector(){}
+};

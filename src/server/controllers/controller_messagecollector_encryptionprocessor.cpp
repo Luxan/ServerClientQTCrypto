@@ -56,7 +56,6 @@ void Controller_MessageCollector_EncryptionProcessor::CheckModule2Events(void *m
     i = eventGiver->getNextImpulse(i);
     while (i)
     {
-        PackageWrapper *p;
         switch (i->getEvent())
         {
         case eSystemEvent::Undefined:
@@ -79,4 +78,14 @@ void Controller_MessageCollector_EncryptionProcessor::CheckModule2Events(void *m
             i = eventGiver->getNextImpulse(i);
         }
     }
+}
+
+void Controller_MessageCollector_EncryptionProcessor::setMessageCollectorObj(MessageCollector * module)
+{
+    setModule1Obj(module);
+}
+
+void Controller_MessageCollector_EncryptionProcessor::setEncryptionProcessorObj(EncryptionProcessor * module)
+{
+    setModule2Obj(module);
 }
