@@ -6,7 +6,7 @@
 #include <list>
 
 #include "../interfaces/interface_communication.h"
-#include "../../server/interfaces/processor.h"
+#include "../../server/interfaces/interface_processor.h"
 #include "../../shared/messages/message.h"
 #include "../../include/server/controllers/controller_messageprocessor_threadworker.h"
 

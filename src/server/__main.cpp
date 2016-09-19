@@ -256,26 +256,64 @@ void initializeMainWindow()
 void deinitializeAll()
 {
     if (mp != nullptr)
-        delete mp;
+    {
+        mp->terminate();
+    }
     if (collector != nullptr)
-        delete collector;
+    {
+        collector->terminate();
+    }
     if (server != nullptr)
-        delete server;
+    {
+        server->terminate();
+    }
     if (db != nullptr)
-        delete db;
+    {
+        db->terminate();
+    }
     if (encr != nullptr)
-        delete encr;
+    {
+        encr->terminate();
+    }
     if (decr != nullptr)
+    {
+        decr->terminate();
+    }
+
+    if (mp != nullptr)
+    {
+        delete mp;
+    }
+    if (collector != nullptr)
+    {
+        delete collector;
+    }
+    if (server != nullptr)
+    {
+        delete server;
+    }
+    if (db != nullptr)
+    {
+        delete db;
+    }
+    if (encr != nullptr)
+    {
+        delete encr;
+    }
+    if (decr != nullptr)
+    {
         delete decr;
+    }
     if (w != nullptr)
+    {
         delete w;
+    }
 }
 
 }
 
 void controllers::initializeControllers()
 {
-
     //controller gui - module
     if (modules::w != nullptr)
         cgmc.setMainWindowObj(modules::w);
@@ -399,8 +437,8 @@ int main(int argc, char *argv[])
     if (signal(SIGSYS, signal_callback_handler) == SIG_ERR)
             SLog::logWarn() << " Can't catch SIGSYS";
 
-    //modules::initializeDecryptionProcessor();
-    //modules::initializeEncryptionProcessor();
+    modules::initializeDecryptionProcessor();
+    modules::initializeEncryptionProcessor();
     modules::initializeMessageProcessor();
     modules::initializeMessageCollector();
     modules::initializeDataBase();

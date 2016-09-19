@@ -103,7 +103,7 @@ public:
     \pre
     \post
     */
-    void terminate();
+    virtual void terminate();
     /**
     \param
     \return

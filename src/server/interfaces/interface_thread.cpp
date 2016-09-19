@@ -14,14 +14,15 @@ InterfaceThread::InterfaceThread(ThreadConfiguration &conf):
 InterfaceThread::~InterfaceThread()
 {
     terminate();
+
+    if (th.joinable())
+        th.join();
 }
 
 void InterfaceThread::terminate()
 {
     doTerminate = true;
 
-//    if (th.joinable())
-//        th.join();
 
     while (!isTerminated)
     {

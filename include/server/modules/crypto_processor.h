@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/processor.h"
+#include "../interfaces/interface_processor.h"
 #include "../../shared/packages/package.h"
 #include "../systemevents.h"
 #include "../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
