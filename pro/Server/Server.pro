@@ -18,6 +18,8 @@ OBJECTS_DIR = ../../obj/Server
 MOC_DIR = ../../obj/Server/moc
 UI_DIR = ../../forms/server/
 
+unix:QMAKE_RPATHDIR += $$PWD/../../lib/crypto++/installed/lib/
+
 SOURCES += ../../src/shared/*.cpp \
     ../../src/server/*.cpp \
     ../../src/server/modules/*.cpp \

@@ -314,6 +314,7 @@ void deinitializeAll()
 
 void controllers::initializeControllers()
 {
+    std::cout << "Cleaning all threads. Please Wait..." << std::endl;
     //controller gui - module
     if (modules::w != nullptr)
         cgmc.setMainWindowObj(modules::w);
