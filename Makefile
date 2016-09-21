@@ -34,7 +34,7 @@ clean_temp_client:
 	$(RM) pro/Client/Makefile
 	$(RM) pro/Client/*.cpp
 	$(RM) pro/Client/*.h
-###[Client]###
+###[Client test]###
 test_client: clean_test_client make_test_client clean_temp_test_client test_client_run
 test_client_run:
 	bin/Test/Client/Test
