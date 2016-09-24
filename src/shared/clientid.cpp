@@ -5,23 +5,32 @@
 #include <iostream>
 #include "../../include/shared/id_client.h"
 
-ClientID::ClientID(uint32_t &_id):
+ClientID::ClientID(uint32_t _id):
     id(_id)
-{}
+{
+    if(id > staticID) staticID = id;
+}
 
 ClientID::ClientID(const ClientID &c)
 {
     id = c.id;
+    if(id > staticID) staticID = id;
 }
 
 ClientID::ClientID()
 {
-    staticID++;
-    id = staticID;
+    id = ++staticID;
 }
 ClientID::ClientID(std::string &data)
 {
     this->id = std::stoi(data);
+    if(id > staticID) staticID = id;
+}
+
+ClientID::ClientID(const char *data)
+{
+    this->id = std::stoi(data);
+    if(id > staticID) staticID = id;
 }
 
 bool ClientID::operator ==(const ClientID& id)const
@@ -51,6 +60,7 @@ bool ClientID::operator>(const ClientID &id)const
 ClientID ClientID::operator=(uint32_t _id)
 {
     id = _id;
+    if(id > staticID) staticID = id;
     return *this;
 }
 

@@ -30,5 +30,12 @@ public:
     RoomID():
         ClientID()
     {}
+    /*!
+    \brief contructor to retrieve original id of room from given const char *
+    \param data - const char * that will initialize original id of room
+    */
+    RoomID(const char *data):
+        ClientID(data)
+    {}
 };
 

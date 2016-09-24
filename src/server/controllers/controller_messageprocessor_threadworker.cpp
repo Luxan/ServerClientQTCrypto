@@ -1,9 +1,9 @@
 #include <sstream>
 
-#include "../../include/server/controllers/controller_messageprocessor_threadworker.h"
-#include "../../include/server/modules/message_processor.h"
-#include "../../include/server/thread_worker.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/controllers/controller_messageprocessor_threadworker.h"
+#include "../../../include/server/modules/message_processor.h"
+#include "../../../include/server/thread_worker.h"
+#include "../../../include/server/slog.h"
 
 /**
 \see interface_communication_controller.h

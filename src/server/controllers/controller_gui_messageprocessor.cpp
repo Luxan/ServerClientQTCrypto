@@ -1,11 +1,11 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/controllers/controller_gui_messageprocessor.h"
-#include "../../include/server/mainwindow.h"
-#include "../../include/server/modules/message_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/controllers/controller_gui_messageprocessor.h"
+#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/modules/message_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
 
 void Controller_GUI_MessageProcessor::CheckModule1Events(void *module1, void *module2)
 {

@@ -65,7 +65,7 @@ clean_test_server: clean_temp_test_server
 	$(RM) -rf obj/Test/Server
 	$(RM) -rf bin/Test/Server	
 make_test_server:
-	cd pro/Test/Server/Test; qmake Test.pro
+	cd pro/Test/Server; qmake Test.pro
 	$(MAKE) -C pro/Test/Server/
 clean_temp_test_server:
 	$(RM) pro/Test/Server/Makefile

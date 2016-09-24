@@ -7,7 +7,7 @@
 #include <map>
 #include <mutex>
 #include <atomic>
-#include <QSqlDatabase>
+#include <QtSql/QSqlDatabase>
 
 #include "../../shared/id_client.h"
 #include "../../shared/user.h"

@@ -3,7 +3,7 @@
 */
 #include <string>
 
-#include "../../include/shared/message.h"
+#include "../../../include/shared/messages/message.h"
 
  std::string Message::GetString()
  {

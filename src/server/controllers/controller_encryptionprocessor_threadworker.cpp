@@ -1,11 +1,11 @@
 #include <sstream>
 
-#include "../../include/server/interfaces/interface_communication_controller.h"
-#include "../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
-#include "../../include/server/thread_worker.h"
-#include "../../include/server/modules/crypto_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/interfaces/interface_communication_controller.h"
+#include "../../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
+#include "../../../include/server/thread_worker.h"
+#include "../../../include/server/modules/crypto_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
 
 void Controller_EncryptionProcessor_ThreadWorker::CheckModule1Events(void *module1, void *module2)
 {

@@ -1,7 +1,7 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/interfaces/interface_communication_controller.h"
+#include "../../../include/server/interfaces/interface_communication_controller.h"
 
 
 void InterfaceCommunicationController::setModule1Obj(void *_m1)

@@ -1,8 +1,8 @@
-#include "../../include/server/controllers/controller_gui_encryptionprocessor.h"
-#include "../../include/server/mainwindow.h"
-#include "../../include/server/modules/crypto_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/controllers/controller_gui_encryptionprocessor.h"
+#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/modules/crypto_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
 
 void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
 {

@@ -10,10 +10,10 @@
 #include "../../include/shared/crypto/hash.h"
 
 User::User(std::string name, UserCredentials * credentials, UserRelations * relations):
-    name(name), credentials(credentials), relations(relations)
+    name(name), credentials(credentials), relations(relations), status(Status::Offline)
 {}
 
-bool User::LogIn(std::string _login, Hash * _password)
+bool User::logIn(std::string _login, Hash * _password)
 {
     std::lock_guard<std::mutex> guard(lock_data);
     if (credentials->getLogin() == _login)
@@ -34,7 +34,7 @@ User::~User()
     delete relations;
 }
 
-void User::LogOff()
+void User::logOff()
 {
     status = Status::Offline;
 }
@@ -68,24 +68,24 @@ std::string User::getLogin()
     return credentials->getLogin();
 }
 
-PackageWrapper * User::getPackageToSend()
-{
-    std::lock_guard<std::mutex> guard(lock_queue);
-    return vpackagesToSend.front();
-}
+//PackageWrapper * User::getPackageToSend()
+//{
+//    std::lock_guard<std::mutex> guard(lock_queue);
+//    return vpackagesToSend.front();
+//}
 
-void User::pushPackageToSend(PackageWrapper * m)
-{
-    std::lock_guard<std::mutex> guard(lock_queue);
-    vpackagesToSend.push(m);
-}
-void User::popPackageToSend()
-{
-    std::lock_guard<std::mutex> guard(lock_queue);
-    vpackagesToSend.pop();
-}
-bool User::hasPacketsToSend()
-{
-    std::lock_guard<std::mutex> guard(lock_queue);
-    return !vpackagesToSend.empty();
-}
+//void User::pushPackageToSend(PackageWrapper * m)
+//{
+//    std::lock_guard<std::mutex> guard(lock_queue);
+//    vpackagesToSend.push(m);
+//}
+//void User::popPackageToSend()
+//{
+//    std::lock_guard<std::mutex> guard(lock_queue);
+//    vpackagesToSend.pop();
+//}
+//bool User::hasPacketsToSend()
+//{
+//    std::lock_guard<std::mutex> guard(lock_queue);
+//    return !vpackagesToSend.empty();
+//}

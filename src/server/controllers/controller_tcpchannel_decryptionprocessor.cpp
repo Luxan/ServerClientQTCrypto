@@ -1,9 +1,9 @@
-#include "../../include/server/interfaces/interface_communication_controller.h"
-#include "../../include/server/controllers/controller_tcpchannel_decryptionprocessor.h"
-#include "../../include/server/interfaces/interface_tcpchannel.h"
-#include "../../include/server/modules/crypto_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/interfaces/interface_communication_controller.h"
+#include "../../../include/server/controllers/controller_tcpchannel_decryptionprocessor.h"
+#include "../../../include/server/interfaces/interface_tcpchannel.h"
+#include "../../../include/server/modules/crypto_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
 
 
 void Controller_TCPChannel_DecryptionProcessor::CheckModule1Events(void *module1, void *module2)

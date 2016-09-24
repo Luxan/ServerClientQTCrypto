@@ -4,11 +4,11 @@
 #include <thread>
 #include <list>
 
-#include "../../include/server/systemevents.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/modules/message_collector.h"
-#include "../../include/server/slog.h"
-#include "../../include/server/modules/database.h"
+#include "../../../include/server/systemevents.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/modules/message_collector.h"
+#include "../../../include/server/slog.h"
+#include "../../../include/server/modules/database.h"
 
 
 MessageCollector::MessageCollector(ThreadConfiguration conf):

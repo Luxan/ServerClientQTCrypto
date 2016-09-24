@@ -1,25 +1,37 @@
+#pragma once
+#include <QObject>
 #include <stdlib.h>
-#include <time.h>
+#include <chrono>
 
 class TestBase : public QObject
 {
     Q_OBJECT
 private:
-	time_t startTime;
+    std::chrono::time_point<std::chrono::system_clock> startTime;
 protected:
+    void setupTimeElapsed()
+    {
+        srand (time(NULL));
+        startTime = std::chrono::system_clock::now();
+    }
 	void showTimeElapsed()
 	{
-		qDebug("Test_Buffer Time Elapsed:" + QString(time(NULL) - startTime));
+        std::chrono::duration<double> diff = std::chrono::system_clock::now() - startTime;
+        std::string q("Time Elapsed:" + std::to_string(diff.count()));
+        qDebug(q.c_str());
 	}
-private slots:
-	virtual void constructor() = 0
-	virtual void setup() = 0;
-	virtual void tierDown() = 0;
 
-	void setupTimeElapsed()
-	{
-		srand (time(NULL));
-		startTime = time(NULL);
-	}
-		
+    virtual void setup() = 0;
+    virtual void tearDown() = 0;
+    virtual void constructor() = 0;
+public:
+    TestBase()
+    {
+        setupTimeElapsed();
+    }
+
+    ~TestBase()
+    {
+        showTimeElapsed();
+    }
 };

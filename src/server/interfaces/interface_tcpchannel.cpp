@@ -5,20 +5,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../include/server/interfaces/interface_tcpchannel.h"
-#include "../../include/shared/messages/message.h"
-#include "../../include/server/slog.h"
-#include "../../include/shared/crypto/key.h"
-#include "../../include/shared/crypto/crypto.h"
-#include "../../include/shared/user.h"
-#include "../../include/server/modules/database.h"
-#include "../../include/shared/buffer.h"
-#include "../../include/shared/packages/package_instant_replay.h"
-#include "../../include/shared/packages/package_signal.h"
-#include "../../include/shared/packages/package_user_to_user.h"
-#include "../../include/shared/packages/package_update.h"
-#include "../../include/shared/buffer_spitter.h"
-#include "../../include/shared/error_enum.h"
+#include "../../../include/server/interfaces/interface_tcpchannel.h"
+#include "../../../include/shared/messages/message.h"
+#include "../../../include/server/slog.h"
+#include "../../../include/shared/crypto/key.h"
+#include "../../../include/shared/crypto/crypto.h"
+#include "../../../include/shared/user.h"
+#include "../../../include/server/modules/database.h"
+#include "../../../include/shared/buffer.h"
+#include "../../../include/shared/packages/package_instant_replay.h"
+#include "../../../include/shared/packages/package_signal.h"
+#include "../../../include/shared/packages/package_user_to_user.h"
+#include "../../../include/shared/packages/package_update.h"
+#include "../../../include/shared/buffer_spitter.h"
+#include "../../../include/shared/error_enum.h"
 
 #include <QDebug>
 
@@ -354,23 +354,23 @@ void InterfaceTcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &lis
 
         AddImpulseToQueue(new ImpulsePackage(eSystemEvent::PackageReceived, pw));
 
-        if (connectedClients[i].isConnected())
-        {
-            if (connectedClients[i].getUser()->hasPacketsToSend())
-            {
-                PackageWrapper *p = connectedClients[i].getUser()->getPackageToSend();
-                while (p != nullptr)
-                {
-                    if (!sendPackage(p, i))
-                    {
-                        delete p;
-                        break;
-                    }
-                    delete p;
-                    connectedClients[i].getUser()->popPackageToSend();
-                }
-            }
-        }
+//        if (connectedClients[i].isConnected())
+//        {
+//            if (connectedClients[i].getUser()->hasPacketsToSend())
+//            {
+//                PackageWrapper *p = connectedClients[i].getUser()->getPackageToSend();
+//                while (p != nullptr)
+//                {
+//                    if (!sendPackage(p, i))
+//                    {
+//                        delete p;
+//                        break;
+//                    }
+//                    delete p;
+//                    connectedClients[i].getUser()->popPackageToSend();
+//                }
+//            }
+//        }
     }
 }
 //always copy content of buf!!! splitter already delete received Data!

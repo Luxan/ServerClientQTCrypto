@@ -3,8 +3,8 @@
 #include "../interfaces/interface_processor.h"
 #include "../../shared/packages/package.h"
 #include "../systemevents.h"
-#include "../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
-#include "../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
+#include "../../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
+#include "../../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
 
 class Controller_DecryptionProcessor_ThreadWorker;
 class Controller_EncryptionProcessor_ThreadWorker;

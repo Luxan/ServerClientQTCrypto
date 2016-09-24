@@ -88,6 +88,18 @@ public:
         id(id)
     {}
 
+    UserCredentials(const char *login,
+                    Hash * password,
+                    uint32_t password_hash_iteration_count,
+                    uint64_t user_salt,
+                    ClientID id):
+        login(login),
+        password(password),
+        password_hash_iteration_count(password_hash_iteration_count),
+        user_salt(user_salt),
+        id(id)
+    {}
+
     ~UserCredentials()
     {
         delete password;

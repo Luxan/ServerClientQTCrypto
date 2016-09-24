@@ -1,7 +1,7 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/interfaces/interface_thread.h"
+#include "../../../include/server/interfaces/interface_thread.h"
 
 InterfaceThread::InterfaceThread(ThreadConfiguration &conf):
     configuration(conf)

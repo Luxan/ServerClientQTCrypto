@@ -60,7 +60,7 @@ public:
     \pre
     \post
     */
-    bool LogIn(std::string _login, Hash * _password);
+    bool logIn(std::string _login, Hash * _password);
     /**
     \param
     \return
@@ -69,7 +69,7 @@ public:
     \pre
     \post
     */
-    void LogOff();
+    void logOff();
     /**
     \param
     \return
@@ -132,32 +132,32 @@ public:
     \pre
     \post
     */
-    PackageWrapper *getPackageToSend();
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool hasPacketsToSend();
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void pushPackageToSend(PackageWrapper *m);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void popPackageToSend();
+//    PackageWrapper *getPackageToSend();
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    bool hasPacketsToSend();
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    void pushPackageToSend(PackageWrapper *m);
+//    /**
+//    \param
+//    \return
+//    \throw
+//    \brief
+//    \pre
+//    \post
+//    */
+//    void popPackageToSend();
 };

@@ -1,4 +1,4 @@
-#include "../../include/server/interfaces/interface_communication.h"
+#include "../../../include/server/interfaces/interface_communication.h"
 
 void interfaceCommunication::AddImpulseToQueue(Impulse *i)
 {

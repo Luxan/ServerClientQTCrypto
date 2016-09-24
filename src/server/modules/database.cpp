@@ -3,15 +3,15 @@
 */
 #include <thread>
 #include <mutex>
-#include <QSqlQuery>
-#include <QSqlRecord>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
 #include <QVariant>
 
-#include "../../include/server/slog.h"
+#include "../../../include/server/slog.h"
 
-#include "../../../include/server/modules/database.h"
-#include "../../include/shared/user_credentials.h"
-#include "../../include/shared/user_relations.h"
+#include "../../../../include/server/modules/database.h"
+#include "../../../include/shared/user_credentials.h"
+#include "../../../include/shared/user_relations.h"
 
 void DataBase::createDatabase()
 {
@@ -211,7 +211,7 @@ void DataBase::registerUserToDatabase(std::string name, ClientID id, std::string
         query.bindValue(":name", name.c_str());
         query.bindValue(":id", id.operator uint32_t());
         query.bindValue(":login", login.c_str());
-        query.bindValue(":password", QByteArray((const char *)password->getBuff(), password->getLength()));
+        query.bindValue(":password", QByteArray((const char *)password->getPointerToBuffer(), password->getLength()));
         query.bindValue(":iteration", iteration);
         query.bindValue(":salt", salt);
         query.exec();
@@ -307,7 +307,7 @@ void DataBase::loginRequest(std::string login, Hash * password)
     for (auto it = mUsers.begin(); it != mUsers.end(); it++)
     {
         std::shared_ptr<User> u = (*it).second;
-        if (u->LogIn(login, password))
+        if (u->logIn(login, password))
         {
             this->AddImpulseToQueue(new ImpulseUser(eSystemEvent::DatabaseLoginSuccessfull, (*it).second));
         }

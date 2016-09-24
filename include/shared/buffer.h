@@ -27,7 +27,7 @@ public:
     Buffer(uint8_t *_buff, BUFF_SIZE _length)
     {
         buff = new uint8_t[_length + 1];
-        
+        length = _length;
         memcpy(buff, _buff, _length);
     }
 

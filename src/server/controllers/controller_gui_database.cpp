@@ -1,12 +1,12 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/controllers/controller_gui_database.h"
-#include "../../include/server/mainwindow.h"
-#include "../../include/server/modules/database.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
-#include "../../include/shared/user_credentials.h"
+#include "../../../include/server/controllers/controller_gui_database.h"
+#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/modules/database.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
+#include "../../../include/shared/user_credentials.h"
 
 void Controller_GUI_Database::CheckModule1Events(void *module1, void *module2)
 {

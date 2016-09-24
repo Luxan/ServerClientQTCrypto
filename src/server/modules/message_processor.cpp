@@ -3,12 +3,12 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/task.h"
-#include "../../include/server/modules/message_processor.h"
-#include "../../include/server/thread_worker.h"
-#include "../../include/server/systemevents.h"
-#include "../../include/server/impulse.h"
-#include "../../include/shared/messages/message.h"
+#include "../../../include/server/task.h"
+#include "../../../include/server/modules/message_processor.h"
+#include "../../../include/server/thread_worker.h"
+#include "../../../include/server/systemevents.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/shared/messages/message.h"
 
 MessageProcessor::MessageProcessor(ThreadConfiguration conf, Controller_MessageProcessor_ThreadWorker *controller, int numberOfWorkers):
     Processor(conf, controller, numberOfWorkers)

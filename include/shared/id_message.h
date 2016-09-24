@@ -31,4 +31,11 @@ public:
     MessageID():
         ClientID()
     {}
+    /*!
+    \brief contructor to retrieve original id of message from given const char *
+    \param data - const char * that will initialize original id of message
+    */
+    MessageID(const char *data):
+        ClientID(data)
+    {}
 };

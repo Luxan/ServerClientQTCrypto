@@ -1,4 +1,4 @@
-#include "../../include/server/modules/crypto_processor.h"
+#include "../../../include/server/modules/crypto_processor.h"
 
 CryptoProcessor::CryptoProcessor(ThreadConfiguration &conf,
                                  InterfaceCommunicationController *controller,

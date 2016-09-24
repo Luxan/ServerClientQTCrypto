@@ -1,9 +1,9 @@
-#include "../../include/server/interfaces/interface_communication_controller.h"
-#include "../../include/server/controllers/controller_messagecollector_encryptionprocessor.h"
-#include "../../include/server/modules/message_collector.h"
-#include "../../include/server/modules/crypto_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
+#include "../../../include/server/interfaces/interface_communication_controller.h"
+#include "../../../include/server/controllers/controller_messagecollector_encryptionprocessor.h"
+#include "../../../include/server/modules/message_collector.h"
+#include "../../../include/server/modules/crypto_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
 
 
 void Controller_MessageCollector_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)

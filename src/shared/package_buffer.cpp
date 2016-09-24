@@ -28,10 +28,11 @@ void PackageBuffer::fillBuffer(uint8_t *_buff, BUFF_SIZE size)
 }
 
 PackageBuffer::PackageBuffer(const uint8_t *_buff, BUFF_SIZE _length) :
-	Buffer(nullptr, _length)
+    Buffer(nullptr, 0)
 {
 	buff = new uint8_t[_length + 1];
-	memcpy(buff, _buff, _length);
+    length = _length;
+    memcpy(buff, _buff, _length);
 	offset = 0;
 }
 

@@ -1,12 +1,12 @@
 /**
 \author Sergey Gorokh (ESEGORO)
 */
-#include "../../include/server/controllers/controller_messageprocessor_database.h"
-#include "../../include/server/modules/database.h"
-#include "../../include/server/modules/message_processor.h"
-#include "../../include/server/impulse.h"
-#include "../../include/server/slog.h"
-#include "../../include/shared/messages/message.h"
+#include "../../../include/server/controllers/controller_messageprocessor_database.h"
+#include "../../../include/server/modules/database.h"
+#include "../../../include/server/modules/message_processor.h"
+#include "../../../include/server/impulse.h"
+#include "../../../include/server/slog.h"
+#include "../../../include/shared/messages/message.h"
 
 void Controller_MessageProcessor_Database::CheckModule1Events(void *module1, void *nmodule2)
 {

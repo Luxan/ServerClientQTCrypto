@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../include/server/modules/epoll_tcpchannel.h"
+#include "../../../include/server/modules/epoll_tcpchannel.h"
 
 EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents, Certificate *certificate):
     InterfaceTcpChannel(conf, portNumb, _maxEvents, certificate)

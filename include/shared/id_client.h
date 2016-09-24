@@ -55,9 +55,9 @@ public:
     ClientID(const ClientID &c);
     /*!
     \brief contructor to initialize original id with given number
-    \param _id - reference of number to initialize original id
+    \param _id - number to initialize original id
     */
-    ClientID(uint32_t &_id);
+    ClientID(uint32_t _id);
     /*!
     \brief default contructor that initialize original id with static number staticID
     */
@@ -67,5 +67,10 @@ public:
     \param data - reference to std::string that will initialize original id of User
     */
     ClientID(std::string &data);
+    /*!
+    \brief contructor to retrieve original id of User from given const char *
+    \param data - const char * that will initialize original id of User
+    */
+    ClientID(const char *data);
 };
 
