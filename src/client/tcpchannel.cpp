@@ -228,7 +228,7 @@ void TCPChannel::readTcpData()
 {
     QByteArray data = _pSocket->readAll();
 
-    bufferSpitter b((uint8_t *)data.data(), data.length());
+    BufferSpitter b((uint8_t *)data.data(), data.length());
     std::list<PackageBuffer *> list;
     static PackageBuffer incompletePackageBuffer(nullptr, 0);
     static BUFF_SIZE incompletePackageFullLength = 0;

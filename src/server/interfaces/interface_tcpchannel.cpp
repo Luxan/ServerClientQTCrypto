@@ -20,8 +20,6 @@
 #include "../../../include/shared/buffer_spitter.h"
 #include "../../../include/shared/error_enum.h"
 
-#include <QDebug>
-
 InterfaceTcpChannel::InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents, Certificate *certificate):
     InterfaceThread(conf),
     maxEvents(maxEvents),
@@ -302,11 +300,6 @@ void InterfaceTcpChannel::processPacketExchange(int i)
             closeSocket(i);
             break;
         }
-
-        //for (int x = 0; x < size; x++)
-        //{
-        //    qDebug() << Quint8_tArray(std::to_string((uint8_t)buf[x]).c_str(), size);
-       // }
 
         BufferSpitter b((uint8_t *)buf, size);
 

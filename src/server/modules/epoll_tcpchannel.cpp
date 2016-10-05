@@ -87,7 +87,6 @@ bool EpollTCPChannel::isSocketValid(int i)
         return true;
 }
 
-
 bool EpollTCPChannel::checkIncomingConnections(int i)
 {
     if (sfd == events[i].data.fd)
