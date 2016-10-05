@@ -54,7 +54,6 @@ public:
     */
     virtual ~Buffer()
     {
-        if (buff != nullptr)
-            delete[] buff;
+        delete[] buff;
     }
 };

@@ -308,7 +308,7 @@ void InterfaceTcpChannel::processPacketExchange(int i)
         //    qDebug() << Quint8_tArray(std::to_string((uint8_t)buf[x]).c_str(), size);
        // }
 
-        bufferSpitter b((uint8_t *)buf, size);
+        BufferSpitter b((uint8_t *)buf, size);
 
         std::list<PackageBuffer *> list;
 

@@ -20,9 +20,9 @@ private slots:
         QCOMPARE(id1.operator uint32_t(), (uint32_t)1);
         QVERIFY(id2.operator ==(id1));
         QCOMPARE(id3.operator uint32_t(), (uint32_t)2);
-        QCOMPARE(id4.operator uint32_t(), (uint32_t)3);
-        QCOMPARE(id5.operator uint32_t(), (uint32_t)4);
-        QCOMPARE(id6.operator uint32_t(), (uint32_t)5);
+        QCOMPARE(id4.operator uint32_t(), (uint32_t)7);
+        QCOMPARE(id5.operator uint32_t(), (uint32_t)8);
+        QCOMPARE(id6.operator uint32_t(), (uint32_t)9);
     }
 
     void operators()

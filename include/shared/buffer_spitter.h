@@ -10,15 +10,17 @@
 \example buffer |0x00 0x0a|0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09| will be splitted into |0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09| buffer.
 \memory as class Buffer it destroys all initial data stored inside class object.
 */
-class bufferSpitter : public Buffer
+class BufferSpitter : public Buffer
 {
+private:
+    uint32_t offset;
 public:
     /*!
     \brief constructor that store initial data inside object class
     \param _buff - pointer to initial huge data buffer 
     \param _length - length of initial huge data buffer 
     */
-    bufferSpitter(uint8_t *_buff, BUFF_SIZE _length);
+    BufferSpitter(uint8_t *_buff, BUFF_SIZE _length);
 
     /*!
     \param &list - reference to list of PackageBuffer where will be stored splitted packages
@@ -28,4 +30,6 @@ public:
     \pre initial huge data buffer must be present!
     */
     void splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, BUFF_SIZE &incompletePackageFullLength);
+
+    virtual ~BufferSpitter();
 };

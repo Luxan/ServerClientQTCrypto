@@ -15,7 +15,7 @@ private:
 private slots:
     virtual void setup()
     {
-        size = rand() % 100;
+        size = (rand() % 100) + 7;
         tab = new uint8_t[size];
         for (size_t i = 0; i < size; i++)
         {
@@ -56,46 +56,22 @@ private slots:
 
 	void fillBuffer()
 	{
-		uint8_t x1[5];
-		uint8_t x2[10];
-		uint8_t x3[15];
-		uint8_t x4[30];
-		uint8_t x5[50];
+        uint8_t x1[5];
+        uint8_t x2[size - 5];
 
-		b3->fillBuffer(x1, 5);
+        b3->fillBuffer(x1, 5);
         QCOMPARE(b3->getLength(), (BUFF_SIZE)(size - 5));
-		for (int i = 0; i < 5; i++)
-		{
+        for (int i = 0; i < 5; i++)
+        {
             QCOMPARE(*(x1 + i), (uint8_t)i);
-		}
+        }
 
-		b3->fillBuffer(x2, 10);
-        QCOMPARE(b3->getLength(), (BUFF_SIZE)(size - 15));
-		for (int i = 0; i < 5; i++)
-		{
-            QCOMPARE(*(x1 + i), (uint8_t)(5 + i));
-		}
-
-		b3->fillBuffer(x3, 15);
-        QCOMPARE(b3->getLength(), (BUFF_SIZE)(size - 30));
-		for (int i = 0; i < 5; i++)
-		{
-            QCOMPARE(*(x1 + i), (uint8_t)(15 + i));
-		}
-
-		b3->fillBuffer(x4, 30);
-        QCOMPARE(b3->getLength(), (BUFF_SIZE)(size - 60));
-		for (int i = 0; i < 5; i++)
-		{
-            QCOMPARE(*(x1 + i), (uint8_t)(30 + i));
-		}
-
-		b3->fillBuffer(x5, 50);
-        QCOMPARE(b3->getLength(), (BUFF_SIZE)(size - 110));
-		for (int i = 0; i < 5; i++)
-		{
-            QCOMPARE(*(x1 + i), (uint8_t)(60 + i));
-		}
+        b3->fillBuffer(x2, size - 5);
+        QCOMPARE(b3->getLength(), (BUFF_SIZE)0);
+        for (int i = 5; i < size; i++)
+        {
+            QCOMPARE(*(x2 + i - 5), (uint8_t)i);
+        }
 	}
 
 	void concatBuff()
@@ -112,12 +88,12 @@ private slots:
 	
 	void getPointerToBuffer()
 	{
-        QCOMPARE(b5->getPointerToBuffer(), tab);
+        QCOMPARE(*b5->getPointerToBuffer(), *tab);
 
 		uint8_t x1[5];
 		
 		b5->fillBuffer(x1, 5);
-        QCOMPARE(b5->getPointerToBuffer(), tab + 5);
+        QCOMPARE(*b5->getPointerToBuffer(), *(tab + 5));
 	}
 
 	void copyToNewAndClear()

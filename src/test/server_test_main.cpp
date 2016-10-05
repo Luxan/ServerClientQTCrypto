@@ -31,10 +31,12 @@ int main(int argc, char *argv[])
 
     TEST_CLASS(Test_Buffer)
     TEST_CLASS(Test_BufferSpitter)
+    //-----------those 3 classes has dependenties so must be tested in proper order!
     TEST_CLASS(Test_ClientID)
     TEST_CLASS(Test_MessageID)
-    TEST_CLASS(Test_PackageBuffer)
     TEST_CLASS(Test_RoomID)
+    //-----------
+    TEST_CLASS(Test_PackageBuffer)
     TEST_CLASS(Test_User)
 
     return status;

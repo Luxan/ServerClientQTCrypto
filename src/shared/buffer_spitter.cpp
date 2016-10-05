@@ -1,11 +1,17 @@
 #include "../../include/shared/buffer_spitter.h"
 
 
-bufferSpitter::bufferSpitter(uint8_t *_buff, BUFF_SIZE _length):
+BufferSpitter::BufferSpitter(uint8_t *_buff, BUFF_SIZE _length):
     Buffer(_buff, _length)
+{
+    offset = 0;
+}
+
+
+BufferSpitter::~BufferSpitter()
 {}
 
-void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, BUFF_SIZE &incompletePackageFullLength)
+void BufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, PackageBuffer *incompletePackageBuffer, BUFF_SIZE &incompletePackageFullLength)
 {
     //check if temporary package exist
     bool isTempPackageExist = incompletePackageFullLength > 0;
@@ -21,8 +27,8 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
             if (length >= needToFull)
             {
                 //add needed amount uint8_ts from input buffer to temporary buffer
-                incompletePackageBuffer->concatBuff(buff, needToFull);
-                buff += needToFull;
+                incompletePackageBuffer->concatBuff(buff + offset, needToFull);
+                offset += needToFull;
                 //push back ready to process new buffer
                 list.push_back(incompletePackageBuffer->copyToNewAndClear());
                 //substruct uint8_ts that needed to full temporary buffer
@@ -35,8 +41,8 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
             else
             {
                 //add all uint8_ts from input buffer to temporary buffer
-                incompletePackageBuffer->concatBuff(buff, length);
-                buff += length;
+                incompletePackageBuffer->concatBuff(buff + offset, length);
+                offset += length;
                 //we got all uint8_ts from buffer
                 length = 0;
             }
@@ -45,8 +51,8 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
         else
         {
             //extract full package length
-            BUFF_SIZE packLength = *((BUFF_SIZE*)buff);
-            buff += sizeof(BUFF_SIZE);
+            BUFF_SIZE packLength = *((BUFF_SIZE*)(buff + offset));
+            offset += sizeof(BUFF_SIZE);
             length -= sizeof(BUFF_SIZE);
             //if full package length equals zero then skip that package
             if (packLength == 0)
@@ -55,8 +61,8 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
             if (packLength <= length)
             {
                 //push back ready to process new buffer
-                list.push_back(new PackageBuffer(buff, packLength));
-                buff +=  packLength;
+                list.push_back(new PackageBuffer(buff + offset, packLength));
+                offset +=  packLength;
                 //substruct uint8_ts that needed to full temporary buffer
                 length -= packLength;
             }
@@ -66,8 +72,8 @@ void bufferSpitter::splitBufferIntoList(std::list<PackageBuffer *> &list, Packag
                 isTempPackageExist = true;
                 incompletePackageFullLength = packLength;
 
-                incompletePackageBuffer->concatBuff(buff, length);
-                buff += length;
+                incompletePackageBuffer->concatBuff(buff + offset, length);
+                offset += length;
                 //got all uint8_tt to fill in temporary package so we dont have uint8_ts left
                 length = 0;
             }
