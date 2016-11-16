@@ -2,10 +2,11 @@
 \author Sergey Gorokh (ESEGORO)
 */
 #include "../../../include/server/controllers/controller_gui_tcpchannel.h"
-#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/login_server/mainwindow.h"
 #include "../../../include/server/interfaces/interface_tcpchannel.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2)
 {
@@ -21,7 +22,7 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartTcpChannel:
-            SLog::logInfo() << "tcpChannel Started.";
+            LOG_INFO("tcpChannel Started.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::TCP_Channel, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -30,7 +31,7 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepTcpChannel:
-            SLog::logInfo() << "tcpChannel Stopped.";
+            LOG_INFO("tcpChannel Stopped.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::TCP_Channel, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -39,11 +40,11 @@ void Controller_GUI_tcpChannel::CheckModule1Events(void *module1, void * module2
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorTcpChannel:
-            SLog::logError() << "tcpChannel Error: " + ((ImpulseError*)i)->getError();
+            LOG_ERROR("tcpChannel Error: " + ((ImpulseError*)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -86,7 +87,7 @@ void Controller_GUI_tcpChannel::CheckModule2Events(void *module1, void *module2)
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

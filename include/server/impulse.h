@@ -11,6 +11,7 @@
 #include "../shared/messages/message.h"
 #include "../shared/packages/package.h"
 #include "../shared/id_client.h"
+#include "../shared/id_session.h"
 #include "../shared/user_credentials.h"
 #include "../shared/user.h"
 
@@ -182,6 +183,7 @@ public:
     {}
 };
 
+
 /**
 \class
 \brief
@@ -207,6 +209,38 @@ public:
     */
     ImpulsePackage(eSystemEvent e, PackageWrapper * p):
         Impulse(e), pw(p)
+    {}
+};
+/**
+\class
+\brief
+*/
+class ImpulseEnryptPackage : public ImpulsePackage
+{
+    Key * encryptionRsaKey;
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    Key * getEncryptionRsaKey()
+    {
+        return encryptionRsaKey;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    ImpulseEnryptPackage(eSystemEvent e, PackageWrapper * p, Key * encryptionRsaKey):
+        ImpulsePackage(e, p), encryptionRsaKey(encryptionRsaKey)
     {}
 };
 /**

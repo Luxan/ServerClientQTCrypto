@@ -5,7 +5,7 @@
 #include "../../../include/server/modules/database.h"
 #include "../../../include/server/modules/message_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
 #include "../../../include/shared/messages/message.h"
 
 void Controller_MessageProcessor_Database::CheckModule1Events(void *module1, void *nmodule2)
@@ -28,7 +28,7 @@ void Controller_MessageProcessor_Database::CheckModule1Events(void *module1, voi
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -66,6 +66,10 @@ void Controller_MessageProcessor_Database::CheckModule2Events(void *module1, voi
     {
         switch (i->getEvent())
         {
+        case eSystemEvent::AttemptToLogIn:
+            database->countAttempsToLogin((MessagePing*)((ImpulseMessage *)i)->getData());
+            deleteAndNext = true;
+            break;
         case eSystemEvent::DatabaseLoginUser:
             c = ((ImpulseUserCredentialsPackage *)i)->getCredentials();
             database->loginRequest(c->getLogin(), c->getPassword());
@@ -92,7 +96,7 @@ void Controller_MessageProcessor_Database::CheckModule2Events(void *module1, voi
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

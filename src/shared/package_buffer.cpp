@@ -37,12 +37,11 @@ PackageBuffer::PackageBuffer(const uint8_t *_buff, BUFF_SIZE _length) :
 }
 
 PackageBuffer::~PackageBuffer()
-{
-}
+{}
 
 void PackageBuffer::concatBuff(uint8_t *_buff, BUFF_SIZE _length)
 {
-	if (_length == 0)
+    if (_length == 0 || _buff == nullptr)
 		return;
 
 	uint8_t *newBuff = new uint8_t[_length + length + 1];
@@ -58,8 +57,8 @@ void PackageBuffer::concatBuff(uint8_t *_buff, BUFF_SIZE _length)
 
 PackageBuffer *PackageBuffer::copyToNewAndClear()
 {
-	PackageBuffer *newBuff = new PackageBuffer(buff, length);
-
+    PackageBuffer *newBuff = new PackageBuffer(buff + offset, length - offset);
+    this->~Buffer();
 	this->buff = nullptr;
 	this->length = 0;
 

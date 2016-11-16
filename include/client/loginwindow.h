@@ -59,6 +59,7 @@ public:
     \post
     */
     void logInfo(std::string info);
+
 private slots:
 	/**
 	\param

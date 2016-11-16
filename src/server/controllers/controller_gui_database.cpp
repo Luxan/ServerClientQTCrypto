@@ -2,10 +2,11 @@
 \author Sergey Gorokh (ESEGORO)
 */
 #include "../../../include/server/controllers/controller_gui_database.h"
-#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/login_server/mainwindow.h"
 #include "../../../include/server/modules/database.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 #include "../../../include/shared/user_credentials.h"
 
 void Controller_GUI_Database::CheckModule1Events(void *module1, void *module2)
@@ -22,7 +23,7 @@ void Controller_GUI_Database::CheckModule1Events(void *module1, void *module2)
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartDatabase:
-            SLog::logInfo() << "Database Started.";
+            LOG_INFO("Database Started.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::Database, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -32,7 +33,7 @@ void Controller_GUI_Database::CheckModule1Events(void *module1, void *module2)
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepDatabase:
-            SLog::logInfo() << "Database Stopped.";
+            LOG_INFO("Database Stopped.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::Database, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -42,11 +43,11 @@ void Controller_GUI_Database::CheckModule1Events(void *module1, void *module2)
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorDatabase:
-            SLog::logError() << "Database Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("Database Error: " + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -103,7 +104,7 @@ void Controller_GUI_Database::CheckModule2Events(void *module1, void * module2)
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

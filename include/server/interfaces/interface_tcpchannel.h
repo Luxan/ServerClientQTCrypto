@@ -4,13 +4,16 @@
 #include <sys/epoll.h>
 
 #include "interface_communication.h"
+#include "../../shared/id_session.h"
 #include "../../shared/packages/package.h"
+#include "../../shared/packages/package_instant_replay.h"
 #include "interface_thread.h"
 #include "../../shared/user.h"
 #include "../../shared/crypto/hasher.h"
 #include "../../shared/crypto/cipher.h"
 #include "../../shared/crypto/certificate.h"
 #include "../../server/clientsocket.h"
+#include "../../shared/crypto/key_agreement_agent.h"
 
 /**
 \class
@@ -27,7 +30,7 @@ public:
     \pre
     \post
     */
-    void prepareToSend(PackageWrapper * pw);
+    void prepareToSend(PackageWrapperEncoded *pw);
     /**
     \param
     \return
@@ -36,16 +39,7 @@ public:
     \pre
     \post
     */
-    void setCrypto(Hasher *hasher, Cipher * cipher);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents, Certificate * certificate);
+    InterfaceTcpChannel(ThreadConfiguration conf, int portNumb, int maxEvents);
     /**
     \param
     \return
@@ -76,7 +70,6 @@ public:
 protected:
     const int portno;
     const int maxEvents;
-
     /**
     \param
     \return
@@ -169,19 +162,15 @@ private:
 //        CloseEpolDescriptor
     };
 
-    Hasher * hasher;
-    Cipher * cipher;
-    RemoteClient *connectedClients;
+    std::map<SessionID, std::list<PackageWrapperEncoded*>*> packagesToSend;
     eChannelState state;
-    Certificate * certificate;
-
-
+    RemoteClient * connectedClients;
 
     /**
     \see interface_thread.h
     */
     virtual void dowork();
-    /**
+   /**
     \param
     \return
     \throw
@@ -189,43 +178,7 @@ private:
     \pre
     \post
     */
-    bool sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp, int i);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff, int i);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    bool sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type, int i);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void handleLoginPackage(Package * p, int i);
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void handleSessionDetailRequestPackage(int i);
+    void handleSessionDetailRequestPackage(PackageWrapperEncoded *pw, int i);
     /**
     \param
     \return
@@ -252,7 +205,7 @@ private:
     \pre
     \post
     */
-    PackageWrapper *CreatePackage(PackageBuffer *buf);
+    PackageWrapperEncoded *CreatePackage(PackageBuffer *buf);
     /**
     \param
     \return
@@ -261,5 +214,5 @@ private:
     \pre
     \post
     */
-    bool sendPackage(PackageWrapper * response, int i);
+    bool sendPackage(PackageWrapperEncoded * response, int i);
 };

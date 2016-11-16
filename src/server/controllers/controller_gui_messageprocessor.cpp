@@ -2,10 +2,11 @@
 \author Sergey Gorokh (ESEGORO)
 */
 #include "../../../include/server/controllers/controller_gui_messageprocessor.h"
-#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/login_server/mainwindow.h"
 #include "../../../include/server/modules/message_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 void Controller_GUI_MessageProcessor::CheckModule1Events(void *module1, void *module2)
 {
@@ -21,7 +22,7 @@ void Controller_GUI_MessageProcessor::CheckModule1Events(void *module1, void *mo
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartMessageProcessor:
-            SLog::logInfo() << "MessageProcessor Started.";
+            LOG_INFO("MessageProcessor Started.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::MessageProcessor, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -30,7 +31,7 @@ void Controller_GUI_MessageProcessor::CheckModule1Events(void *module1, void *mo
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepMessageProcessor:
-            SLog::logInfo() << "MessageProcessor Stopped.";
+            LOG_INFO("MessageProcessor Stopped.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::MessageProcessor, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -39,11 +40,11 @@ void Controller_GUI_MessageProcessor::CheckModule1Events(void *module1, void *mo
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorMessageProcessor:
-            SLog::logError() << "MessageProcessor Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("MessageProcessor Error: " + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -86,7 +87,7 @@ void Controller_GUI_MessageProcessor::CheckModule2Events(void *module1, void *mo
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

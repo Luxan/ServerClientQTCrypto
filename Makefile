@@ -1,11 +1,14 @@
 #################[Variables]#################
 this_dir = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 #################[Global]#################
-all:	is_lib_installed client test_client server test_server
+all:	is_lib_installed certificate client test_client server test_server
 rebuild: clean all
 clean:	clean_client clean_server
 gendoc:
 	bash generate_documentation.sh
+certificate:
+	cd cert; ./validate.sh
+test:	test_client test_server
 #################[Lib]#################
 is_lib_installed: is_crypto++_installed
 lib: crypto++
@@ -42,7 +45,7 @@ clean_test_client: clean_temp_test_client
 	$(RM) -rf obj/Test/Client
 	$(RM) -rf bin/Test/Client
 make_test_client:
-	cd pro/Test/Client/Test; qmake Test.pro
+	cd pro/Test/Client/; qmake Test.pro
 	$(MAKE) -C pro/Test/Client/
 clean_temp_test_client:
 	$(RM) pro/Test/Client/Makefile

@@ -6,14 +6,14 @@
 
 void TaskQueue::AddTask(Task *t)
 {
-    lock.lock();
+    lockJobs.lock();
     jobs.push(t);
-    lock.unlock();
+    lockJobs.unlock();
 }
 
 Task* TaskQueue::GetNextTask()
 {
-    std::lock_guard<std::mutex> guard(lock);
+    std::lock_guard<std::mutex> guard(lockJobs);
 
     if (jobs.empty())
     {
@@ -24,4 +24,27 @@ Task* TaskQueue::GetNextTask()
     jobs.pop();
 
     return task;
+}
+
+
+Task* TaskQueue::GetNextDoneTask()
+{
+    std::lock_guard<std::mutex> guard(lockDone);
+
+    if (done.empty())
+    {
+        return nullptr;
+    }
+
+    Task * task = done.front();
+    done.pop();
+
+    return task;
+}
+
+void TaskQueue::AddDoneTask(Task * t)
+{
+    lockDone.lock();
+    done.push(t);
+    lockDone.unlock();
 }

@@ -1,57 +1,29 @@
 #pragma once
 
-#include "../../../include/shared/buffer.h"
-#include "../../../include/test/test_base.h"
-
 #include <QtTest/QtTest>
 #include <QTest>
+
+#include "../../../include/shared/buffer.h"
+#include "../../../include/test/test_base.h"
 
 class Test_Buffer : public TestBase
 {
     Q_OBJECT
+    CLASSTEST(Test_Buffer, TestBase)
 private:
-    Buffer *b1;
-	uint8_t * tab;
+    Buffer *b1, *b2, *b3, *b4;
+    uint8_t * tab, *tab2;
     BUFF_SIZE size;
 private slots:
-	virtual void setup()
-	{
-        size = rand() % 100;
-		tab = new uint8_t[size];
-        for (BUFF_SIZE i = 0; i < size; i++)
-		{
-			tab[i] = i;
-		}
-        b1 = new Buffer(tab, size);
-	}
+    virtual void setup();
 
-	virtual void constructor()
-	{
-        for (BUFF_SIZE i = 0; i < size; i++)
-		{
-            if (*(b1->getPointerToBuffer() + i) != i)
-			{
-                QCOMPARE(*(b1->getPointerToBuffer() + i), (uint8_t)i);
-				qDebug("Consrtucted buffer has incorrect Data"); 
-				break;
-			}
-		}
-	}
+    virtual void constructor();
 	
-	void getLength()
-	{				
-        QCOMPARE(b1->getLength(), size);
-	}
+    void getLength();
 
-	void getPointerToBuffer()
-	{
-        QCOMPARE(*b1->getPointerToBuffer(), *tab);
-    }
+    void getPointerToBuffer();
 
-    virtual void tearDown()
-    {
-        delete[] tab;
+    void operators();
 
-        delete b1;
-    }
+    virtual void tearDown();
 };

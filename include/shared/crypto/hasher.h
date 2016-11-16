@@ -2,6 +2,7 @@
 
 #include <cryptopp/sha3.h>
 #include "crypto.h"
+#include "../package_buffer.h"
 #include "hash.h"
 
 class Hasher : public CryptographyBase
@@ -17,50 +18,55 @@ class SHA3 : public Hasher
 {
 private:
     CryptoPP::SHA3 * hashingAlgorithm;
-    const int DIGESTSIZE;
+    const int digestsize;
 
-    uint8_t * digest_message(const uint8_t *message, size_t message_len, int itherationsCount)
+    uint8_t * digest_message(Buffer * message, uint32_t itherationsCount)
     {
         if (message == nullptr)
             throw ("SHA3: message is nullptr!");
 
-        if (itherationsCount < 1)
-            throw ("SHA3: itherationsCount is fewer than 1!");
+        uint8_t * digest = new uint8_t[digestsize];
 
-        uint8_t * digest = new uint8_t[DIGESTSIZE];
+        hashingAlgorithm->CalculateDigest(digest, message->getPointerToBuffer(), message->getLength());
 
-        hashingAlgorithm->CalculateDigest(digest, message, message_len);
-
-        for (int i = 1; i < itherationsCount; i++)
-            hashingAlgorithm->CalculateDigest(digest, digest, DIGESTSIZE);
+        for (uint32_t i = 0; i < itherationsCount; i++)
+            hashingAlgorithm->CalculateDigest(digest, digest, digestsize);
 
         return digest;
+    }
+protected:
+    SHA3(CryptoPP::SHA3 * hashingAlgorithm, const int DIGESTSIZE):
+        hashingAlgorithm(hashingAlgorithm), digestsize(DIGESTSIZE)
+    {}
+    virtual  ~SHA3()
+    {
+        delete hashingAlgorithm;
     }
 public:
     int getDigestSize()const
     {
-        return DIGESTSIZE;
-    }
-
-    SHA3(CryptoPP::SHA3 * hashingAlgorithm, const int DIGESTSIZE):
-        hashingAlgorithm(hashingAlgorithm), DIGESTSIZE(DIGESTSIZE)
-    {}
-
-   virtual  ~SHA3()
-    {
-        delete hashingAlgorithm;
+        return digestsize;
     }
 
     Hash * createHash(PackageBuffer * input, int itherationsCount)
     {
-        return new Hash(digest_message(input->getPointerToBuffer(), input->getLength(), itherationsCount), getDigestSize());
+        return new Hash(digest_message(input, itherationsCount), getDigestSize());
+    }
+    Hash * createHash(Buffer * input, int itherationsCount)
+    {
+        return new Hash(digest_message(input, itherationsCount), getDigestSize());
     }
 };
 
 class Sha256Hasher : public SHA3
 {
-public:
     Sha256Hasher():
         SHA3(new CryptoPP::SHA3_256(), CryptoPP::SHA3_256::DIGESTSIZE)
     {}
+public:
+    static Sha256Hasher & getInstance()
+    {
+        static Sha256Hasher sh;
+        return sh;
+    }
 };

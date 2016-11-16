@@ -23,6 +23,12 @@ public:
     */
     bool operator==(const ClientID &id)const;
     /*!
+    \brief operator == that checks if given object of ClientID is equal to present.
+    \param id - int that will be compared to id of object.
+    \return true if ClientID object has given id.
+    */
+    bool operator ==(const int id)const;
+    /*!
     \brief operator < that checks if given object of ClientID is smaller to present.
     \param id - object of ClientID that will be compared to present object.
     \return true if given object has greater original id that present object.

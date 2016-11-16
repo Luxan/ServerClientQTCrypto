@@ -5,7 +5,50 @@
 #include "../../shared/id_client.h"
 #include "../../shared/id_message.h"
 #include "../../shared/id_room.h"
+#include "../../shared/id_session.h"
 #include "../../shared/error_enum.h"
+
+struct PackageSessionID : PackageStrictSize
+{
+    SessionID id;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    PackageSessionID() {}
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    PackageSessionID(SessionID id):
+        id(id)
+    {}
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    size_t strictSize() const
+    {
+        return sizeof(id);
+    }
+
+    virtual PackageBuffer * toPackageBuffer()
+    {
+        return new PackageBuffer((uint8_t*)&id, sizeof(id));
+    }
+};
 
 /**
 \struct

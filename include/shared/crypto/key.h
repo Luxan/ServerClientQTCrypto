@@ -8,86 +8,92 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../buffer.h"
+
 /**
 \class
 \brief
 */
-class Key
+class Key : public Buffer
 {
-    uint8_t * buff;
-    const size_t key_length;
 public:
-    size_t getKeyLength() const
+    enum EncryptionKeyType
     {
-        return key_length;
+        RSAPublic,
+        RSAPrivate,
+        AES,
+        Undefined
+    };
+private:
+    EncryptionKeyType type;
+public:
+    Key(uint8_t * buff, size_t _key_length, EncryptionKeyType type):
+        Buffer(buff, _key_length), type(type)
+    {
+        try
+        {
+            uint8_t a = *(buff + _key_length);
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw("Not enought data in buffer. Key length:" + std::to_string(length) + " error: " + oor.what());
+        }
     }
 
-    Key(uint8_t * buff, size_t _key_length, size_t precise_key_length):
-        buff(buff), key_length(_key_length)
+    Key(uint8_t * buff, size_t _key_length):
+        Buffer(buff, _key_length), type(Undefined)
     {
-        if (precise_key_length != _key_length)
-            throw("key length and key precise length is not the same!");
-    }
-
-    virtual ~Key()
-    {
-        delete[] buff;
-    }
-
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    const uint8_t * getBuff()const
-    {
-        return buff;
+        try
+        {
+            uint8_t a = *(buff + _key_length);
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw("Not enought data in buffer. Key length:" + std::to_string(length) + " error: " + oor.what());
+        }
     }
 };
 
 
-class Key64 : Key
+class Key64 : public Key
 {
 public:
-    Key64(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 64)
+    Key64(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 64, type)
     {}
 };
-class Key128 : Key
+class Key128 : public Key
 {
 public:
-    Key128(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 128)
+    Key128(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 128, type)
     {}
 };
-class Key256 : Key
+class Key256 : public Key
 {
 public:
-    Key256(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 256)
+    Key256(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 256, type)
     {}
 };
-class Key512 : Key
+class Key512 : public Key
 {
 public:
-    Key512(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 512)
+    Key512(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 512, type)
     {}
 };
-class Key1024 : Key
+class Key1024 : public Key
 {
 public:
-    Key1024(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 1024)
+    Key1024(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 1024, type)
     {}
 };
-class Key2048 : Key
+class Key2048 : public Key
 {
 public:
-    Key2048(uint8_t * buff, size_t _key_length):
-        Key(buff, _key_length, 2048)
+    Key2048(uint8_t * buff, EncryptionKeyType type):
+        Key(buff, 2048, type)
     {}
 };

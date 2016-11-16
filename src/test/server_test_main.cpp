@@ -2,7 +2,7 @@
 #include <QApplication>
 
 #define TEST_CLASS(TestObject) {\
-TestObject tc;\
+TestObject tc(#TestObject);\
 status |= QTest::qExec(&tc, argc, argv);\
 }
 
@@ -13,16 +13,18 @@ status |= QTest::qExec(&tc, argc, argv);\
 #include "../../include/test/test_shared/test_id_room.h"
 #include "../../include/test/test_shared/test_package_buffer.h"
 #include "../../include/test/test_shared/test_user.h"
+#include "../../include/test/test_shared/test_user_credentials.h"
+#include "../../include/test/test_shared/test_user_relations.h"
 
-
-//#include "../../obj/Test/Server/moc/test_buffer.moc"
-//#include "../../obj/Test/Server/moc/test_buffer_spitter.moc"
-//#include "../../obj/Test/Server/moc/test_id_client.moc"
-//#include "../../obj/Test/Server/moc/test_id_message.moc"
-//#include "../../obj/Test/Server/moc/test_id_room.moc"
-//#include "../../obj/Test/Server/moc/test_package_buffer.moc"
-//#include "../../obj/Test/Server/moc/test_user.moc"
-
+#include "../../include/test/test_shared/crypto/test_certificate.h"
+#include "../../include/test/test_shared/crypto/test_certificate_authority.h"
+#include "../../include/test/test_shared/crypto/test_cipher_rsa.h"
+#include "../../include/test/test_shared/crypto/test_crypto.h"
+#include "../../include/test/test_shared/crypto/test_hash.h"
+#include "../../include/test/test_shared/crypto/test_hasher.h"
+#include "../../include/test/test_shared/crypto/test_iv.h"
+#include "../../include/test/test_shared/crypto/test_key.h"
+#include "../../include/test/test_shared/crypto/test_key_agreement_agent.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,9 +37,20 @@ int main(int argc, char *argv[])
     TEST_CLASS(Test_ClientID)
     TEST_CLASS(Test_MessageID)
     TEST_CLASS(Test_RoomID)
-    //-----------
+//-----------
     TEST_CLASS(Test_PackageBuffer)
-    TEST_CLASS(Test_User)
-
+    TEST_CLASS(Test_PackageBuffer)
+    TEST_CLASS(Test_UserCredentials)
+    TEST_CLASS(Test_UserRelations)
+//-------Crypto
+    TEST_CLASS(Test_Certificate)
+    TEST_CLASS(Test_CertificateAuthority)
+    TEST_CLASS(Test_RSACipher)
+    TEST_CLASS(Test_Crypto)
+    TEST_CLASS(Test_Hash)
+    TEST_CLASS(Test_Sha256Hasher)
+    TEST_CLASS(Test_Iv)
+    TEST_CLASS(Test_Key)
+    TEST_CLASS(Test_KeyAgreamentAgent)
     return status;
 }

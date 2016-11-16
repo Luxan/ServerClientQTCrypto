@@ -4,8 +4,9 @@
 #pragma once
 
 #include "../interfaces/interface_communication_controller.h"
-#include "../mainwindow.h"
+
 #include "../interfaces/interface_tcpchannel.h"
+#include "../login_server/mainwindow.h"
 /**
 \class
 \brief

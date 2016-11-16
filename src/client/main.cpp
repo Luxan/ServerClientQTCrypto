@@ -69,9 +69,11 @@ int main(int argc, char *argv[])
     Buffer b(thawtecert, sizeof(thawtecert));
     CertificateAuthority ca(&b);
 
+    KeyAgreamentAgent agent(&ca);
+
     LoginWindow lw(globalConfiguration.minLoginCharacters, globalConfiguration.minPasswordCharacters);
     MainWindow mw;
-    TCPChannel tcpChannel(globalConfiguration.serverIP, globalConfiguration.serverPort, &ca);
+    TCPChannel tcpChannel(globalConfiguration.serverIP, globalConfiguration.serverPort, &agent);
 
     lw.setTCPChannel(&tcpChannel);
     mw.setTCPChannel(&tcpChannel);

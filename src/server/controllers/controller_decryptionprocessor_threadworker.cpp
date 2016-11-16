@@ -9,7 +9,7 @@
 #include "../../../include/server/thread_worker.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
 
 void Controller_DecryptionProcessor_ThreadWorker::CheckModule1Events(void *module1, void *module2)
 {
@@ -27,21 +27,25 @@ void Controller_DecryptionProcessor_ThreadWorker::CheckModule1Events(void *modul
         {
         case eSystemEvent::ResponseStartDecryptionWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "DecryptionWorker is started. id: " + ss.str();
+            LOG_INFO("DecryptionWorker is started. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepEncryptionWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "DecryptionWorker is sleeped. id: " + ss.str();
+            LOG_INFO("DecryptionWorker is sleeped. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorDecryptionWorker:
-            SLog::logError() << "DecryptionWorker Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("DecryptionWorker Error: " + ((ImpulseError *)i)->getError());
             //decryptionProcessor->AddImpulseToQueue(ImpulseError(eSystemEvent::ErrorReceivedBadPackage, );
             deleteAndNext = true;
             break;
+        case eSystemEvent::ErrorExecutionTask:
+            LOG_ERROR("Got DecryptionProcessor_ThreadWorker error:" + ((ImpulseError *)i)->getError());
+            deleteAndNext = true;
+            break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -94,7 +98,7 @@ void Controller_DecryptionProcessor_ThreadWorker::CheckModule2Events(void *modul
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

@@ -1,8 +1,9 @@
 #include "../../../include/server/controllers/controller_gui_encryptionprocessor.h"
-#include "../../../include/server/mainwindow.h"
+#include "../../../include/server/login_server/mainwindow.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
 {
@@ -18,7 +19,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
         switch (i->getEvent())
         {
         case eSystemEvent::ResponseStartEncryptionProcessor:
-            SLog::logInfo() << "EncryptionProcessor Started.";
+            LOG_INFO("EncryptionProcessor Started.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, true);
             if (mainWindow->isAllChildsEnabled())
             {
@@ -28,7 +29,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepEncryptionProcessor:
-            SLog::logInfo() << "EncryptionProcessor Stopped.";
+            LOG_INFO("EncryptionProcessor Stopped.");
             mainWindow->setChildEnabled(ChildController::EnabledFlag::EncryptionProcessor, false);
             if (mainWindow->isAllChildsDisabled())
             {
@@ -38,11 +39,11 @@ void Controller_GUI_EncryptionProcessor::CheckModule1Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorEncryptionProcessor:
-            SLog::logError() << "EncryptionProcessor Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("EncryptionProcessor Error: " + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -85,7 +86,7 @@ void Controller_GUI_EncryptionProcessor::CheckModule2Events(void *module1, void 
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

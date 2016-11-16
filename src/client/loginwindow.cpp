@@ -30,13 +30,9 @@ void LoginWindow::setTCPChannel(TCPChannel * ch)
 {
     tcpchannel = ch;
 
-    PackageWrapper wr;
     try
     {
-        wr.package = new PackageSessionDetailRequest();
-        wr.type = PackageWrapper::ePackageType::SessionDetailRequest;
-        tcpchannel->sendPackage(&wr);
-        delete wr.package;
+        tcpchannel->startSession();
     }
     catch (eError e)
     {
@@ -49,7 +45,6 @@ void LoginWindow::setTCPChannel(TCPChannel * ch)
             logError("Undefined error!");
             break;
         }
-        delete wr.package;
     }
 }
 

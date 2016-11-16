@@ -17,8 +17,10 @@
 class TaskQueue
 {
 private:
-    std::mutex lock;
+    std::mutex lockJobs;
+    std::mutex lockDone;
     std::queue<Task*> jobs;
+    std::queue<Task*> done;
 public:
     /**
     \threadsafe using std::mutex lock to manage access to std::queue<Task*> jobs
@@ -40,6 +42,18 @@ public:
     \post
     */
     Task * GetNextTask();
+
+    Task * GetNextDoneTask();
+
+    /**
+    \threadsafe using std::mutex lock to manage access to std::queue<Task*> done
+    \param t - task that has been done.
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void AddDoneTask(Task * t);
 };
 
 #endif // TASKQUEUE_H

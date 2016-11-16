@@ -5,8 +5,9 @@
 #include "../../../include/server/modules/message_collector.h"
 #include "../../../include/server/modules/message_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+
 #include "../../../include/shared/messages/message.h"
+#include "../../include/server/login_server/server_logger.h"
 
 void Controller_MessageCollector_MessageProcessor::CheckModule1Events(void *module1, void *nmodule2)
 {
@@ -27,8 +28,14 @@ void Controller_MessageCollector_MessageProcessor::CheckModule1Events(void *modu
             messageCollector->storeMessageToSend((Message *)m);
             deleteAndNext = true;
             break;
+        case eSystemEvent::MessageKeyAgreementProcessed:
+            m = ((ImpulseMessage *)i)->getData();
+            messageCollector->storeKeyAgreementMessageToSend((MessageSessionDetailResponse *)m);
+            deleteAndNext = true;
+            break;
+
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -68,8 +75,18 @@ void Controller_MessageCollector_MessageProcessor::CheckModule2Events(void *modu
             messageProcessor->AddMessageToProcess((MessageProcessable *)m);
             deleteAndNext = true;
             break;
+        case eSystemEvent::AttemptToLogIn:
+            m = ((ImpulseMessage *)i)->getData();
+            messageProcessor->AddMessageToProcess((MessageProcessable *)m);
+            deleteAndNext = true;
+            break;
+        case eSystemEvent::MessageKeyAgreementCollected:
+            m = ((ImpulseMessage *)i)->getData();
+            messageProcessor->AddKeyAgreementMessageToProcess((MessageSessionDetailRequest *)m);
+            deleteAndNext = true;
+            break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

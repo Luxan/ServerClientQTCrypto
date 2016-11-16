@@ -3,6 +3,9 @@
 */
 #pragma once
 
+#include <map>
+#include <list>
+
 #include "../interfaces/interface_communication.h"
 #include "../../shared/packages/package.h"
 #include "../../shared/messages/message.h"
@@ -16,7 +19,7 @@
 class MessageCollector : public InterfaceThread
 {
 private:
-    //std::list<MessageProcessable *> qMessages;
+    std::map<SessionID, std::list<MessageProcessable *>*> qMessages;
 
     /**
     \see interface_thread.h
@@ -67,7 +70,16 @@ public:
     \pre
     \post
     */
-    void collectPackage(PackageWrapper *p);
+    void storeKeyAgreementMessageToSend(MessageSessionDetailResponse *m);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void collectPackage(PackageWrapperDecoded *p);
 
     virtual ~MessageCollector(){}
 };

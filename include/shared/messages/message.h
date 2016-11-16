@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "../packages/package.h"
+#include "../packages/package_instant_replay.h"
 #include "../id_client.h"
 #include "../id_message.h"
 #include "../id_room.h"
@@ -21,18 +22,26 @@
 class Message
 {
 protected:
-    std::string data;//xml
-    std::list<Package *> lPackages;
-    ClientID sender_id;
-    ClientID reciever_id;
-    RoomID room_id;
     time_t time_received;
     time_t time_sended;
 
     MessageID message_id;
+    SessionID sessionID;
 
     const PackageWrapper::ePackageType packageType;
 public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    SessionID getSessionID() const
+    {
+        return sessionID;
+    }
 	/**
 	\param
 	\return
@@ -54,37 +63,9 @@ public:
 	\pre
 	\post
 	*/
-    ClientID getSenderID()const
-    {
-        return sender_id;
-    }
-
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    ClientID getReceiverID()const
-    {
-        return reciever_id;
-    }
-
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    Message(Package * p, PackageWrapper::ePackageType type):
+    Message(PackageWrapper::ePackageType type):
         packageType(type)
-    {
-        lPackages.push_back(p);
-    }
+    {}
 
 	/**
 	\param
@@ -96,22 +77,8 @@ public:
 	*/
     virtual ~Message()
     {
-        for (Package * p : lPackages)
-            delete p;
     }
 
-	/**
-	\param
-	\return
-	\throw
-	\brief
-	\pre
-	\post
-	*/
-    std::list<Package*> &splitIntoPackages()
-    {
-        return lPackages;
-    }
 
     /**
     \param
@@ -128,8 +95,12 @@ public:
 \class
 \brief
 */
-class MessageProcessable : Message
+class MessageMulty : public Message
 {
+protected:
+    //xml
+    std::string data;
+    std::list<Package *> lPackages;
 public:
     /**
     \param
@@ -139,9 +110,103 @@ public:
     \pre
     \post
     */
-    MessageProcessable(Package * p, PackageWrapper::ePackageType type):
-        Message(p, type)
+    virtual void extractData() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual void splitDataToPackages() = 0;
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    std::list<Package *> * extractPackages()
+    {
+        std::list<Package *> * ret = new std::list<Package *>(lPackages);
+        lPackages.clear();
+        return ret;
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    MessageMulty(Package * package, PackageWrapper::ePackageType type):
+        Message(type)
+    {
+        lPackages.push_back(package);
+    }
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    virtual ~MessageMulty()
+    {
+        for (Package * p : lPackages)
+        {
+            delete p;
+        }
+    }
+};
+
+/**
+\class
+\brief
+*/
+class MessageSingle : public Message
+{
+protected:
+    Package * package;
+public:
+    MessageSingle(Package * package, PackageWrapper::ePackageType type):
+        Message(type), package(package)
     {}
+    Package * extractPackage()
+    {
+        Package * ret = package;
+        package = nullptr;
+        return ret;
+    }
+    virtual ~MessageSingle()
+    {
+        if (package != nullptr)
+            delete package;
+    }
+};
+
+/**
+\class
+\brief
+*/
+class MessageProcessable
+{
+protected:
+
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    MessageProcessable(){}
     /**
     \param
     \return
@@ -159,7 +224,7 @@ public:
     \pre
     \post
     */
-    bool isReadyToProcess();
+    bool isReadyToProcess(){}
 
 	/**
 	\param
@@ -169,12 +234,98 @@ public:
 	\pre
 	\post
 	*/
-    virtual ~MessageProcessable()
-    {
-
-    }
+    virtual ~MessageProcessable(){}
 };
 
+class MessageSessionDetailResponse : public MessageProcessable, public MessageSingle
+{
+    Key * rsaPublicKey;
+public:
+
+    MessageSessionDetailResponse(PackageSessionDetailResponse * p, Key * rsaPublicKey):
+        MessageSingle(p, PackageWrapper::ePackageType::SessionDetailResponse), rsaPublicKey(rsaPublicKey)
+    {}
+
+    Key * getRsaPublicKey()
+    {
+        return rsaPublicKey;
+    }
+
+    void process() {}//LOG_INFO("MessageRequestAutocomplete";}
+};
+
+class MessageSessionDetailRequest : public MessageProcessable, public MessageSingle
+{
+public:
+    Buffer * getP()
+    {
+        return ((PackageSessionDetailRequest*)extractPackage())->p;
+    }
+
+    Buffer * getQ()
+    {
+        return ((PackageSessionDetailRequest*)extractPackage())->q;
+    }
+
+    Buffer * getG()
+    {
+        return ((PackageSessionDetailRequest*)extractPackage())->g;
+    }
+
+    Key * getRsaPublicKey()
+    {
+        return ((PackageSessionDetailRequest*)extractPackage())->rsaPublicKey;
+    }
+
+    MessageSessionDetailRequest(PackageSessionDetailRequest * p):
+        MessageSingle(p, PackageWrapper::ePackageType::SessionDetailRequest)
+    {}
+
+    void process() {}//LOG_INFO("MessageRequestAutocomplete";}
+};
+
+/**
+\class
+\brief
+*/
+class MessagePing : public MessageProcessable, public MessageSingle
+{
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    MessagePing(PackagePing * p):
+        MessageSingle(p, PackageWrapper::ePackageType::Ping)
+    {}
+
+    std::string getLogin()
+    {
+        PackagePing * ping = (PackagePing*)extractPackage();
+        std::string str((char*)ping->login->getPointerToBuffer());
+        str.resize(ping->login->getLength());
+        return str;
+    }
+
+    Hash * getSaltedPassword()
+    {
+        return ((PackagePing*)extractPackage())->saltedPassword;
+    }
+
+    Status getstatus()
+    {
+        return ((PackagePing*)extractPackage())->status;
+    }
+
+    /**
+    \see message.h
+    */
+    void process() {}//LOG_INFO("MessagePing";}
+};
 ///**
 //\class
 //\brief
@@ -196,7 +347,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageRequestAutocomplete";}
+//    void process() {}//LOG_INFO("MessageRequestAutocomplete";}
 //};
 ///**
 //\class
@@ -219,7 +370,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageRequestLeavingRoom";}
+//    void process() {}//LOG_INFO("MessageRequestLeavingRoom";}
 //};
 ///**
 //\class
@@ -242,7 +393,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageRequestMessageHistory";}
+//    void process() {}//LOG_INFO("MessageRequestMessageHistory";}
 //};
 ///**
 //\class
@@ -265,7 +416,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageRequestJoinRoom";}
+//    void process() {}//LOG_INFO("MessageRequestJoinRoom";}
 //};
 ///**
 //\class
@@ -288,7 +439,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "ResponseAutocompleteMessage";}
+//    void process() {}//LOG_INFO("ResponseAutocompleteMessage";}
 //};
 ///**
 //\class
@@ -311,7 +462,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageResponseLeavingRoom";}
+//    void process() {}//LOG_INFO("MessageResponseLeavingRoom";}
 //};
 ///**
 //\class
@@ -334,7 +485,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageResponseJoinRoom";}
+//    void process() {}//LOG_INFO("MessageResponseJoinRoom";}
 //};
 ///**
 //\class
@@ -357,7 +508,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUpdateBlackList";}
+//    void process() {}//LOG_INFO("MessageUpdateBlackList";}
 //};
 ///**
 //\class
@@ -380,7 +531,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUpdateFriendStatus";}
+//    void process() {}//LOG_INFO("MessageUpdateFriendStatus";}
 //};
 ///**
 //\class
@@ -403,7 +554,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUpdateRoomPresence";}
+//    void process() {}//LOG_INFO("MessageUpdateRoomPresence";}
 //};
 ///**
 //\class
@@ -426,7 +577,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUpdateBlackListPresence";}
+//    void process() {}//LOG_INFO("MessageUpdateBlackListPresence";}
 //};
 ///**
 //\class
@@ -449,7 +600,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUserMessage";}
+//    void process() {}//LOG_INFO("MessageUserMessage";}
 //};
 ///**
 //\class
@@ -472,7 +623,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUserNotification";}
+//    void process() {}//LOG_INFO("MessageUserNotification";}
 //};
 ///**
 //\class
@@ -495,7 +646,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageReceipeMessageHistory";}
+//    void process() {}//LOG_INFO("MessageReceipeMessageHistory";}
 //};
 ///**
 //\class
@@ -518,7 +669,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessagePTPhistory";}
+//    void process() {}//LOG_INFO("MessagePTPhistory";}
 //};
 ///**
 //\class
@@ -541,7 +692,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageSetUserInBlackList";}
+//    void process() {}//LOG_INFO("MessageSetUserInBlackList";}
 //};
 ///**
 //\class
@@ -564,30 +715,7 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageUnFriendUser";}
-//};
-///**
-//\class
-//\brief
-//*/
-//class MessagePing : public MessageProcessable
-//{
-//public:
-//    /**
-//    \param
-//    \return
-//    \throw
-//    \brief
-//    \pre
-//    \post
-//    */
-//    MessagePing(Package * p):
-//        MessageProcessable(p)
-//    {}
-//    /**
-//    \see message.h
-//    */
-//    void process() {}//SLog::logInfo() << "MessagePing";}
+//    void process() {}//LOG_INFO("MessageUnFriendUser";}
 //};
 ///**
 //\class
@@ -610,5 +738,5 @@ public:
 //    /**
 //    \see message.h
 //    */
-//    void process() {}//SLog::logInfo() << "MessageError";}
+//    void process() {}//LOG_INFO("MessageError";}
 //};

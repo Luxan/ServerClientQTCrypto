@@ -94,6 +94,15 @@ public:
     \pre
     \post
     */
+    void countAttempsToLogin(MessagePing *ping);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
     void saltRequest(std::string login);
     /**
     \param

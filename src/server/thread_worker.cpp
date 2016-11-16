@@ -29,6 +29,16 @@ void ThreadWorker::dowork()
 
     if (task != nullptr)
     {
-        task->execute();
+        try
+        {
+            task->execute();
+        }
+        catch(std::string error)
+        {//TBD create some dump to see what was wrong!
+            AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorExecutionTask, error));
+            delete task;
+            return;
+        }
+        queue->AddDoneTask(task);
     }
 }

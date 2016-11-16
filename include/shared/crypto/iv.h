@@ -1,70 +1,44 @@
 #pragma once
 
 #include "crypto.h"
+#include "../buffer.h"
 
-class IV
+class IV : public Buffer
 {
-    const size_t iv_length;
-    uint8_t * buff;
 public:
-    size_t getIVLength() const
-    {
-        return iv_length;
-    }
-
     IV(size_t iv_length):
-        iv_length(iv_length)
-    {
-        buff = CryptographyBase::createRandomBuffer(iv_length);
-    }
-
-    ~IV()
-    {
-        delete buff;
-    }
-
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    const uint8_t * getBuff()const
-    {
-        return buff;
-    }
+        Buffer(CryptographyBase::createRandomBuffer(iv_length), iv_length)
+    {}
 };
-class IV64 : IV
+class IV64 : public IV
 {
 public:
     IV64():
         IV(64)
     {}
 };
-class IV128 : IV
+class IV128 : public IV
 {
 public:
     IV128():
         IV(128)
     {}
 };
-class IV256 : IV
+class IV256 : public IV
 {
 public:
     IV256():
         IV(256)
     {}
 };
-class IV512 : IV
+class IV512 : public IV
 {
 public:
     IV512():
         IV(512)
     {}
 };
-class IV1024 : IV
+class IV1024 : public IV
 {
 public:
     IV1024():

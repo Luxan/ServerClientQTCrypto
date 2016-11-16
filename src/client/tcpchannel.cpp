@@ -10,11 +10,14 @@
 #include "../../include/client/mainwindow.h"
 #include "../../include/client/tcpchannel.h"
 
-TCPChannel::TCPChannel(const char *serverIP, const int serverPort, CertificateAuthority * ca):
+TCPChannel::TCPChannel(const char *serverIP, const int serverPort, KeyAgreamentAgent *agent):
     serverIP(serverIP),
     serverPort(serverPort),
-    ca(ca)
-{}
+    agent(agent),
+    sessionID(0)
+{
+    rsaClient = new RSACipher();
+}
 
 TCPChannel::~TCPChannel()
 {
@@ -32,10 +35,13 @@ bool TCPChannel::connectToServer()
 
 bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp)
 {
-    uint8_t size = sizeof(type) + sizeof(mp->multiPackSize) +
+    BUFF_SIZE size = sizeof(sessionID) + sizeof(type) + sizeof(mp->multiPackSize) +
                    sizeof(mp->multiPackCurrentSize) + mp->buff->getLength();
 
     if (!sendBuffer(&size, sizeof(size)))
+        return false;
+
+    if (!sendBuffer(&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
@@ -55,7 +61,12 @@ bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
 
 bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff)
 {
-    if (!sendBuffer((uint8_t *)&size, sizeof(size)))
+    BUFF_SIZE allsize = (uint8_t) size + sizeof(type) + sizeof(sessionID);
+
+    if (!sendBuffer((uint8_t *)&allsize, sizeof(allsize)))
+        return false;
+
+    if (!sendBuffer(&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
@@ -69,8 +80,11 @@ bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, ui
 
 bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type)
 {
-    uint8_t size = (uint8_t) strictSize + sizeof(type);
+    BUFF_SIZE size = (uint8_t) strictSize + sizeof(type) + sizeof(sessionID);
     if (!sendBuffer((uint8_t *)&size, sizeof(size)))
+        return false;
+
+    if (!sendBuffer(&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
@@ -103,19 +117,39 @@ bool TCPChannel::sendPackage(PackageWrapper *pw)
     {
         throw (eError::ServerIsAnaviable);
     }
-    PackageRequestLogin *rl;
-    PackageRequestAutocomplete *ra;
-    uint16_t size;
-    uint8_t strictSize;
+    //PackageRequestLogin *rl;
+    //PackageRequestAutocomplete *ra;
+    PackageSessionDetailRequest *ssdr;
+    BUFF_SIZE size;
+    //BUFF_SIZE strictSize;
     switch (pw->type)
     {
     case PackageWrapper::ePackageType::SessionDetailRequest:
-        size = sizeof(pw->type);
+        ssdr = (PackageSessionDetailRequest*)pw->package;
+        size = sizeof(pw->type) + ssdr->size();
 
         if (!sendBuffer((uint8_t *)&size, sizeof(size)))
             return false;
 
         if (!sendBuffer((uint8_t *)&pw->type, sizeof(pw->type)))
+            return false;
+
+        size = ssdr->p->getLength();
+        if (!sendBuffer((uint8_t *)&size, sizeof(BUFF_SIZE)))
+            return false;
+        if (!sendBuffer((uint8_t *)ssdr->p->getPointerToBuffer(), ssdr->p->getLength()))
+            return false;
+
+        size = ssdr->g->getLength();
+        if (!sendBuffer((uint8_t *)&size, sizeof(BUFF_SIZE)))
+            return false;
+        if (!sendBuffer((uint8_t *)ssdr->g->getPointerToBuffer(), ssdr->g->getLength()))
+            return false;
+
+        size = ssdr->q->getLength();
+        if (!sendBuffer((uint8_t *)&size, sizeof(BUFF_SIZE)))
+            return false;
+        if (!sendBuffer((uint8_t *)ssdr->q->getPointerToBuffer(), ssdr->q->getLength()))
             return false;
 /*
     //dynamic size packages
@@ -253,18 +287,23 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
 
         if (pw->type == PackageWrapper::ePackageType::SessionDetailResponse)
         {
-            if (!ca->authorize(((PackageSessionDetailResponse*)pw->package)->certificate))
+            if (!agent->verifyCertificate(((PackageSessionDetailResponse*)pw->package)->certificate))
+            {
                 logError("Certificate Authority cannot authorize server's certificate!");
-            continue;
+                delete ((PackageSessionDetailResponse*)pw->package)->certificate;
+            }
+
+            //send p, q, g to server
+            //prepareStaticAndEphemeralKeys
+            //send staticPublicKey ephemeralPublicKey and getAgreedValueLength
+            //receive same staticPublicKey and ephemeralPublicKey from server
+            //retrieveSecretKey
         }
         /*if (pw->type == PackageWrapper::ePackageType::)
         {
             //logInfo("Signed in Successfully!");
 
             mw->LoggedInAs(((PackageResponseLogin*)pw->package)->id);
-
-            delete pw->package;
-            return;
         }*/
         if (pw->type == PackageWrapper::ePackageType::Error)
         {
@@ -281,10 +320,9 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
                 logError("Undefined error!");
                 break;
             }
-
-            delete pw->package;
-            return;
         }
+
+        delete pw->package;
     }
 }
 
@@ -315,6 +353,16 @@ void TCPChannel::setMainWindow(MainWindow * mw)
 void TCPChannel::setLoginWindow(LoginWindow * lw)
 {
     this->lw = lw;
+}
+
+
+void TCPChannel::startSession()
+{
+    PackageWrapper wr;
+    wr.package = new PackageSessionDetailRequest(agent->getP(), agent->getG(), agent->getQ(), rsaClient->getPublicKey());
+    wr.type = PackageWrapper::ePackageType::SessionDetailRequest;
+    sendPackage(&wr);
+    delete wr.package;
 }
 
 PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)

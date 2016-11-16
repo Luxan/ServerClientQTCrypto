@@ -13,8 +13,8 @@
 
 #include "../../../include/server/modules/epoll_tcpchannel.h"
 
-EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents, Certificate *certificate):
-    InterfaceTcpChannel(conf, portNumb, _maxEvents, certificate)
+EpollTCPChannel::EpollTCPChannel(ThreadConfiguration conf, int portNumb, int _maxEvents):
+    InterfaceTcpChannel(conf, portNumb, _maxEvents)
 {
     /* Buffer where events are returned */
     events = (epoll_event *)calloc(maxEvents, sizeof event);

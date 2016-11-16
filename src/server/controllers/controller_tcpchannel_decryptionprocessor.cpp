@@ -3,7 +3,8 @@
 #include "../../../include/server/interfaces/interface_tcpchannel.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 
 void Controller_TCPChannel_DecryptionProcessor::CheckModule1Events(void *module1, void *module2)
@@ -20,7 +21,7 @@ void Controller_TCPChannel_DecryptionProcessor::CheckModule1Events(void *module1
         switch (i->getEvent())
         {
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -49,7 +50,8 @@ void Controller_TCPChannel_DecryptionProcessor::CheckModule2Events(void *module1
     Impulse *todelete = nullptr;
     bool deleteAndNext = false;
     PackageWrapper *p;
-
+    CryptoTask *task;
+    CryptoContext *c;
     i = eventGiver->getNextImpulse(i);
     while (i)
     {
@@ -57,11 +59,19 @@ void Controller_TCPChannel_DecryptionProcessor::CheckModule2Events(void *module1
         {
         case eSystemEvent::PackageReceived:
             p = ((ImpulsePackage *)i)->getData();
-            decryptionProcessor->DecryptPackage(p);
+            decryptionProcessor->DecryptPackage((PackageWrapperEncoded *)p);
+            deleteAndNext = true;
+            break;
+        case eSystemEvent::PackageKeyAgreementReceived:
+            p = ((ImpulsePackage *)i)->getData();
+            c = new CryptoContext(p, nullptr, false);
+            task = new CryptoTask(c);
+            decryptionProcessor->AddTask((Task*)task);
+
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

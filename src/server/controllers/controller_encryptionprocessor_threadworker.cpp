@@ -5,7 +5,8 @@
 #include "../../../include/server/thread_worker.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 void Controller_EncryptionProcessor_ThreadWorker::CheckModule1Events(void *module1, void *module2)
 {
@@ -23,20 +24,24 @@ void Controller_EncryptionProcessor_ThreadWorker::CheckModule1Events(void *modul
         {
         case eSystemEvent::ResponseStartEncryptionWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "EncryptionWorker is started. id: " + ss.str();
+            LOG_INFO("EncryptionWorker is started. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepEncryptionWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "EncryptionWorker is sleeped. id: " + ss.str();
+            LOG_INFO("EncryptionWorker is sleeped. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorEncryptionWorker:
-            SLog::logError() << "EncryptionWorker Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("EncryptionWorker Error: " + ((ImpulseError *)i)->getError());
+            deleteAndNext = true;
+            break;
+        case eSystemEvent::ErrorExecutionTask:
+            LOG_ERROR("Got EncryptionProcessor_ThreadWorker error:" + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -89,7 +94,7 @@ void Controller_EncryptionProcessor_ThreadWorker::CheckModule2Events(void *modul
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../interfaces/interface_communication_controller.h"
-#include "../mainwindow.h"
+#include "../login_server/mainwindow.h"
 #include "../modules/message_processor.h"
 
 class Controller_GUI_MessageProcessor : public InterfaceCommunicationController

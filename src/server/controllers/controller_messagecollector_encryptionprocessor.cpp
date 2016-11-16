@@ -3,7 +3,7 @@
 #include "../../../include/server/modules/message_collector.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
 
 
 void Controller_MessageCollector_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
@@ -23,8 +23,12 @@ void Controller_MessageCollector_EncryptionProcessor::CheckModule1Events(void *m
             encryptionProcessor->EncryptPackage(((ImpulsePackage *)i)->getData());
             deleteAndNext = true;
             break;
+        case eSystemEvent::EncryptPackageWithRSA:
+            encryptionProcessor->EncryptPackageWithRSA(((ImpulseEnryptPackage *)i)->getData(), ((ImpulseEnryptPackage *)i)->getEncryptionRsaKey());
+            deleteAndNext = true;
+            break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -59,7 +63,7 @@ void Controller_MessageCollector_EncryptionProcessor::CheckModule2Events(void *m
         switch (i->getEvent())
         {
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

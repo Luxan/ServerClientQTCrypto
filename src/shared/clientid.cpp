@@ -38,6 +38,11 @@ bool ClientID::operator ==(const ClientID& id)const
     return this->id == id.id;
 }
 
+bool ClientID::operator ==(const int id)const
+{
+    return this->id == id;
+}
+
 bool ClientID::operator<(const ClientID &id)const
 {
     return this->id < id.id;

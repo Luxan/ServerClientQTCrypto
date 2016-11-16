@@ -7,8 +7,8 @@
 #include <queue>
 #include <vector>
 
-#include "../server/impulse.h"
-#include "../server/interfaces/interface_communication_controller.h"
+#include "../../server/impulse.h"
+#include "../../server/interfaces/interface_communication_controller.h"
 
 class Impulse;
 class LoginWindow;

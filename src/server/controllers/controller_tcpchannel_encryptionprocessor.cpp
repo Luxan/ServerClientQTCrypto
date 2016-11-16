@@ -3,8 +3,7 @@
 #include "../../../include/server/interfaces/interface_tcpchannel.h"
 #include "../../../include/server/modules/crypto_processor.h"
 #include "../../../include/server/impulse.h"
-#include "../../../include/server/slog.h"
-
+#include "../../include/server/login_server/server_logger.h"
 
 void Controller_TCPChannel_EncryptionProcessor::CheckModule1Events(void *module1, void *module2)
 {
@@ -22,11 +21,11 @@ void Controller_TCPChannel_EncryptionProcessor::CheckModule1Events(void *module1
         {
         case eSystemEvent::PackageToSend:
             p = ((ImpulsePackage *)i)->getData();
-            tcpChannel->prepareToSend(p);
+            tcpChannel->prepareToSend((PackageWrapperEncoded*)p);
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -61,7 +60,7 @@ void Controller_TCPChannel_EncryptionProcessor::CheckModule2Events(void *module1
         switch (i->getEvent())
         {
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

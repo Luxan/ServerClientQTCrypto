@@ -32,12 +32,68 @@ public:
     }
 
     /*!
+    \brief Constructor to create empty buffer.
+    */
+    Buffer()
+    {
+        buff = nullptr;
+        length = 0;
+    }
+
+    /*!
+    \brief resize empty buffer.
+    \param _length - length of the buffer that will be created.
+    \pre buffer must be created using default contructor!
+    \throw Cannot resize not empty buffer! if buffer is not empty
+    */
+    void resize(BUFF_SIZE _length)
+    {
+        if (buff != nullptr || length != 0)
+            throw "Cannot resize not empty buffer!";
+        length = _length;
+        buff = new uint8_t[_length + 1];
+    }
+
+    /*!
     \return uint8_t * - pointer to data buffer
     \brief returns pointer to data buffer stored inside class object
     */
     virtual uint8_t * getPointerToBuffer() const
     {
         return buff;
+    }
+
+    /*!
+    \brief returns true if contents of two Buffers are the same
+    \return bool - true if contents are the same
+    */
+    bool operator== (Buffer &buffer)
+    {
+        if (buffer.getPointerToBuffer() == nullptr)
+        {
+            if (this->getPointerToBuffer() == nullptr)
+                return true;
+            else
+                return false;
+        }
+        if (buffer.getLength() != this->getLength())
+            return false;
+
+        for (int i = 0; i < this->getLength(); i++)
+        {
+            if (*(this->getPointerToBuffer() + i) != *(buffer.getPointerToBuffer() + i))
+                return false;
+        }
+        return true;
+    }
+
+    /*!
+    \brief returns true if contents of two Buffers are not the same
+    \return bool - true if contents are not the same
+    */
+    bool operator!= (Buffer &buffer)
+    {
+        return !this->operator==(buffer);
     }
 
     /*!

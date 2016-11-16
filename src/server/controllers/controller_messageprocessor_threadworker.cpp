@@ -3,7 +3,8 @@
 #include "../../../include/server/controllers/controller_messageprocessor_threadworker.h"
 #include "../../../include/server/modules/message_processor.h"
 #include "../../../include/server/thread_worker.h"
-#include "../../../include/server/slog.h"
+#include "../../include/server/login_server/server_logger.h"
+
 
 /**
 \see interface_communication_controller.h
@@ -24,20 +25,24 @@ void Controller_MessageProcessor_ThreadWorker::CheckModule1Events(void *module1,
         {
         case eSystemEvent::ResponseStartMessageWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "MessageWorker is started. id: " + ss.str();
+            LOG_INFO("MessageWorker is started. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ResponseSleepMessageWorker:
             ss << ((ImpulseSignal *)i)->getThreadID();
-            SLog::logInfo() << "MessageWorker is sleeped. id: " + ss.str();
+            LOG_INFO("MessageWorker is sleeped. id: " + ss.str());
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorMessageWorker:
-            SLog::logError() << "MessageWorker Error: " + ((ImpulseError *)i)->getError();
+            LOG_ERROR("MessageWorker Error: " + ((ImpulseError *)i)->getError());
+            deleteAndNext = true;
+            break;
+        case eSystemEvent::ErrorExecutionTask:
+            LOG_ERROR("Got MessageProcessor_ThreadWorker error:" + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:
@@ -94,11 +99,11 @@ void Controller_MessageProcessor_ThreadWorker::CheckModule2Events(void *module1,
             deleteAndNext = true;
             break;
         case eSystemEvent::ErrorMessageProcessor:
-            SLog::logError() << "MessageProcessor Error: " << ((ImpulseError *)i)->getError();
+            LOG_ERROR("MessageProcessor Error: " + ((ImpulseError *)i)->getError());
             deleteAndNext = true;
             break;
         case eSystemEvent::Undefined:
-            SLog::logError() << "Got Undefined event!";
+            LOG_ERROR("Got Undefined event!");
             deleteAndNext = true;
             break;
         default:

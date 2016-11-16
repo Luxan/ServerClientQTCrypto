@@ -3,12 +3,14 @@
 */
 #pragma once
 
-#include <list>
+#include <map>
 
 #include "../interfaces/interface_communication.h"
 #include "../../server/interfaces/interface_processor.h"
 #include "../../shared/messages/message.h"
 #include "../../../include/server/controllers/controller_messageprocessor_threadworker.h"
+#include "../../../include/shared/crypto/key_agreement_agent.h"
+#include "../../../include/shared/id_session.h"
 
 class Controller_MessageProcessor_ThreadWorker;
 
@@ -18,6 +20,9 @@ class Controller_MessageProcessor_ThreadWorker;
 */
 class MessageProcessor : public Processor
 {
+private:
+    std::map<SessionID, KeyAgreamentAgent *> agentBank;
+    Certificate * certificate;
 public:
     /**
     \param
@@ -27,7 +32,7 @@ public:
     \pre
     \post
     */
-    MessageProcessor(ThreadConfiguration conf, Controller_MessageProcessor_ThreadWorker *controller, int numberOfWorkers);
+    MessageProcessor(ThreadConfiguration conf, Controller_MessageProcessor_ThreadWorker *controller, int numberOfWorkers, Certificate * certificate);
     /**
     \param
     \return
@@ -37,6 +42,24 @@ public:
     \post
     */
     void AddMessageToProcess(MessageProcessable * m);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void AttemptToLogIn(MessagePing * ping);
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void AddKeyAgreementMessageToProcess(MessageSessionDetailRequest * m);
     /**
     \param
     \return

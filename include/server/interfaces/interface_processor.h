@@ -64,6 +64,20 @@ public:
     }
 
     /**
+    \threadsafe using threadsafe TaskQueue tq
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    Task * GetNextDoneTask()
+    {
+        return tq.GetNextDoneTask();
+    }
+
+    /**
     \param
     \return
     \throw

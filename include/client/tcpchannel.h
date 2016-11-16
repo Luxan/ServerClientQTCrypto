@@ -10,6 +10,8 @@ class LoginWindow;
 #include "../client/mainwindow.h"
 #include "../client/loginwindow.h"
 #include "../shared/crypto/certificate.h"
+#include "../shared/crypto/key_agreement_agent.h"
+#include "../shared/id_session.h"
 
 class TCPChannel : public QObject
 {
@@ -24,7 +26,7 @@ public:
     \pre
     \post
     */
-    explicit TCPChannel(const char *serverIP, const int serverPort, CertificateAuthority * ca);
+    explicit TCPChannel(const char *serverIP, const int serverPort, KeyAgreamentAgent * agent);
     /**
     \param
     \return
@@ -61,7 +63,15 @@ public:
     \post
     */
     void setLoginWindow(LoginWindow * lw);
-
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    void startSession();
 private slots:
     /**
     \param
@@ -79,7 +89,10 @@ private:
     LoginWindow * lw;
     const char *serverIP;
     const int serverPort;
-    CertificateAuthority * ca;
+    RSACipher * rsaServer;
+    RSACipher * rsaClient;
+    KeyAgreamentAgent * agent;
+    SessionID sessionID;
 
     /**
     \param

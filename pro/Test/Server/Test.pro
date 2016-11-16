@@ -17,11 +17,17 @@ QT += testlib
 unix:QMAKE_RPATHDIR += $$PWD/../../../lib/crypto++/installed/lib/
 
 SOURCES += ../../../src/test/server_test_main.cpp \
-    ../../../src/shared/*.cpp
+    ../../../src/shared/*.cpp \
+    ../../../src/test/test_shared/*.cpp \
+    ../../../src/test/test_shared/crypto/*.cpp
 
 HEADERS  += ../../../include/shared/*.h \
     ../../../include/test/*.h \
-    ../../../include/test/test_shared/*.h
+    ../../../include/test/test_shared/*.h \
+    ../../../include/shared/messages/*.h \
+    ../../../include/shared/crypto/*.h \
+    ../../../include/test/test_shared/*.h \
+    ../../../include/test/test_shared/crypto/*.h
 
 unix|win32: LIBS += -L$$PWD/../../../lib/crypto++/installed/lib/ -lcryptopp
 

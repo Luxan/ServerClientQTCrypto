@@ -16,6 +16,8 @@ public:
         Buffer(buff, hash_length)
     {}
 
+    Hash(){}
+
     bool operator==(Hash &h)const
     {
         int diff = this->getLength() ^ h.getLength();

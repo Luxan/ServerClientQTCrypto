@@ -1,10 +1,14 @@
 #pragma once
 
+#include <map>
+
 #include "../interfaces/interface_processor.h"
 #include "../../shared/packages/package.h"
 #include "../systemevents.h"
 #include "../../../include/server/controllers/controller_decryptionprocessor_threadworker.h"
 #include "../../../include/server/controllers/controller_encryptionprocessor_threadworker.h"
+#include "../../shared/crypto/cipher.h"
+#include "../../shared/id_session.h"
 
 class Controller_DecryptionProcessor_ThreadWorker;
 class Controller_EncryptionProcessor_ThreadWorker;
@@ -15,6 +19,8 @@ protected:
     eSystemEvent errorEvent;
     eSystemEvent requestStartWorkerEvent;
     eSystemEvent requestSleepWorkerEvent;
+    std::mutex cipherBankLock;
+    std::map<SessionID, Cipher*> cipherBank;
 public:
     /**
     \param
@@ -51,7 +57,14 @@ public:
     */
     void RequestStop();
 
-    virtual ~CryptoProcessor(){}
+    virtual ~CryptoProcessor()
+    {
+        for (std::pair<SessionID, Cipher*> pair : cipherBank)
+        {
+            delete pair.second;
+        }
+        cipherBank.clear();
+    }
 };
 
 class EncryptionProcessor : public CryptoProcessor
@@ -60,6 +73,7 @@ class EncryptionProcessor : public CryptoProcessor
     \see interface_thread.h
     */
     virtual void dowork();
+    Key * rsaPrivateKey;
 public:
     /**
     \param
@@ -69,7 +83,7 @@ public:
     \pre
     \post
     */
-    EncryptionProcessor(ThreadConfiguration conf, Controller_EncryptionProcessor_ThreadWorker *controller, int numberOfWorkers);
+    EncryptionProcessor(ThreadConfiguration conf, Controller_EncryptionProcessor_ThreadWorker *controller, int numberOfWorkers, Key *rsaPrivateKey);
     /**
     \param
     \return
@@ -79,6 +93,8 @@ public:
     \post
     */
     void EncryptPackage(PackageWrapper *m);
+
+    void EncryptPackageWithRSA(PackageWrapper *m, Key *rsaPublicKey);
 
     virtual ~EncryptionProcessor(){}
 };
@@ -108,7 +124,7 @@ public:
     \pre
     \post
     */
-    void DecryptPackage(PackageWrapper *m);
+    void DecryptPackage(PackageWrapperEncoded *m);
 
     virtual ~DecryptionProcessor(){}
 };

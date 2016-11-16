@@ -22,12 +22,14 @@ unix:QMAKE_RPATHDIR += $$PWD/../../lib/crypto++/installed/lib/
 
 SOURCES += ../../src/shared/*.cpp \
     ../../src/server/*.cpp \
+    ../../src/server/server/*.cpp \
     ../../src/server/modules/*.cpp \
     ../../src/server/interfaces/*.cpp \
     ../../src/server/controllers/*.cpp
 
 HEADERS  += ../../include/shared/*.h \
     ../../include/server/*.h \
+    ../../include/server/server/*.h \
     ../../include/server/controllers/*.h \
     ../../include/server/interfaces/*.h \
     ../../include/server/modules/*.h \

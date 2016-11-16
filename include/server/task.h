@@ -6,24 +6,45 @@
 #include <mutex>
 
 #include "../shared/messages/message.h"
+#include "../shared/crypto/cipher.h"
+#include "../shared/crypto/key_agreement_agent.h"
 
 /**
 \struct
 \brief
 */
-struct Context
+class Context
 {
-
+public:
+    virtual ~Context(){}
 };
 
 /**
 \struct
 \brief
 */
-struct MessageContext : Context
+class MessageContext : public Context
 {
+private:
     MessageProcessable * m;
+public:
+    MessageProcessable * extractMessage()
+    {
+        MessageProcessable * msg = m;
+        m = nullptr;
+        return msg;
+    }
 
+    void setMessage(MessageProcessable * msg)
+    {
+        if (m != nullptr)
+            delete m;
+
+        m = msg;
+    }
+    MessageContext(MessageProcessable * m):
+        m(m)
+    {}
     /**
     \brief
     \pre
@@ -36,9 +57,66 @@ struct MessageContext : Context
 \struct
 \brief
 */
-struct CryptoContext : Context
+class MessageKeyAgreementContext : public MessageContext
 {
+private:
+    KeyAgreamentAgent * agent;
+public:
+    KeyAgreamentAgent * getAgent()
+    {
+        return agent;
+    }
+
+    MessageKeyAgreementContext(MessageProcessable * m, KeyAgreamentAgent * agent):
+        MessageContext(m), agent(agent)
+    {}
+
+    virtual ~MessageKeyAgreementContext(){}
+};
+
+/**
+\struct
+\brief
+*/
+class CryptoContext : public Context
+{
+private:
     PackageWrapper * m;
+    Cipher * cipher;
+    bool encrypt;
+public:
+    CryptoContext(PackageWrapper * m, Cipher * cipher, bool encrypt):
+        m(m), cipher(cipher), encrypt(encrypt)
+    {}
+
+    PackageWrapper * extractWrapper()
+    {
+        PackageWrapper * w = m;
+        m = nullptr;
+        return w;
+    }
+
+    bool isEncryption()
+    {
+        return encrypt;
+    }
+
+    Cipher * extractCipher()
+    {
+        Cipher * w = cipher;
+        cipher = nullptr;
+        return w;
+    }
+
+    void setCipher(Cipher * ciph)
+    {
+        cipher = ciph;
+    }
+
+    void setWrapper(PackageWrapper * msg)
+    {
+        m = msg;
+    }
 
     /**
     \brief
@@ -84,6 +162,15 @@ public:
     \post
     */
     virtual ~Task();
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    Context * getContext();
 };
 
 /**
@@ -109,6 +196,30 @@ public:
     \see task.h
     */
     virtual void execute();
+
+    virtual ~MessageTask(){}
+};
+
+class MessageKeyAgreementTask : public MessageTask
+{
+public:
+    /**
+    \param
+    \return
+    \throw
+    \brief
+    \pre
+    \post
+    */
+    MessageKeyAgreementTask(MessageKeyAgreementContext * c):
+        MessageTask(c)
+    {}
+    /**
+    \see task.h
+    */
+    virtual void execute();
+
+    virtual ~MessageKeyAgreementTask(){}
 };
 
 
@@ -131,8 +242,15 @@ public:
         Task(c)
     {}
 
+    Package * createPackage(PackageBuffer * buf);
+
+    void encrypt(PackageWrapper ** pw, Cipher * cipher);
+
+    void decrypt(PackageWrapper ** pw, Cipher *cipher);
     /**
     \see task.h
     */
     virtual void execute();
+
+    virtual ~CryptoTask(){}
 };

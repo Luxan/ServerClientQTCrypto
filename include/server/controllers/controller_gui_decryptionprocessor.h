@@ -2,7 +2,7 @@
 
 #include "../interfaces/interface_communication_controller.h"
 #include "../modules/crypto_processor.h"
-#include "../mainwindow.h"
+#include "../login_server/mainwindow.h"
 
 /**
 \class

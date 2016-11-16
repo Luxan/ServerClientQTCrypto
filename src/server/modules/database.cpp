@@ -7,7 +7,7 @@
 #include <QtSql/QSqlRecord>
 #include <QVariant>
 
-#include "../../../include/server/slog.h"
+#include "../../../include/server/login_server/server_logger.h"
 
 #include "../../../../include/server/modules/database.h"
 #include "../../../include/shared/user_credentials.h"
@@ -33,10 +33,10 @@ void DataBase::createDatabase()
     }
     catch (std::string e)
     {
-        SLog::logError() << "SQL error: Cant create table! " + e;
+        LOG_ERROR("SQL error: Cant create table! " + e);
     }
 
-    SLog::logInfo() << "Table created successfully.";
+    LOG_INFO("Table created successfully.");
 }
 
 void DataBase::dowork()
@@ -83,7 +83,7 @@ DataBase::DataBase(ThreadConfiguration& conf, std::string _path):
     {
         throw ("SQL error: Start up Database! " + e);
     }
-    SLog::logInfo() << "Opened database successfully.";
+    LOG_INFO("Opened database successfully.");
 }
 
 std::shared_ptr<User> DataBase::selectUserFromDatabase(ClientID id)
@@ -123,7 +123,7 @@ std::shared_ptr<User> DataBase::selectUserFromDatabase(ClientID id)
             user = new User(name, uc, ur);
             std::shared_ptr<User> u(user);
 
-            SLog::logInfo() << "User selected successfully";
+            LOG_INFO("User selected successfully");
             return u;
         }
     }
@@ -172,14 +172,14 @@ void DataBase::loadAllUsersFromDatabase()
 
             mUsers.insert(std::pair<ClientID, std::shared_ptr<User>>(u->getID(), u));
 
-            SLog::logInfo() << "User selected successfully";
+            LOG_INFO("User selected successfully");
         }
     }
     catch (std::string e)
     {
         throw ("SQL error: cant load all users in Database! " + e);
     }
-    SLog::logInfo() << "All user in database loaded successfully.";
+    LOG_INFO("All user in database loaded successfully.");
 }
 
 void DataBase::deleteUserInDatabase(ClientID u)
@@ -192,7 +192,7 @@ void DataBase::deleteUserInDatabase(ClientID u)
     {
         throw ("SQL error: cant delete user in Database! " + e);
     }
-    SLog::logInfo() << "User in database deleted successfully.";
+    LOG_INFO("User in database deleted successfully.");
 }
 
 void DataBase::registerUserToDatabase(std::string name, ClientID id, std::string login, Hash * password, int iteration, uint32_t salt)
@@ -223,14 +223,14 @@ void DataBase::registerUserToDatabase(std::string name, ClientID id, std::string
         throw("SQL error: Cant insert user into database! " + e);
     }
 
-    SLog::logInfo() << "User inserted successfully.";
+    LOG_INFO("User inserted successfully.");
 }
 
 void DataBase::updateUserInDatabase(std::shared_ptr<User> u)
 {
     QSqlQuery query;
-    try
-    {
+//    try
+//    {
 //        query.prepare("INSERT INTO USER (NAME,FRIENDLIST,BLOCKEDUSERLIST,PRESENCEINBLOCKEDLIST,PRESENCEINROOMS) "
 //                      "VALUES (:name, :friendlist, "\
 //                      ":blockuserlist, :presenceblockedlist, "\
@@ -241,13 +241,13 @@ void DataBase::updateUserInDatabase(std::shared_ptr<User> u)
 //        query.bindValue(":presenceblockedlist", u->getPassword().c_str());
 //        query.bindValue(":presenceinrooms", u->getPassword().c_str());
 //        query.exec();
-    }
-    catch(std::string e)
-    {
-        throw("SQL error: Cant update user into database! " + e);
-    }
+//    }
+//    catch(std::string e)
+//    {
+//        throw("SQL error: Cant update user into database! " + e);
+//    }
 
-    SLog::logInfo() << "User updated successfully.";
+    LOG_INFO("User updated successfully.");
 }
 
 void DataBase::ReleaseResources()
@@ -290,6 +290,23 @@ void DataBase::getUserViaID(ClientID id)
     this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with id: " + std::to_string(id) + "is not exist in database!"));
 }
 
+void DataBase::countAttempsToLogin(MessagePing *ping)
+{
+    for (auto it = mUsers.begin(); it != mUsers.end(); it++)
+    {
+        std::shared_ptr<User> u = (*it).second;
+        if (u->getLogin() == ping->getLogin())
+        {
+            //if ()
+            //this->AddImpulseToQueue(new ImpulseSalt(eSystemEvent::DatabaseUserSalt, u->getSalt()));
+            delete ping;
+            return;
+        }
+    }
+    delete ping;
+    //this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with login: " + login + "is not exist in database!"));
+}
+
 void DataBase::saltRequest(std::string login)
 {
     for (auto it = mUsers.begin(); it != mUsers.end(); it++)
@@ -298,8 +315,10 @@ void DataBase::saltRequest(std::string login)
         if (u->getLogin() == login)
         {
             this->AddImpulseToQueue(new ImpulseSalt(eSystemEvent::DatabaseUserSalt, u->getSalt()));
+            return;
         }
     }
+    this->AddImpulseToQueue(new ImpulseError(eSystemEvent::ErrorCannotFindUserFromDatabase, "User with login: " + login + "is not exist in database!"));
 }
 
 void DataBase::loginRequest(std::string login, Hash * password)
