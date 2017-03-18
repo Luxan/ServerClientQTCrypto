@@ -105,7 +105,7 @@ bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
     return _pSocket->waitForBytesWritten();
 }
 
-bool TCPChannel::sendPackage(PackageWrapper *pw)
+bool TCPChannel::sendPackage(PackageWrapperDecoded *pw)
 {
     //Quint8_tArray data; // <-- fill with data
 
@@ -276,18 +276,18 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
             test = *(packageBuff->getPointerToBuffer() + i);
             qDebug() << test;
         }
-        PackageWrapper *pw = CreatePackage(packageBuff);
+        PackageWrapperDecoded *pw = CreatePackage(packageBuff);
 
         if (pw == nullptr)
             return;
 
         if (pw->type == PackageWrapper::ePackageType::SessionDetailResponse)
         {
-            if (!agent->verifyCertificate(((PackageSessionDetailResponse*)pw->package)->certificate))
-            {
-                logError("Certificate Authority cannot authorize server's certificate!");
-                delete ((PackageSessionDetailResponse*)pw->package)->certificate;
-            }
+//            if (!agent->verifyCertificate(((PackageSessionDetailResponse*)pw->package)->certificate))
+//            {
+//                logError("Certificate Authority cannot authorize server's certificate!");
+//                delete ((PackageSessionDetailResponse*)pw->package)->certificate;
+//            }
 
             //send p, q, g to server
             //prepareStaticAndEphemeralKeys
@@ -329,7 +329,7 @@ void TCPChannel::logError(std::string error)
     if (!this->lw->isHidden())
         this->lw->logError(error);
 
-    CLog::logError() << error;
+//    CLog::logError() << error;
 }
 
 void TCPChannel::logInfo(std::string info)
@@ -339,7 +339,7 @@ void TCPChannel::logInfo(std::string info)
     if (!lw->isHidden())
         lw->logInfo(info);
 
-    CLog::logInfo() << info;
+//    CLog::logInfo() << info;
 }
 void TCPChannel::setMainWindow(MainWindow * mw)
 {
@@ -354,19 +354,19 @@ void TCPChannel::setLoginWindow(LoginWindow * lw)
 
 void TCPChannel::startSession()
 {
-    PackageWrapper wr;
-    wr.package = new PackageSessionDetailRequest(agent->getP(), agent->getG(), agent->getQ(), rsaClient->getPublicKey());
-    wr.type = PackageWrapper::ePackageType::SessionDetailRequest;
-    sendPackage(&wr);
-    delete wr.package;
+//    PackageWrapperDecoded wr;
+//    wr.package = new PackageSessionDetailRequest(NULL);
+//    wr.type = PackageWrapper::ePackageType::SessionDetailRequest;
+//    sendPackage(&wr);
+//    delete wr.package;
 }
 
-PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)
+PackageWrapperDecoded *TCPChannel::CreatePackage(PackageBuffer *buf)
 {
     if (buf == nullptr)
         return nullptr;
 
-    PackageWrapper *pw = new PackageWrapper();
+    PackageWrapperDecoded *pw = new PackageWrapperDecoded();
     try
     {
         buf->fillBuffer((uint8_t *)&pw->type, sizeof(pw->type));
@@ -376,10 +376,10 @@ PackageWrapper *TCPChannel::CreatePackage(PackageBuffer *buf)
         case PackageWrapper::ePackageType::SessionDetailRequest:
             throw ("why would server send SessionDetailRequest to client?!");
             break;
-        case PackageWrapper::ePackageType::SessionDetailResponse:
-            pw->package = new PackageSessionDetailResponse(buf);
-            delete buf;
-            break;
+//        case PackageWrapper::ePackageType::SessionDetailResponse:
+//            pw->package = new PackageSessionDetailResponse(buf);
+//            delete buf;
+//            break;
 
 
 /*

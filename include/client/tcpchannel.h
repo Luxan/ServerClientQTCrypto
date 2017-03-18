@@ -42,7 +42,7 @@ public:
     \pre
     \post
     */
-    bool sendPackage(PackageWrapper *pw);
+    bool sendPackage(PackageWrapperDecoded *pw);
     /**
     \param
     \return
@@ -153,7 +153,7 @@ private:
     \pre
     \post
     */
-    PackageWrapper *CreatePackage(PackageBuffer *buf);
+    PackageWrapperDecoded *CreatePackage(PackageBuffer *buf);
 
     /**
     \param
