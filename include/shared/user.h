@@ -12,7 +12,6 @@
 #include "../shared/id_client.h"
 #include "../shared/id_room.h"
 #include "../shared/packages/package.h"
-#include "../shared/crypto/hash.h"
 #include "../shared/status.h"
 #include "../shared/user_credentials.h"
 #include "../shared/user_relations.h"

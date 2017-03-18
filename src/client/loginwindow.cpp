@@ -11,7 +11,6 @@
 #include "../../include/shared/packages/package_signal.h"
 #include "../../include/shared/packages/package_update.h"
 #include "../../include/shared/error_enum.h"
-#include "../../include/client/clog.h"
 #include "../../include/shared/buffer_spitter.h"
 
 LoginWindow::LoginWindow(const int minLoginCharacters, const int minPasswordCharacters, QWidget *parent) :
@@ -110,7 +109,7 @@ void LoginWindow::on_loginButton_clicked()
             logError("Undefined error!");
             break;
         }
-        delete wr.package;
+        //delete wr.package;
     }
 }
 //#include "moc_mainwindow.cpp"

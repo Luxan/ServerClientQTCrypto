@@ -9,8 +9,6 @@ class LoginWindow;
 #include "../shared/packages/package.h"
 #include "../client/mainwindow.h"
 #include "../client/loginwindow.h"
-#include "../shared/crypto/certificate.h"
-#include "../shared/crypto/key_agreement_agent.h"
 #include "../shared/id_session.h"
 
 class TCPChannel : public QObject
@@ -26,7 +24,7 @@ public:
     \pre
     \post
     */
-    explicit TCPChannel(const char *serverIP, const int serverPort, KeyAgreamentAgent * agent);
+    explicit TCPChannel(const char *serverIP, const int serverPort);
     /**
     \param
     \return
@@ -89,9 +87,6 @@ private:
     LoginWindow * lw;
     const char *serverIP;
     const int serverPort;
-    RSACipher * rsaServer;
-    RSACipher * rsaClient;
-    KeyAgreamentAgent * agent;
     SessionID sessionID;
 
     /**

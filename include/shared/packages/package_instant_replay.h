@@ -4,7 +4,6 @@
 #include "../status.h"
 #include "../crypto/hash.h"
 #include "../crypto/key.h"
-#include "../crypto/certificate.h"
 #include "../id_session.h"
 /**
 \struct
@@ -84,23 +83,23 @@ struct PackageSessionDetailRequest : PackageDynamicSize
 
     PackageSessionDetailRequest(PackageBuffer *buf)
     {
-        BUFF_SIZE size;
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        p = new Buffer();
-        p->resize(size);
-        buf->fillBuffer(p->getPointerToBuffer(), p->getLength());
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        g = new Buffer();
-        g->resize(size);
-        buf->fillBuffer(g->getPointerToBuffer(), g->getLength());
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        q = new Buffer();
-        q->resize(size);
-        buf->fillBuffer(q->getPointerToBuffer(), q->getLength());
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        rsaPublicKey = new Key(size, size);
-        rsaPublicKey->resize(size);
-        buf->fillBuffer(rsaPublicKey->getPointerToBuffer(), rsaPublicKey->getLength());
+//        BUFF_SIZE size;
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        p = new Buffer();
+//        p->resize(size);
+//        buf->fillBuffer(p->getPointerToBuffer(), p->getLength());
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        g = new Buffer();
+//        g->resize(size);
+//        buf->fillBuffer(g->getPointerToBuffer(), g->getLength());
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        q = new Buffer();
+//        q->resize(size);
+//        buf->fillBuffer(q->getPointerToBuffer(), q->getLength());
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        rsaPublicKey = new Key(size, size);
+//        rsaPublicKey->resize(size);
+//        buf->fillBuffer(rsaPublicKey->getPointerToBuffer(), rsaPublicKey->getLength());
     }
 
     virtual BUFF_SIZE size() const
@@ -112,19 +111,19 @@ struct PackageSessionDetailRequest : PackageDynamicSize
     {
         BUFF_SIZE size = p->getLength();
         PackageBuffer * buff = new PackageBuffer((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(p->getPointerToBuffer(), p->getLength());
+//        buff->concatBuff(p->getPointerToBuffer(), p->getLength());
 
-        size = g->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(g->getPointerToBuffer(), g->getLength());
+//        size = g->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(g->getPointerToBuffer(), g->getLength());
 
-        size = q->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(q->getPointerToBuffer(), q->getLength());
+//        size = q->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(q->getPointerToBuffer(), q->getLength());
 
-        size = rsaPublicKey->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(rsaPublicKey->getBuff(), rsaPublicKey->getLength());
+//        size = rsaPublicKey->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(rsaPublicKey->getBuff(), rsaPublicKey->getLength());
 
         return buff;
     }
@@ -136,65 +135,66 @@ struct PackageSessionDetailRequest : PackageDynamicSize
 */
 struct PackageSessionDetailResponse : PackageDynamicSize
 {
-    u_int32_t session_id;
-    Certificate * certificate;
-    uint32_t agreedValueLength;
-    Key * staticPublicKey, * ephemeralPublicKey;
+//    u_int32_t session_id;
+//    Certificate * certificate;
+//    uint32_t agreedValueLength;
+//    Key * staticPublicKey, * ephemeralPublicKey;
 
-    virtual BUFF_SIZE size()const
-    {
-        return sizeof(session_id) +
-                certificate->getBuffer()->getLength() + sizeof(BUFF_SIZE) +
-                sizeof(agreedValueLength) +
-                staticPublicKey->getKeyLength() + sizeof(BUFF_SIZE) +
-                ephemeralPublicKey->getKeyLength() + sizeof(BUFF_SIZE);
-    }
+//    virtual BUFF_SIZE size()const
+//    {
+//        return sizeof(session_id) +
+//                certificate->getBuffer()->getLength() + sizeof(BUFF_SIZE) +
+//                sizeof(agreedValueLength) +
+//                staticPublicKey->getKeyLength() + sizeof(BUFF_SIZE) +
+//                ephemeralPublicKey->getKeyLength() + sizeof(BUFF_SIZE);
+//    }
 
     PackageSessionDetailResponse(PackageBuffer *buf)
     {
-        BUFF_SIZE size;
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        Buffer *b = new Buffer();
-        b->resize(size);
-        buf->fillBuffer(b->getPointerToBuffer(), b->getLength());
-        certificate = new Certificate(b);
+//        BUFF_SIZE size;
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        Buffer *b = new Buffer();
+//        b->resize(size);
+//        buf->fillBuffer(b->getPointerToBuffer(), b->getLength());
+//        certificate = new Certificate(b);
 
-        buf->fillBuffer((uint8_t*)&agreedValueLength, sizeof(agreedValueLength));
+//        buf->fillBuffer((uint8_t*)&agreedValueLength, sizeof(agreedValueLength));
 
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        staticPublicKey = new Key(size, size);
-        staticPublicKey->resize(size);
-        buf->fillBuffer(staticPublicKey->getPointerToBuffer(), staticPublicKey->getLength());
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        staticPublicKey = new Key(size, size);
+//        staticPublicKey->resize(size);
+//        buf->fillBuffer(staticPublicKey->getPointerToBuffer(), staticPublicKey->getLength());
 
-        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
-        ephemeralPublicKey = new Key(size, size);
-        ephemeralPublicKey->resize(size);
-        buf->fillBuffer(ephemeralPublicKey->getPointerToBuffer(), ephemeralPublicKey->getLength());
+//        buf->fillBuffer((uint8_t*)&size, sizeof(BUFF_SIZE));
+//        ephemeralPublicKey = new Key(size, size);
+//        ephemeralPublicKey->resize(size);
+//        buf->fillBuffer(ephemeralPublicKey->getPointerToBuffer(), ephemeralPublicKey->getLength());
+//    }
+
+//    PackageSessionDetailResponse(Certificate *cert, uint32_t agreedValueLength, Key * staticPublicKey, Key * ephemeralPublicKey):
+//        certificate(cert), agreedValueLength(agreedValueLength), staticPublicKey(staticPublicKey), ephemeralPublicKey(ephemeralPublicKey)
+//    {}
+
+//    virtual PackageBuffer * toPackageBuffer()
+//    {
+//        PackageBuffer * buff = new PackageBuffer((uint8_t*)(&session_id), sizeof(session_id));
+//        BUFF_SIZE size = certificate->getBuffer()->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(certificate->getBuffer()->getPointerToBuffer(), certificate->getBuffer()->getLength());
+
+//        buff->concatBuff((uint8_t*)(&agreedValueLength), sizeof(agreedValueLength));
+
+//        size = staticPublicKey->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(staticPublicKey->getPointerToBuffer(), staticPublicKey->getLength());
+
+//        size = ephemeralPublicKey->getLength();
+//        buff->concatBuff((uint8_t*)(&size), sizeof(size));
+//        buff->concatBuff(ephemeralPublicKey->getPointerToBuffer(), ephemeralPublicKey->getLength());
+
+//        return buff;
     }
 
-    PackageSessionDetailResponse(Certificate *cert, uint32_t agreedValueLength, Key * staticPublicKey, Key * ephemeralPublicKey):
-        certificate(cert), agreedValueLength(agreedValueLength), staticPublicKey(staticPublicKey), ephemeralPublicKey(ephemeralPublicKey)
-    {}
-
-    virtual PackageBuffer * toPackageBuffer()
-    {
-        PackageBuffer * buff = new PackageBuffer((uint8_t*)(&session_id), sizeof(session_id));
-        BUFF_SIZE size = certificate->getBuffer()->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(certificate->getBuffer()->getPointerToBuffer(), certificate->getBuffer()->getLength());
-
-        buff->concatBuff((uint8_t*)(&agreedValueLength), sizeof(agreedValueLength));
-
-        size = staticPublicKey->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(staticPublicKey->getPointerToBuffer(), staticPublicKey->getLength());
-
-        size = ephemeralPublicKey->getLength();
-        buff->concatBuff((uint8_t*)(&size), sizeof(size));
-        buff->concatBuff(ephemeralPublicKey->getPointerToBuffer(), ephemeralPublicKey->getLength());
-
-        return buff;
-    }
 };
 
 struct PackageLoginCheck : Package

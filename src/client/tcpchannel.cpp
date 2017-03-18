@@ -3,21 +3,17 @@
 #include "../../include/shared/packages/package_user_to_user.h"
 #include "../../include/shared/packages/package_signal.h"
 #include "../../include/shared/packages/package_update.h"
-#include "../../include/client/clog.h"
 #include "../../include/shared/buffer_spitter.h"
 
 #include "../../include/client/loginwindow.h"
 #include "../../include/client/mainwindow.h"
 #include "../../include/client/tcpchannel.h"
 
-TCPChannel::TCPChannel(const char *serverIP, const int serverPort, KeyAgreamentAgent *agent):
+TCPChannel::TCPChannel(const char *serverIP, const int serverPort):
     serverIP(serverIP),
     serverPort(serverPort),
-    agent(agent),
-    sessionID(0)
-{
-    rsaClient = new RSACipher();
-}
+    sessionID((uint32_t)0)
+{}
 
 TCPChannel::~TCPChannel()
 {
@@ -38,22 +34,22 @@ bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
     BUFF_SIZE size = sizeof(sessionID) + sizeof(type) + sizeof(mp->multiPackSize) +
                    sizeof(mp->multiPackCurrentSize) + mp->buff->getLength();
 
-    if (!sendBuffer(&size, sizeof(size)))
+    if (!sendBuffer((uint8_t *)&size, sizeof(size)))
         return false;
 
-    if (!sendBuffer(&sessionID, sizeof(sessionID)))
+    if (!sendBuffer((uint8_t *)&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
         return false;
 
-    if (!sendBuffer(&mp->multiPackSize, sizeof(mp->multiPackSize)))
+    if (!sendBuffer((uint8_t *)&mp->multiPackSize, sizeof(mp->multiPackSize)))
         return false;
 
-    if (!sendBuffer(&mp->multiPackCurrentSize, sizeof(mp->multiPackCurrentSize)))
+    if (!sendBuffer((uint8_t *)&mp->multiPackCurrentSize, sizeof(mp->multiPackCurrentSize)))
         return false;
 
-    if (!sendBuffer(mp->buff->getPointerToBuffer(), mp->buff->getLength()))
+    if (!sendBuffer((uint8_t *)mp->buff->getPointerToBuffer(), mp->buff->getLength()))
         return false;
 
     return true;
@@ -66,13 +62,13 @@ bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, ui
     if (!sendBuffer((uint8_t *)&allsize, sizeof(allsize)))
         return false;
 
-    if (!sendBuffer(&sessionID, sizeof(sessionID)))
+    if (!sendBuffer((uint8_t *)&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))
         return false;
 
-    if (!sendBuffer(buff, sizeOfBuff))
+    if (!sendBuffer((uint8_t *)buff, sizeOfBuff))
         return false;
 
     return true;
@@ -84,7 +80,7 @@ bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSiz
     if (!sendBuffer((uint8_t *)&size, sizeof(size)))
         return false;
 
-    if (!sendBuffer(&sessionID, sizeof(sessionID)))
+    if (!sendBuffer((uint8_t *)&sessionID, sizeof(sessionID)))
         return false;
 
     if (!sendBuffer((uint8_t *)&type, sizeof(type)))

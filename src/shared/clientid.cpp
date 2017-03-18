@@ -21,6 +21,7 @@ ClientID::ClientID()
 {
     id = ++staticID;
 }
+
 ClientID::ClientID(std::string &data)
 {
     this->id = std::stoi(data);
@@ -62,6 +63,7 @@ bool ClientID::operator>(const ClientID &id)const
 {
     return this->id > id.id;
 }
+
 ClientID ClientID::operator=(uint32_t _id)
 {
     id = _id;
