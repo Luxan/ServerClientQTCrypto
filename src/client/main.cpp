@@ -9,9 +9,22 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QByteArray cert;
+    QFile file_cert("server.crt");
+    if(file_cert.open(QIODevice::ReadOnly))
+    {
+        cert = file_cert.readAll();
+        file_cert.close();
+    }
+    else
+    {
+        qDebug() << file_cert.errorString();
+    }
+
     LoginWindow lw(globalConfiguration.minLoginCharacters, globalConfiguration.minPasswordCharacters);
     MainWindow mw;
-    TCPChannel tcpChannel(globalConfiguration.serverIP, globalConfiguration.serverPort);
+    SslTcpChannel tcpChannel(globalConfiguration.serverIP, globalConfiguration.serverPort, cert);
 
     lw.setTCPChannel(&tcpChannel);
     mw.setTCPChannel(&tcpChannel);

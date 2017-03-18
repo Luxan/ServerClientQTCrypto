@@ -15,7 +15,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setTCPChannel(TCPChannel *ch)
+void MainWindow::setTCPChannel(SslTcpChannel *ch)
 {
     this->tcpchannel = ch;
 }

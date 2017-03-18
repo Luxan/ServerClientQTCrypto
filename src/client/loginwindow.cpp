@@ -25,7 +25,7 @@ LoginWindow::LoginWindow(const int minLoginCharacters, const int minPasswordChar
     ui->passwordEdit->setInputMethodHints(Qt::ImhHiddenText | Qt::ImhNoPredictiveText | Qt::ImhNoAutoUppercase);
 }
 
-void LoginWindow::setTCPChannel(TCPChannel * ch)
+void LoginWindow::setTCPChannel(SslTcpChannel * ch)
 {
     tcpchannel = ch;
 

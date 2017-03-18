@@ -32,7 +32,7 @@ public:
     {
         try
         {
-            uint8_t a = *(buff + _key_length);
+            *(buff + _key_length);
         }
         catch(const std::out_of_range& oor)
         {
@@ -45,7 +45,7 @@ public:
     {
         try
         {
-            uint8_t a = *(buff + _key_length);
+            *(buff + _key_length);
         }
         catch(const std::out_of_range& oor)
         {

@@ -9,27 +9,59 @@
 #include "../../include/client/mainwindow.h"
 #include "../../include/client/tcpchannel.h"
 
-TCPChannel::TCPChannel(const char *serverIP, const int serverPort):
+SslTcpChannel::SslTcpChannel(const char *serverIP, const int serverPort, QByteArray &cert):
+    ssl_cert(cert),
     serverIP(serverIP),
     serverPort(serverPort),
     sessionID((uint32_t)0)
 {}
 
-TCPChannel::~TCPChannel()
+SslTcpChannel::~SslTcpChannel()
 {
+    disconnectFronServer();
     delete _pSocket;
 }
 
-bool TCPChannel::connectToServer()
+bool SslTcpChannel::connectToServer()
 {
-    _pSocket = new QTcpSocket();
-    connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
+    _pSocket = new QSslSocket();
+    _pSocket->setProtocol(QSsl::TlsV1SslV3);
 
-    _pSocket->connectToHost(serverIP, serverPort);
+    _pSocket->addCaCertificate(ssl_cert);
+    _pSocket->setLocalCertificate(ssl_cert);
+
+    connect(_pSocket, SIGNAL(sslErrors(QList<QSslError>)),
+            this, SLOT(sslError(QList<QSslError>)) );
+    connect(_pSocket, SIGNAL(encrypted()),
+            this,SLOT(encrypted()));
+
+    _pSocket->setSocketOption(QAbstractSocket::KeepAliveOption, true);
+
+    _pSocket->connectToHostEncrypted(serverIP, serverPort);
     return _pSocket->waitForConnected();
 }
 
-bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp)
+bool SslTcpChannel::disconnectFronServer()
+{
+    _pSocket->disconnectFromHost();
+    return _pSocket->waitForDisconnected();
+}
+
+void SslTcpChannel::encrypted()
+{
+    connect(_pSocket, SIGNAL(readyRead()), this, SLOT(readTcpData()));
+}
+
+void SslTcpChannel::sslError(QList<QSslError> errors)
+{
+    QString erroStr="";
+    foreach (const QSslError &e, errors)
+        erroStr.append(e.errorString()).append("\n");
+    logError(erroStr.toStdString());
+    _pSocket->ignoreSslErrors();
+}
+
+bool SslTcpChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, PackageMultiPackage *mp)
 {
     BUFF_SIZE size = sizeof(sessionID) + sizeof(type) + sizeof(mp->multiPackSize) +
                    sizeof(mp->multiPackCurrentSize) + mp->buff->getLength();
@@ -55,7 +87,7 @@ bool TCPChannel::sendPackageMultyMessage(PackageWrapper::ePackageType type, Pack
     return true;
 }
 
-bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff)
+bool SslTcpChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, uint16_t size, uint8_t * buff, uint16_t sizeOfBuff)
 {
     BUFF_SIZE allsize = (uint8_t) size + sizeof(type) + sizeof(sessionID);
 
@@ -74,7 +106,7 @@ bool TCPChannel::sendPackageDynamicMessage(PackageWrapper::ePackageType type, ui
     return true;
 }
 
-bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type)
+bool SslTcpChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSize, PackageWrapper::ePackageType type)
 {
     BUFF_SIZE size = (uint8_t) strictSize + sizeof(type) + sizeof(sessionID);
     if (!sendBuffer((uint8_t *)&size, sizeof(size)))
@@ -92,20 +124,14 @@ bool TCPChannel::sendStrictSizePackage(PackageStrictSize * sp, uint8_t strictSiz
     return true;
 }
 
-bool TCPChannel::sendBuffer(uint8_t *buff, size_t size)
+bool SslTcpChannel::sendBuffer(uint8_t *buff, size_t size)
 {
     QByteArray dataWrite((const char *)buff, size);
-
-    //for (size_t i = 0; i < size; i++)
-    //{
-    //    qDebug() << "0x" << std::hex << *(buff + i) << '\n' ;
-    //}
-
     _pSocket->write(dataWrite);
     return _pSocket->waitForBytesWritten();
 }
 
-bool TCPChannel::sendPackage(PackageWrapperDecoded *pw)
+bool SslTcpChannel::sendPackage(PackageWrapperDecoded *pw)
 {
     //Quint8_tArray data; // <-- fill with data
 
@@ -254,9 +280,9 @@ bool TCPChannel::sendPackage(PackageWrapperDecoded *pw)
     return true;
 }
 
-void TCPChannel::readTcpData()
+void SslTcpChannel::readTcpData()
 {
-    QByteArray data = _pSocket->readAll();
+    QByteArray data =  _pSocket->read(_pSocket->bytesAvailable());
 
     BufferSpitter b((uint8_t *)data.data(), data.length());
     std::list<PackageBuffer *> list;
@@ -266,7 +292,7 @@ void TCPChannel::readTcpData()
     processReceivedBuffers(list);
 }
 
-void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
+void SslTcpChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
 {
     for (PackageBuffer *packageBuff : list)
     {
@@ -322,7 +348,7 @@ void TCPChannel::processReceivedBuffers(std::list<PackageBuffer *> &list)
     }
 }
 
-void TCPChannel::logError(std::string error)
+void SslTcpChannel::logError(std::string error)
 {
     if (!this->mw->isHidden())
         this->mw->logError(error);
@@ -332,7 +358,7 @@ void TCPChannel::logError(std::string error)
 //    CLog::logError() << error;
 }
 
-void TCPChannel::logInfo(std::string info)
+void SslTcpChannel::logInfo(std::string info)
 {
     if (!mw->isHidden())
         mw->logInfo(info);
@@ -341,18 +367,18 @@ void TCPChannel::logInfo(std::string info)
 
 //    CLog::logInfo() << info;
 }
-void TCPChannel::setMainWindow(MainWindow * mw)
+
+void SslTcpChannel::setMainWindow(MainWindow * mw)
 {
     this->mw = mw;
 }
 
-void TCPChannel::setLoginWindow(LoginWindow * lw)
+void SslTcpChannel::setLoginWindow(LoginWindow * lw)
 {
     this->lw = lw;
 }
 
-
-void TCPChannel::startSession()
+void SslTcpChannel::startSession()
 {
 //    PackageWrapperDecoded wr;
 //    wr.package = new PackageSessionDetailRequest(NULL);
@@ -361,7 +387,7 @@ void TCPChannel::startSession()
 //    delete wr.package;
 }
 
-PackageWrapperDecoded *TCPChannel::CreatePackage(PackageBuffer *buf)
+PackageWrapperDecoded *SslTcpChannel::CreatePackage(PackageBuffer *buf)
 {
     if (buf == nullptr)
         return nullptr;

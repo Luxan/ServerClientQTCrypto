@@ -8,7 +8,7 @@
 #include "../shared/id_client.h"
 #include "../shared/user.h"
 
-class TCPChannel;
+class SslTcpChannel;
 
 namespace Ui {
 class MainWindow;
@@ -21,34 +21,21 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    /**
-    \param
-    \return
-    \throw
-    \brief
-    \pre
-    \post
-    */
-    void setTCPChannel(TCPChannel * ch);
-
+    void setTCPChannel(SslTcpChannel * ch);
     void logError(std::string error);
-
     void logInfo(std::string info);
-
     void LoggedInAs(ClientID id);
 
 private slots:
     void sendMyStatusToServer();
     void checkFriendsStatus();
+
 private:
     Ui::MainWindow *ui;
-    TCPChannel * tcpchannel;
+    SslTcpChannel * tcpchannel;
     std::shared_ptr<User> activeUser;
     QTimer *timerPing;
     QTimer *timerCheckFriendsStatus;
-
-
     void getUserDetail(ClientID id);
 };
 
