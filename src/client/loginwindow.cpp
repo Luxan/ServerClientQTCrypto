@@ -89,13 +89,13 @@ void LoginWindow::on_loginButton_clicked()
     ui->statusLabel->setText(QString("Signing in.."));
     ui->statusLabel->setStyleSheet("QLabel { color : black;}");
 
-    PackageWrapper wr;
+    PackageWrapperDecoded wr;
     try
     {
-        //wr.package = new PackageRequestLogin(login.toStdString(), password.toStdString());
-        //wr.type = PackageWrapper::ePackageType::RequestLogin;
-        //tcpchannel->sendPackage(&wr);
-        //delete wr.package;
+        wr.package = new PackageRequestLogin(login.toStdString(), password.toStdString());
+        wr.type = PackageWrapper::ePackageType::RequestLogin;
+        tcpchannel->sendPackage(&wr);
+        delete wr.package;
     }
     catch (eError e)
     {

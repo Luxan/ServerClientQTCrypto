@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QByteArray cert;
-    QFile file_cert("server.crt");
+    QFile file_cert("../../cert/CA/servercert.pem");
     if(file_cert.open(QIODevice::ReadOnly))
     {
         cert = file_cert.readAll();

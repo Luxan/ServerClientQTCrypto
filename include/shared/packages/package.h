@@ -30,7 +30,7 @@ struct Package
             throw (std::string("Not enough buffer. Got: " + std::to_string(gotSize) + " Expected: " + std::to_string(expectedSize)));
     }
     virtual ~Package() {}
-    virtual PackageBuffer * toPackageBuffer() = 0;
+    //virtual PackageBuffer * toPackageBuffer() = 0;
 };
 /**
 \struct
@@ -128,7 +128,7 @@ struct PackageDynamicSize : Package
 	\pre
 	\post
 	*/
-    virtual BUFF_SIZE size()const = 0;
+    //virtual BUFF_SIZE size()const = 0;
 
 	/**
 	\param
@@ -140,7 +140,7 @@ struct PackageDynamicSize : Package
 	*/
     virtual void checkIfEnoughSize(Package *p, BUFF_SIZE size)const
     {
-        thowNotEnoughSizeException(size, ((PackageDynamicSize*)p)->size());
+        //thowNotEnoughSizeException(size, ((PackageDynamicSize*)p)->size());
     }
 };
 

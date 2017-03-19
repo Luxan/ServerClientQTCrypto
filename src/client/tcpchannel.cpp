@@ -13,7 +13,8 @@ SslTcpChannel::SslTcpChannel(const char *serverIP, const int serverPort, QByteAr
     ssl_cert(cert),
     serverIP(serverIP),
     serverPort(serverPort),
-    sessionID((uint32_t)0)
+    sessionID((uint32_t)0),
+    _pSocket(nullptr)
 {}
 
 SslTcpChannel::~SslTcpChannel()
@@ -43,6 +44,8 @@ bool SslTcpChannel::connectToServer()
 
 bool SslTcpChannel::disconnectFronServer()
 {
+    if (!_pSocket)
+        return false;
     _pSocket->disconnectFromHost();
     return _pSocket->waitForDisconnected();
 }
