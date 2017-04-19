@@ -32,6 +32,16 @@ public:
     }
 
     /*!
+    \brief Constructor to create empty buffer with given size.
+    \param _length - length of empty buffer that will be created
+    */
+    Buffer(BUFF_SIZE _length)
+    {
+        buff = new uint8_t[_length + 1];
+        length = _length;
+    }
+
+    /*!
     \brief Constructor to create empty buffer.
     */
     Buffer()

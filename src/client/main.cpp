@@ -6,11 +6,8 @@
 #include "../../include/shared/configuration.h"
 #include "../../include/shared/buffer.h"
 
-int main(int argc, char *argv[])
+void loadCertificate(QByteArray &cert)
 {
-    QApplication a(argc, argv);
-
-    QByteArray cert;
     QFile file_cert("../../cert/CA/servercert.pem");
     if(file_cert.open(QIODevice::ReadOnly))
     {
@@ -21,6 +18,14 @@ int main(int argc, char *argv[])
     {
         qDebug() << file_cert.errorString();
     }
+}
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+
+    QByteArray cert;
+    loadCertificate(cert);
 
     LoginWindow lw(globalConfiguration.minLoginCharacters, globalConfiguration.minPasswordCharacters);
     MainWindow mw;
@@ -32,7 +37,7 @@ int main(int argc, char *argv[])
     tcpChannel.setMainWindow(&mw);
 
     lw.show();
-    //mw.show();
+    //mw.show();5
 
     return a.exec();
 }
